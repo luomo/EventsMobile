@@ -17,7 +17,7 @@
 
 
 <script type="text/javascript">
-
+ 
 	
 
 	$(function(){
@@ -122,11 +122,13 @@
 			<a href="#settings" data-icon="gear">Settings</a>
 		</div>
 
-		<div data-role="content">		
-			<p>	<h3>Welcome to events application!</h3> </p>
-			<p class="msg">
-				This is a sample application for searching events...
-			</p>
+		<div data-role="content">
+			<div style="margin:50px;padding: 20px;text-align: center;">		
+				<p>	<h1>Welcome to events application!</h1> </p>
+				<p class="msg">
+					This is a sample application for searching events...
+				</p>
+			</div>
 			<div class="ui-grid-a">
 				<div class="ui-block-a">
 					<a href="#searchPage" data-icon="search" data-role="button"
@@ -172,35 +174,33 @@
 
 
 		<div data-role="content">
-			<blockquote>
-				<p><h3>Where to go ...</h3></p>
-			</blockquote>
-			<div data-role="content" >
-				<p>
-				<ul id="searchEventsList" data-role="listview" data-filter="true" data-filter-placeholder="Search Events ...">
-					<li><a href="#">
-							<img src="images/events.png" />
-							<h3>a Event Item title</h3> 
-			    			<p>Event Item overview</p>
-			    			<span class=ui-li-count>3</span>
-			    		</a>
-			    	</li>
-			    	<li data-role="list-divider">E</li> 
-					<li>
-						<a href="#">
-							<img src="images/events.png" class="ui-li-icon"/>
-							<h3>Event Item title</h3> 
-			    			<p>Event Item overview 2</p>
-			    		</a>
-			    	</li>
-				</ul>
-			</div>
-				
-
+			<ul id="searchEventsList" data-role="listview" data-filter="true" data-filter-placeholder="Search Events ...">
+				<li><a href="#">
+						<img src="images/events.png" />
+						<h2>a Event Item title</h2> 
+		    			<p>Event Item overview</p>
+		    			<span class=ui-li-count>3</span>
+		    		</a>
+		    	</li>
+		    	<li data-role="list-divider">E</li> 
+				<li>
+					<a href="#">
+						<img src="images/events.png" class="ui-li-icon"/>
+						<h3>Event Item title</h3> 
+		    			<p>Event Item overview 2</p>
+		    		</a>
+		    	</li>
+			</ul>
 		</div>
 
-		<div data-role="footer">
-			<h4>@Mobile Applications</h4>
+		<div data-role="footer" data-position="fixed">
+			<div data-role=navbar>
+			<ul>
+		        <li><a href="#"  data-icon="home">Home</a></li>
+		        <li><a href="#" data-icon=info>Help</a></li>
+		        <li><a href="#" data-icon=delete>Close</a></li>
+      		</ul> 
+	    </div>
 		</div>
 
 	</div>

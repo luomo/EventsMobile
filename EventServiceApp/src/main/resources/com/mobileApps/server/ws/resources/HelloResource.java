@@ -1,4 +1,4 @@
-package com.mobileApps.server.ws;
+package com.mobileApps.server.ws.resources;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

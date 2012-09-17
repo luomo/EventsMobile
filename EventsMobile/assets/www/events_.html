@@ -1,0 +1,309 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Title Test</title>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+
+ 
+<link rel="stylesheet" href="css/themes/events-theme.css" /> 
+<link rel="stylesheet" href="jquery.mobile/jquery.mobile-1.1.1.min.css" />
+
+<script src="jquery.mobile/jquery-1.7.2.min"></script>
+<script src="custom/jQueryMobile/jQuery-mobile-init.js"></script>
+<script src="jquery.mobile/jquery.mobile-1.1.1.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="cordova-2.0.0.js"></script>
+
+
+<script type="text/javascript">
+ 
+	
+
+	$(function(){
+
+		// try to sinalize in the console some events that are fired --- see 181 pro jquery mobile
+		$( "#home" ).live( " pagebeforechange pagebeforeload pagebeforecreate pagecreate", function(e, data){
+			console.log("Page events are being fired..." + e +  " "+data);
+		});
+		
+		// try to create a splashScreen while a app loads
+		setTimeout(hideSplash, 1000);
+		function hideSplash() {
+		  $.mobile.changePage("#home", "fade");
+		}
+		
+		
+		// try to load webService info when byNameSearchPage loads		
+		$('#byNameSearchPage').live("pageinit", function(){
+			// callback funtion invocation
+		   init();
+		});
+
+		// callback funtion (populates one <li> with the info returned by the webService)
+		function init(){
+			alert("init");
+			$.ajax( {
+				type:'get',
+				url:'http://192.168.1.69:8080/EventServiceApp/resources/hello',
+
+				success:function(data) {
+					console.log(data);
+			      	//alert(data);
+					$("#searchEventsList").append('<li><a href="' + "#" + '">' +data + '</a></li>');
+				     $("#searchEventsList").listview('refresh');
+				},
+				error: function(request,error) 
+				{
+				 console.log(arguments);
+				 console.log("error: "  + error);
+				 //alert ( " Can't do because: " + error );
+				 $("#searchEventsList").append('<li><a href="' + "#" + '">' +error + '</a></li>');
+			      
+			     $("#searchEventsList").listview('refresh'); 
+				}
+	
+			});
+		}
+
+		// this is a override of the function responsable for search in list view .. 
+		// this is a dummy redifinition because it has the same code as the original
+		// is a first try to have control of the search callback to be able to invoke the rest ws 
+		filterFunction = function( text, searchValue ){
+				
+			  return text.toLowerCase().indexOf( searchValue ) === -1;
+		}
+		
+		$('#searchEventsList').listview( 'option', 'filterCallback', filterFunction);
+		
+	
+		
+		
+		
+	});
+</script>
+
+<style type="text/css">
+
+	.splash {
+		align:center;
+		background-color: #fff;
+		padding: 1000px;
+	}
+	
+	
+	/* Navbar text */
+	[data-role=navbar] .ui-btn-text {
+	font-size: smaller;
+	}
+	
+	.logo {
+		margin-top: none;
+		display: block;
+    	margin-left: auto;
+    	margin-right: auto;
+	}
+	
+	.smallLogo {
+		margin-bottom: 20px;
+	}
+	
+	[data-role="header"] > h1, .headerMsg {
+		color: rgb(119, 149, 252);
+		text-align: center;
+	}
+
+	.msg{
+		margin:0px;
+		padding:0px;
+	}
+	
+	#splash {
+		background-image: url("images/calendar_128x128.png");
+		background-position: center;
+		background-attachment: fixed;
+		background-repeat: no-repeat;
+		text-align: center;
+	}
+	
+</style>
+
+</head>
+
+<body>
+
+	<!-- Splash Screen -->
+	<div id="splash" data-role="page" data-theme="a" > 
+		<div data-role="content" class="logo" >    	
+			<p>	<h2>Welcome to events application!</h2> </p>
+				<p class="msg">
+					This is a sample application for searching events...
+				</p>
+		</div>
+	</div>
+
+
+	<!-- Home Page -->
+	<div data-role="page" id="home" data-theme="c">
+		<div data-role="header">			
+			<h1>Events</h1>
+			<a href="#settings" data-icon="gear" class="ui-btn-right">Settings</a>
+		</div>
+
+		<div data-role="content" >
+			<img alt="Events" src="images/calendar_100x100.png" class="logo">
+			<div class="headerMsg" >		
+				<p>	<h4>Simple apps to search for fun !!!</h4> </p>
+			</div>
+
+			<ul data-role="listview" >
+				<li data-icon="false"> <a href="#loginPage" ><img alt="Log in" src="images/login.png" class="ui-li-icon">Log In</a></li>
+				<li data-icon="false"> <a href="#byGenreSearchPage" ><img alt="Events" src="images/_search.png" class="ui-li-icon">Events</a></li>
+				<li data-icon="false"> <a href="#genreSearchPage" ><img alt="Sign Up" src="images/add_user.png" class="ui-li-icon">Sign Up</a></li>
+				<li data-icon="false"> <a href="#aboutPage" ><img alt="About" src="images/about.png" class="ui-li-icon">About</a></li>
+				<li data-icon="false"> <a href="feedback.html" data-rel="dialog"><img alt="Feedback" src="images/feedback.png" class="ui-li-icon">Feedback</a></li>
+			</ul>
+		</div>
+		
+		<div data-role="footer" data-position="fixed">
+			<h5>@Mobile Applications</h5>
+		</div>
+	</div>
+
+	
+	
+	<!-- Genre Search Page -->
+	<div data-role="page" id="byGenreSearchPage"  data-add-back-btn="true">
+		<div data-role="header">
+			<h1>Events</h1>
+			<a href="#settings" data-icon="gear" class="ui-btn-right">Settings</a>
+		</div>
+
+		<div data-role="content">
+			<ul id="genreSearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search genres ...">
+				<li><a href="#">Reggae events <span class=ui-li-count>3</span> </a> </li>
+				<li><a href="#">Jazz events <span class=ui-li-count>10</span> </a> </li>
+				<li><a href="#">Electronic events <span class=ui-li-count>15</span> </a> </li>
+				<li><a href="#">World Music events <span class=ui-li-count>2</span> </a> </li>
+				<li><a href="#">Pop events <span class=ui-li-count>10</span> </a> </li>
+			</ul>
+		</div>
+
+		<div data-role="footer" data-position="fixed">
+			<div data-role=navbar>
+				<ul>
+					<li><a href="#" class="ui-btn-active" data-icon="info">Genre</a></li>	
+					<li><a href="#byNameSearchPage" data-icon="Name">Name</a></li>
+					<li><a href="#" data-icon="grid">Location</a></li>
+					<li><a href="#" data-icon="home">Nearby</a></li>
+					<li><a href="#" data-icon="star">Today</a></li>
+				</ul> 
+			</div>
+		</div>
+	</div>
+
+
+	
+	<!-- By Name Search Page -->
+	<div data-role="page" id="byNameSearchPage"  data-add-back-btn="true">
+		<div data-role="header">
+			<h1>Events</h1>
+			<a href="#settings" data-icon="gear" class="ui-btn-right">Settings</a>
+		</div>
+
+		<div data-role="content" >
+			<ul id="searchEventsList" data-role="listview" data-filter="true" data-filter-placeholder="Search Events ...">
+				<li data-role="list-divider">A</li> 
+				<li><a href="#">
+						<img src="images/mia.png" />
+						<h2>An Event from MIA</h2> 
+		    			<p>MIA event</p>
+		    		</a>
+		    	</li>
+				<li data-role="list-divider">B</li> 
+				<li data-role="list-divider">D</li> 
+		    	<li data-role="list-divider">E</li> 
+				<li>
+					<a href="#">
+						<img src="images/events.png" />
+						<h3>Event Item title</h3> 
+		    			<p>Event Item overview 2</p>
+		    		</a>
+		    	</li>
+				<li data-role="list-divider">F</li> 
+				<li data-role="list-divider">G</li> 
+		    	<li data-role="list-divider">H</li> 
+			</ul>
+		</div>
+
+		<div data-role="footer" data-position="fixed">
+			<div data-role=navbar>
+			<ul>
+		        <li><a href="#byGenreSearchPage" data-icon="info">Genre</a></li>	
+				<li><a href="#byNameSearchPage" class="ui-btn-active"  data-icon="Name">Name</a></li>
+				<li><a href="#" data-icon="grid">Location</a></li>
+				<li><a href="#" data-icon="home">Nearby</a></li>
+				<li><a href="#" data-icon="star">Today</a></li>
+      		</ul> 
+	    </div>
+		</div>
+
+	</div>
+
+
+
+	<div data-role="page" id="settings" data-add-back-btn="true">
+		<div data-role="header">
+			<h1>Events</h1>
+			<a href="#settings" data-icon="gear" class="ui-btn-right">Settings</a>
+		</div>
+
+		<div data-role="content">
+			<p>Settings</p>
+			<label for="updated">Receive updates</label> <select id="updated"
+				name="updated" data-role="slider">
+				<option value="no">No</option>
+				<option value="yes">Yes</option>
+			</select>
+		</div>
+
+	</div>
+
+	<div data-role="dialog" id="loginPage" data-add-back-btn="true">
+
+		<div data-role="header">
+			<h1>Events</h1>
+		</div>
+
+		<div data-role="content">
+			<h1>Login</h1>
+			
+			<form action="" method="post" data-transition="none">
+
+			   <div data-role="fieldcontain">
+				 <label for="user">User:</label>
+				 <input type="text" name="user" id="user" value="" required="true" />
+			   </div>
+
+			   <div data-role="fieldcontain">
+				 <label for="password">Password:</label>
+				 <input type="password" name="password" id="password" value="" required="true" />
+			   </div>
+			   
+			   
+			   <input type="submit" value="Login" data-theme="a">
+			   <a href="#home" data-role="button">Cancel</a>
+			 
+			 </form>
+		</div>
+
+		<div data-role="footer">
+			<h4>@Mobile Applications</h4>
+		</div>
+
+
+	</div>
+
+</body>
+</body>
+</html>

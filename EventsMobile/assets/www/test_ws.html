@@ -96,6 +96,21 @@
 		padding-left: 50px;
 	}
 	
+	/* Navbar text */
+	[data-role=navbar] .ui-btn-text {
+	font-size: smaller;
+	}
+	
+	.logo {
+		display: block;
+    	margin-left: auto;
+    	margin-right: auto;
+	}
+	[data-role="header"] > h1 {
+		color: rgb(119, 149, 252);
+	}
+
+	
 	
 </style>
 
@@ -115,12 +130,14 @@
 
 
 	<div data-role="page" id="home" data-theme="b">
-
+ 
 		<div data-role="header">
+			<img alt="Events" src="images/events.png" class="logo">
 			<a href="#logout" data-rel="dialog" data-transition="pop">Log out</a>
 			<h1>Events</h1>
 			<a href="#settings" data-icon="gear">Settings</a>
 		</div>
+
 
 		<div data-role="content">
 			<div style="margin:50px;padding: 20px;text-align: center;">		
@@ -151,15 +168,6 @@
 		
 		<div data-role="footer" data-position="fixed">
 			<h4>@Mobile Applications</h4>
-      	<!-- 
-		<div data-role=navbar>
-			<ul>
-		        <li><a href=# data-icon=refresh>Refresh</a></li>
-		        <li><a href=# data-icon=info>Help</a></li>
-		        <li><a href=# data-icon=delete>Close</a></li>
-      		</ul> 
-	    </div>
-      	-->
 		</div>
 	</div>
 

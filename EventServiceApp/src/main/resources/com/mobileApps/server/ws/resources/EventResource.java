@@ -7,6 +7,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.mobileApps.server.ws.domain.Artist;
 import com.mobileApps.server.ws.domain.Event;
@@ -18,7 +19,7 @@ public class EventResource {
 	@GET
 	@Path("/city")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public List<Event> getEventsByCity(){
+	public Response getEventsByCity(){
 		
 		List<Event> eventList = new ArrayList<Event>();
 		
@@ -44,6 +45,34 @@ public class EventResource {
 		
 		
 		eventList.add(event);
-		return eventList;
+		return Response.ok(eventList).header("Access-Control-Allow-Origin", "*").build();
+		
+	}
+
+	@GET
+	@Path("/location")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public List<Location> getExistentLocations(){
+		
+		List<Location> locationList = new ArrayList<Location>();
+		
+		
+		
+		Location location = new Location();
+		location.setCity("braga");
+		location.setCountry("pt");
+		location.setLatitude(12f);
+		location.setLongitude(48.5f);
+		location.setPostalCode("4705-097");
+		locationList.add(location);
+
+		location = new Location();
+		location.setCity("porto");
+		location.setCountry("pt");
+		location.setLatitude(78f);
+		location.setLongitude(10f);
+		location.setPostalCode("3500");
+
+		return locationList;
 	}
 }

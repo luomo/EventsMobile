@@ -45,11 +45,11 @@
 			alert("init");
 			$.ajax( {
 				type:'get',
-				url:'http://192.168.1.69:8080/EventServiceApp/resources/hello',
-
+				url:'http://10.197.100.78:8080/EventServiceApp/resources/events/city',
+				crossDomain:true,
 				success:function(data) {
 					console.log(data);
-			      	//alert(data);
+			      	alert(data);
 					$("#searchEventsList").append('<li><a href="' + "#" + '">' +data + '</a></li>');
 				     $("#searchEventsList").listview('refresh');
 				},
@@ -157,6 +157,7 @@
 			</div>
 
 			<ul data-role="listview" >
+				<!-- <li data-role="list-divider" data-theme="c">Event application</li> --> 
 				<li data-icon="false"> <a href="#loginPage" ><img alt="Log in" src="images/login.png" class="ui-li-icon">Log In</a></li>
 				<li data-icon="false"> <a href="#byGenreSearchPage" ><img alt="Events" src="images/_search.png" class="ui-li-icon">Events</a></li>
 				<li data-icon="false"> <a href="#genreSearchPage" ><img alt="Sign Up" src="images/add_user.png" class="ui-li-icon">Sign Up</a></li>
@@ -194,7 +195,33 @@
 				<ul>
 					<li><a href="#" class="ui-btn-active" data-icon="info">Genre</a></li>	
 					<li><a href="#byNameSearchPage" data-icon="Name">Name</a></li>
-					<li><a href="#" data-icon="grid">Location</a></li>
+					<li><a href="#byLocationSearchPage" data-icon="grid">Location</a></li>
+					<li><a href="#" data-icon="home">Nearby</a></li>
+					<li><a href="#" data-icon="star">Today</a></li>
+				</ul> 
+			</div>
+		</div>
+	</div>
+	
+	<!-- Genre Search Page -->
+	<div data-role="page" id="byLocationSearchPage"  data-add-back-btn="true">
+		<div data-role="header">
+			<h1>Events</h1>
+			<a href="#settings" data-icon="gear" class="ui-btn-right">Settings</a>
+		</div>
+
+		<div data-role="content">
+			<ul id="locationSearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search locations ...">
+
+			</ul>
+		</div>
+
+		<div data-role="footer" data-position="fixed">
+			<div data-role=navbar>
+				<ul>
+					<li><a href="#" data-icon="info">Genre</a></li>	
+					<li><a href="#byNameSearchPage" data-icon="Name">Name</a></li>
+					<li><a href="#" class="ui-btn-active"  data-icon="grid">Location</a></li>
 					<li><a href="#" data-icon="home">Nearby</a></li>
 					<li><a href="#" data-icon="star">Today</a></li>
 				</ul> 

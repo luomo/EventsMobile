@@ -21,12 +21,13 @@
 	
 
 	$(function(){
-
+	
 		// try to sinalize in the console some events that are fired --- see 181 pro jquery mobile
 		$( "#home" ).live( " pagebeforechange pagebeforeload pagebeforecreate pagecreate", function(e, data){
 			console.log("Page events are being fired..." + e +  " "+data);
 		});
-		
+	
+			
 		// try to create a splashScreen while a app loads
 		setTimeout(hideSplash, 1000);
 		function hideSplash() {
@@ -37,19 +38,34 @@
 		// try to load webService info when byNameSearchPage loads		
 		$('#byNameSearchPage').live("pageinit", function(){
 			// callback funtion invocation
-		   init();
+		   init('http://localhost:8080/EventServiceApp/resources/events/city');
 		});
 
 		// callback funtion (populates one <li> with the info returned by the webService)
-		function init(){
+		function init(ws){
+			
 			alert("init");
+			
+			//$.getJSON(ws, function (json) {
+			//    alert(json.result);
+			 //   $.each(json.list, function (i, fb) {
+			 //       alert(fb.result);
+			  //  });
+			//}); 
 			$.ajax( {
 				type:'get',
-				url:'http://10.197.100.78:8080/EventServiceApp/resources/events/city',
-				crossDomain:true,
+				url:ws,
+				cache:false,
+				datatype:'json',
+			   //async: false,
 				success:function(data) {
 					console.log(data);
-			      	alert(data);
+					var lang = '';
+					$.each(data, function() {
+						lang += this['title'] + + "<br/>";
+					});
+			      	alert(lang);
+			      	console.log(lang);
 					$("#searchEventsList").append('<li><a href="' + "#" + '">' +data + '</a></li>');
 				     $("#searchEventsList").listview('refresh');
 				},
@@ -65,6 +81,41 @@
 	
 			});
 		}
+		
+		// try to load webService info when byNameSearchPage loads		
+		$('#byLocationSearchPage').live("pageinit", function(){
+			// callback funtion invocation
+		   init('http://localhost:8080/EventServiceApp/resources/events/city');
+		});
+
+		// callback funtion (populates one <li> with the info returned by the webService)
+		function init(url){
+			
+			alert("byLocationSearchPage");
+			
+			$.getJSON(url, function (json) {
+			alert(json);
+			  var html = '';
+			   $.each(json, function (i, item) {
+			   	   html += '<li> <img src="images/mia.png" />'; 
+			       html += '<h2>' + item.title + '<h2>';
+			       html += '<h2>' + item.description + '<h2>';
+			       html += '<h2>' + this.artists.artist + '<h2>';					 
+				   html += '<h5>' + this.location.country + '<h5>';
+				   html += '<h5>' + this.location.city + '<h5>';
+				   html += '<h5>' + this.location.latitude + 'º<h5>';
+				   html += '<h5>' + this.location.longitude + 'º<h5>';
+			       html += "</li>";
+			       
+			  });
+			  console.log(html);
+			  $("#locationSearchList").append(html);
+			  $("#locationSearchList").listview('refresh');
+			  
+			}); 
+			
+		}
+
 
 		// this is a override of the function responsable for search in list view .. 
 		// this is a dummy redifinition because it has the same code as the original
@@ -85,7 +136,7 @@
 
 <style type="text/css">
 
-	.splash {
+	.splash { 
 		align:center;
 		background-color: #fff;
 		padding: 1000px;
@@ -268,7 +319,7 @@
 			<ul>
 		        <li><a href="#byGenreSearchPage" data-icon="info">Genre</a></li>	
 				<li><a href="#byNameSearchPage" class="ui-btn-active"  data-icon="Name">Name</a></li>
-				<li><a href="#" data-icon="grid">Location</a></li>
+				<li><a href="#byLocationSearchPage" data-icon="grid">Location</a></li>
 				<li><a href="#" data-icon="home">Nearby</a></li>
 				<li><a href="#" data-icon="star">Today</a></li>
       		</ul> 

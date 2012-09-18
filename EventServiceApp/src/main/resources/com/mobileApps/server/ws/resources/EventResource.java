@@ -6,6 +6,7 @@ import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -16,6 +17,8 @@ import com.mobileApps.server.ws.domain.Location;
 @Path("/events")
 public class EventResource {
 
+
+	
 	@GET
 	@Path("/city")
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -45,14 +48,16 @@ public class EventResource {
 		
 		
 		eventList.add(event);
-		return Response.ok(eventList).header("Access-Control-Allow-Origin", "*").build();
+		return Response.ok(eventList).header("Access-Control-Allow-Origin", "*")
+									 .build();
+									 //.header("Content-Type", "application/json")
 		
 	}
 
 	@GET
 	@Path("/location")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public List<Location> getExistentLocations(){
+	public Response getExistentLocations(){
 		
 		List<Location> locationList = new ArrayList<Location>();
 		
@@ -73,6 +78,7 @@ public class EventResource {
 		location.setLongitude(10f);
 		location.setPostalCode("3500");
 
-		return locationList;
+		return Response.ok(locationList).header("Access-Control-Allow-Origin", "*")
+				 					    .build();
 	}
 }

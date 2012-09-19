@@ -82,16 +82,48 @@
 			});
 		}
 		
-		// try to load webService info when byNameSearchPage loads		
-		$('#byLocationSearchPage').live("pageinit", function(){
+		$('#byLocationSearchPage').live("pageshow", function(){
 			// callback funtion invocation
-		   init('http://localhost:8080/EventServiceApp/resources/events/city');
+		   $("#console").html("Downloading session data...");
+		   var url = 'http://localhost:8080/EventServiceApp/resources/events/location';
+		   
+		   //alert("byLocationSearchPage__");
+			
+			$.getJSON(url, function (json) {
+			alert(json);
+			  var html = '';
+			   $.each(json, function (i, item) {
+			   	    
+			       html += '<li data-role="list-divider" data-theme="c"><a href="#">' + item.country + '</a> </li>';
+			       html += '<li><a href="#">' + item.city + '<span class=ui-li-count>3</span> </a> </li>';
+			       
+			  });
+			  console.log(html);
+			  $("#locationSearchList").append(html);
+			  $("#locationSearchList").listview('refresh');
+			
+				$("#locationSearchList").on("click", "li", function() {
+					//alert("asdasd");
+  					alert( $(this).text() );
+  					
+				});
+			
+			  $("#console").html("Data refreshed ..");  
+			}); 
+
 		});
+		
+		
+		// try to load webService info when byNameSearchPage loads		
+		//$('#byLocationSearchPage').live("pageinit", function(){
+			// callback funtion invocation
+		   //init('http://localhost:8080/EventServiceApp/resources/events/city');
+		//});
 
 		// callback funtion (populates one <li> with the info returned by the webService)
 		function init(url){
 			
-			alert("byLocationSearchPage");
+			alert("byLocationSearchPage__");
 			
 			$.getJSON(url, function (json) {
 			alert(json);
@@ -101,10 +133,10 @@
 			       html += '<h2>' + item.title + '<h2>';
 			       html += '<h2>' + item.description + '<h2>';
 			       html += '<h2>' + this.artists.artist + '<h2>';					 
-				   html += '<h5>' + this.location.country + '<h5>';
-				   html += '<h5>' + this.location.city + '<h5>';
-				   html += '<h5>' + this.location.latitude + 'º<h5>';
-				   html += '<h5>' + this.location.longitude + 'º<h5>';
+				   html += '<h5>' + this.venue.location.country + '<h5>';
+				   html += '<h5>' + this.venue.location.city + '<h5>';
+				   html += '<h5>' + this.venue.location.latitude + 'º<h5>';
+				   html += '<h5>' + this.venue.location.longitude + 'º<h5>';
 			       html += "</li>";
 			       
 			  });
@@ -262,6 +294,7 @@
 		</div>
 
 		<div data-role="content">
+			<p id="console"></p>
 			<ul id="locationSearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search locations ...">
 
 			</ul>
@@ -290,6 +323,8 @@
 		</div>
 
 		<div data-role="content" >
+			
+			
 			<ul id="searchEventsList" data-role="listview" data-filter="true" data-filter-placeholder="Search Events ...">
 				<li data-role="list-divider">A</li> 
 				<li><a href="#">

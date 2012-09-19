@@ -14,7 +14,19 @@ public class Artist implements Serializable {
 	
 	private Long id;
 	private String artist;
+
 	
+	public Artist(){}
+
+	
+	public Artist(Long id, String artist) {
+		super();
+		this.id = id;
+		this.artist = artist;
+	}
+
+
+
 	public Long getId() {
 		return id;
 	}

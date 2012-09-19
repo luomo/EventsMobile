@@ -40,6 +40,22 @@ public class Venue implements Serializable {
 	private String phoneNumber;
 	private String image;
 
+	
+	public Venue(){}
+	
+	
+
+	public Venue(Long id, Location location, String website,
+			String phoneNumber, String image) {
+		super();
+		this.id = id;
+		this.location = location;
+		this.website = website;
+		this.phoneNumber = phoneNumber;
+		this.image = image;
+	}
+
+
 
 	public Long getId() {
 		return id;

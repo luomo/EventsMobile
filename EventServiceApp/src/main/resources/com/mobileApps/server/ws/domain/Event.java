@@ -40,7 +40,28 @@ public class Event implements Serializable {
 	private Artist artists;
 	private Venue venue;
 	private Provider provider;
-	private Location location;
+	
+
+	public Event() {
+	}
+	
+	public Event(Long id, String title, String startDate, String description,
+			String image, String attendance, String tag, String url,
+			String website, Artist artists, Venue venue, Provider provider ) {
+		super();
+		this.id = id;
+		this.title = title;
+		this.startDate = startDate;
+		this.description = description;
+		this.image = image;
+		this.attendance = attendance;
+		this.tag = tag;
+		this.url = url;
+		this.website = website;
+		this.artists = artists;
+		this.venue = venue;
+		this.provider = provider;
+	}
 
 
 
@@ -143,13 +164,6 @@ public class Event implements Serializable {
 	}
 
 
-	public Location getLocation() {
-		return location;
-	}
-	public void setLocation(Location location) {
-		this.location = location;
-	}
-
 
 	@Override
 	public String toString() {
@@ -157,8 +171,7 @@ public class Event implements Serializable {
 				+ startDate + ", description=" + description + ", image="
 				+ image + ", attendance=" + attendance + ", tag=" + tag
 				+ ", url=" + url + ", website=" + website + ", artists="
-				+ artists + ", venue=" + venue + ", provider=" + provider
-				+ ", location=" + location + "]";
+				+ artists + ", venue=" + venue + ", provider=" + provider + "]";
 	}
 	
 	//	@PrePersist

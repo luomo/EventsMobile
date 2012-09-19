@@ -9,6 +9,24 @@ public class Feed {
     private String configFileLocation;
     private String method; 
     private Integer status;
+    
+    public Feed(){}
+   
+	public Feed(Long id, String name, String url, String configFileName,
+			String configFileLocation, String method, Integer status) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.url = url;
+		this.configFileName = configFileName;
+		this.configFileLocation = configFileLocation;
+		this.method = method;
+		this.status = status;
+	}
+
+
+
+
 	public Long getId() {
 		return id;
 	}

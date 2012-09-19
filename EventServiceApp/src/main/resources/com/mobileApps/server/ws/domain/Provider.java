@@ -18,6 +18,18 @@ public class Provider implements Serializable {
 	private String processDate;
 	
 	
+	public Provider(){}
+
+
+	public Provider(Long id, String name, String url, String processDate) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.url = url;
+		this.processDate = processDate;
+	}
+
+
 
 	public Long getId() {
 		return id;

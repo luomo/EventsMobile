@@ -19,6 +19,7 @@
 <script type="text/javascript">
  
 	
+	// ****************** Start of jQuery code ******************
 
 	$(function(){
 		// try to sinalize in the console some events that are fired --- see 181 pro jquery mobile
@@ -39,105 +40,118 @@
 			// callback funtion invocation
 		   init('http://localhost:8080/EventServiceApp/resources/events/city');
 		});
-	
-		// callback function (populates one <li> with the info returned by the webService)
-		function init(ws){
-			alert("init");
-			$.ajax( {
-				type:'get',
-				url:ws,
-				cache:false,
-				datatype:'json',
-			   //async: false,
-				success:function(data) {
-					console.log(data);
-					var lang = '';
-					$.each(data, function() {
-						lang += this['title'] + + "<br/>";
-					});
-			      	console.log(lang);
-					$("#searchEventsList").append('<li><a href="' + "#" + '">' +JSON.stringify(eval(data)) + '</a></li>');
-				    $("#searchEventsList").listview('refresh');
-				},
-				error: function(request,error)  {
-					console.log(arguments);
-					console.log("error: "  + error);
-					$("#searchEventsList").append('<li><a href="' + "#" + '">' +error + '</a></li>');
-				    $("#searchEventsList").listview('refresh'); 
-				}
-			});
-		}
-		
-			
 			
 		// try to load webService info when byLocationSearchPage loads
 		$('#byLocationSearchPage').live("pageshow", function(){
-			  // callback function invocation
-			   $("#console").html("Downloading ws data...");
-			   
-			   // url for invoking ws
-			   var url = 'http://localhost:8080/EventServiceApp/resources/events/location/dto';
-			
-			   // obtain ws info city -> nbrEvents	
-			   $.getJSON(url, function (json) {
-			       	//alert(json);
-			        alert(JSON.stringify(eval(json)));
-			   		var html = '';
-			   		// for each record
-			   		$.each(json, function (i, item) {
-			   	    
-			       		//html += '<li data-role="list-divider" data-theme="c"><a href="#">' + item.country + '</a> </li>';
-			       		html += '<li id="' + item.cityId+'"><a href="#eventsByCityPage">' + item.city + '<span class=ui-li-count>' + item.nbrEvents + '</span> </a> </li>';
-			       
-			  		});
-			  		console.log(html);
-			  		$("#locationSearchList").html(html);
-			  		$("#locationSearchList").listview('refresh');
-			  		$("#console").html("Data refreshed ..");  
-				}); 
-			
-			// create a event listener for click events  on (#locationSearchList > li ... every li inside locationSearchList)
-			// the idea is to try to associate a click event in a way that we create dinamically the next page (events by city page)
-		    $("#locationSearchList").on("click", "li", function() {
-		    	// fetch the id of li (it was fulfilled with item.cityId )
-			    var id = $(this).attr('id');
-			    // fetch the text of li --> to display in the header of next page
-			    var city = $(this).text();
-			    // create ws url based on the city id clicked
-			    var urlByCity = 'http://localhost:8080/EventServiceApp/resources/events/location/' + id;
-			    // invoke function to create/fulfill new page results
-			    loadEventsByCitiesAjax(urlByCity, city);					
-		    });
-
+			loadCitiesAjax();
 		});
-		
-		// funtion for creating events by city page	
-		function loadEventsByCitiesAjax(url, city) {
-			// obtain page reference
-			var $page = $("#eventsByCityPage");
-			
-			// get header 
-			$header = $page.children( ":jqmData(role=header)" );
-			// populate header with the name of the city we are selecting
-			$header.find( "h1" ).html( city );
-			
-			//obtain json info from ws (based on city id)
-			$.getJSON(url, function (json) {
-				 var html = '';
-				 $.each(json, function (i, item) {
-				       html += '<li ><a href=""><img alt="coverArt" src="images/mia.png" /><h3>' + item.title + '</h3>';
-				       html += '<p>' + item.startDate + '</p>';
-				       html += '<p>' + item.venue.location.city + '</p>';
-				       html += '</a></li>';
-				  });
-				  console.log(html);
-				  $("#eventsByCitySearchList").html(html);
-				  $("#eventsByCitySearchList").listview('refresh');  
-			});
-			
-		}
-	
+
 	});
+	
+
+	// ****************** Start of JavaScript functions ******************
+	
+	function refresh(){
+		$("#console").html("Verifying...");
+		loadCitiesAjax();
+	}
+	
+	function loadCitiesAjax(){
+	   // callback function invocation
+	   $("#console").html("Downloading ws data...");
+	   
+	   // url for invoking ws
+	   var url = 'http://localhost:8080/EventServiceApp/resources/events/location/dto';
+	
+	   // obtain ws info city -> nbrEvents	
+	   $.getJSON(url, function (json) {
+	       	//alert(json);
+	        alert(JSON.stringify(eval(json)));
+	   		var html = '';
+	   		// for each record
+	   		$.each(json, function (i, item) {
+	   	    
+	       		//html += '<li data-role="list-divider" data-theme="c"><a href="#">' + item.country + '</a> </li>';
+	       		html += '<li id="' + item.cityId+'"><a href="#eventsByCityPage">' + item.city + '<span class=ui-li-count>' + item.nbrEvents + '</span> </a> </li>';
+	       
+	  		});
+	  		console.log(html);
+	  		$("#locationSearchList").html(html);
+	  		$("#locationSearchList").listview('refresh');
+	  		$("#console").html("Data refreshed ..");  
+		}); 
+		
+		// create a event listener for click events  on (#locationSearchList > li ... every li inside locationSearchList)
+		// the idea is to try to associate a click event in a way that we create dinamically the next page (events by city page)
+	    $("#locationSearchList").on("click", "li", function() {
+	    	// fetch the id of li (it was fulfilled with item.cityId )
+		    var id = $(this).attr('id');
+		    // fetch the text of li --> to display in the header of next page
+		    var city = $(this).text();
+		    // create ws url based on the city id clicked
+		    var urlByCity = 'http://localhost:8080/EventServiceApp/resources/events/location/' + id;
+		    // invoke function to create/fulfill new page results
+		    loadEventsByCitiesAjax(urlByCity, city);					
+	    });
+
+
+	}
+	
+	
+	
+	// funtion for creating events by city page	
+	function loadEventsByCitiesAjax(url, city) {
+		// obtain page reference
+		var $page = $("#eventsByCityPage");
+		
+		// get header 
+		$header = $page.children( ":jqmData(role=header)" );
+		// populate header with the name of the city we are selecting
+		$header.find( "h1" ).html( city );
+		
+		//obtain json info from ws (based on city id)
+		$.getJSON(url, function (json) {
+			 var html = '';
+			 $.each(json, function (i, item) {
+			       html += '<li ><a href=""><img alt="coverArt" src="images/mia.png" /><h3>' + item.title + '</h3>';
+			       html += '<p>' + item.startDate + '</p>';
+			       html += '<p>' + item.venue.location.city + '</p>';
+			       html += '</a></li>';
+			  });
+			  console.log(html);
+			  $("#eventsByCitySearchList").html(html);
+			  $("#eventsByCitySearchList").listview('refresh');  
+		});
+	}
+		
+	// callback function (populates one <li> with the info returned by the webService)
+	function init(ws){
+		console.log("init");
+		$.ajax( {
+			type:'get',
+			url:ws,
+			cache:false,
+			datatype:'json',
+		   //async: false,
+			success:function(data) {
+				console.log(data);
+				var lang = '';
+				$.each(data, function() {
+					lang += this['title'] + + "<br/>";
+				});
+		      	console.log(lang);
+				$("#searchEventsList").append('<li><a href="' + "#" + '">' +JSON.stringify(eval(data)) + '</a></li>');
+			    $("#searchEventsList").listview('refresh');
+			},
+			error: function(request,error)  {
+				console.log(arguments);
+				console.log("error: "  + error);
+				$("#searchEventsList").append('<li><a href="' + "#" + '">' +error + '</a></li>');
+			    $("#searchEventsList").listview('refresh'); 
+			}
+		});
+	}
+
 </script>
 
 <style type="text/css">
@@ -183,11 +197,89 @@
 		text-align: center;
 	}
 	
+	#eventDetails div[data-role=content]  h1, #eventDetails div[data-role=content]  h2 {
+		margin: 0px auto 5px auto;
+		font-size: 18px;
+	}
+
+	#eventDetails div[data-role=content]  img{
+		margin: 0px auto 5px auto;
+		font-size: 18px;
+	}
+	
+	#eventDetails div[data-role=content]  p {
+		margin: 2px auto 5px auto;
+		padding-left: 5px;
+	}
+
+	#event_info .ui-block-b .ui-btn, #venue_info {
+		font-size:12px;
+	}
+
+	#event_info .ui-block-a , #venue_info {
+		font-size:12px;
+	}
+
+	#event_info .ui-block-b .ui-btn-inner{
+		padding:5px;
+	}
+
+	#contact_buttons a{
+		color:rgb(63, 41, 39);
+	}
+	
+	#event_info .header{
+		font-weight: bold;
+	}
+	#event_info .detail{
+		font-style: italic;
+	}
+
+
+
 </style>
 
 </head>
 
 <body>
+	
+	<div id="eventDetails" data-role="page" data-add-back-btn="true">
+
+		<div data-role="header">
+			<h1> Restaurant Picker</h1>
+		</div> 
+	
+		<div data-role="content">
+			<div class="ui-grid-a" id="event_info">
+				<div class="ui-block-a">
+					<h1> Event name</h1>
+					<p><strong class="header">  Event description</strong> <span class="detail">Description</span> </p>
+					<p><strong>  Date: </strong> 12/12/2000</p>
+					<p><strong>  Date: </strong> 12/12/2000</p>
+				</div>
+				<div class="ui-block-b">
+					<p><img src="images/mia_.png" alt="jeannette photo"/></p>
+				</div>
+			</div><!-- /grid-a -->
+			<hr/>
+	
+			<div class="ui-grid-a" id="venue_info">
+				<div class="ui-block-a" >
+					<h2> Contact venue</h2>
+					<p>30 Rue des Tonneliers</p>
+					<p> 67000 Strasbourg	</p>
+				</div>
+				<div class="ui-block-b">
+					<img src="images/maps_small.png" alt="maps"/>
+			    </div>
+			</div><!-- /grid-a -->
+			<div id="contact_buttons">
+				<a href="http://maps.google.com/maps?hl=en&safe=off&q=braga+ferreiros+google+maps&ie=UTF-8&hq=&hnear=0xd24fed6130e97f5:0x7dcd16ff52948be6,Ferreiros,+Portugal&ei=jAhbUKnaEoOGrAfho4DQCQ&ved=0CCAQ8gEwAA"  data-role="button" data-icon="maps"> Find in Google Maps </a>
+				<a href="tel:0388161072"  data-role="button" data-icon="tel"> Call </a>
+			</div>
+		</div>
+	
+	</div><!-- /page -->
 
 	<!-- Splash Screen -->
 	<div id="splash" data-role="page" data-theme="a" > 
@@ -218,7 +310,7 @@
 				<li data-icon="false"> <a href="#loginPage" ><img alt="Log in" src="images/login.png" class="ui-li-icon">Log In</a></li>
 				<li data-icon="false"> <a href="#byLocationSearchPage" ><img alt="Events" src="images/_search.png" class="ui-li-icon">Events</a></li>
 				<li data-icon="false"> <a href="#genreSearchPage" ><img alt="Sign Up" src="images/add_user.png" class="ui-li-icon">Sign Up</a></li>
-				<li data-icon="false"> <a href="#aboutPage" ><img alt="About" src="images/about.png" class="ui-li-icon">About</a></li>
+				<li data-icon="false"> <a href="#eventDetails" ><img alt="About" src="images/about.png" class="ui-li-icon">About</a></li>
 				<li data-icon="false"> <a href="feedback.html" data-rel="dialog"><img alt="Feedback" src="images/feedback.png" class="ui-li-icon">Feedback</a></li>
 			</ul>
 		</div>
@@ -235,7 +327,8 @@
 	<div data-role="page" id="byLocationSearchPage"  data-add-back-btn="true">
 		<div data-role="header">
 			<h1>Events</h1>
-			<a href="#settings" data-icon="gear" class="ui-btn-right">Settings</a>
+			<a href='javascript:refresh();' data-icon="refresh" id="refresh" 
+					class="ui-btn-right" data-iconpos="notext"></a>
 		</div>
 
 		<div data-role="content">

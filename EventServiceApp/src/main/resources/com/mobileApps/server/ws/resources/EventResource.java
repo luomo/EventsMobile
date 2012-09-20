@@ -2,6 +2,7 @@ package com.mobileApps.server.ws.resources;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -34,5 +35,15 @@ public class EventResource {
 				
 		return Response.ok(eventService.getAllLocations()).header("Access-Control-Allow-Origin", "*")
 				 					    .build();
+	}
+
+	@GET
+	@Path("/location/{id}")
+	@Produces({ MediaType.APPLICATION_JSON })
+	@SuppressWarnings("static-access")
+	public Response getEventsByLocation(@PathParam("id") Long id){
+		
+		return Response.ok(eventService.getEventsByLocation(id)).header("Access-Control-Allow-Origin", "*")
+				.build();
 	}
 }

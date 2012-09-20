@@ -26,10 +26,7 @@
 			console.log("Page events are being fired..." + e +  " "+data);
 		});
 		
-		
 	
-	
-		
 		// try to create a splashScreen while a app loads
 		setTimeout(hideSplash, 1000);
 		function hideSplash() {
@@ -42,11 +39,9 @@
 			// callback funtion invocation
 		   init('http://localhost:8080/EventServiceApp/resources/events/city');
 		});
-
+	
 		// callback function (populates one <li> with the info returned by the webService)
 		function init(ws){
-			
-			alert("init");
 
 			$.ajax( {
 				type:'get',
@@ -63,135 +58,86 @@
 			      	alert(lang);
 			      	console.log(lang);
 					$("#searchEventsList").append('<li><a href="' + "#" + '">' +data + '</a></li>');
-				     $("#searchEventsList").listview('refresh');
+				    $("#searchEventsList").listview('refresh');
 				},
-				error: function(request,error) 
-				{
+				error: function(request,error)  {
 				 console.log(arguments);
 				 console.log("error: "  + error);
-				 //alert ( " Can't do because: " + error );
 				 $("#searchEventsList").append('<li><a href="' + "#" + '">' +error + '</a></li>');
-			      
 			     $("#searchEventsList").listview('refresh'); 
 				}
-	
 			});
 		}
 		
-		
-		
+			
+			
 		// try to load webService info when byLocationSearchPage loads
 		$('#byLocationSearchPage').live("pageshow", function(){
-		  // callback function invocation
-		   $("#console").html("Downloading session data...");
-		   
-		   // url for invoking ws
-		   var url = 'http://localhost:8080/EventServiceApp/resources/events/location/dto';
+			  // callback function invocation
+			   $("#console").html("Downloading ws data...");
+			   
+			   // url for invoking ws
+			   var url = 'http://localhost:8080/EventServiceApp/resources/events/location/dto';
 			
-		   $.getJSON(url, function (json) {
-		       	//alert(json);
-		        alert(JSON.stringify(eval(json)));
-		   		var html = '';
-		   		$.each(json, function (i, item) {
-		   	    
-		       		//html += '<li data-role="list-divider" data-theme="c"><a href="#">' + item.country + '</a> </li>';
-		       		html += '<li id="' + item.cityId+'"><a href="#eventsByCityPage">' + item.city + '<span class=ui-li-count>' + item.nbrEvents + '</span> </a> </li>';
-		       
-		  		});
-		  		console.log(html);
-		  		$("#locationSearchList").html(html);
-		  		$("#locationSearchList").listview('refresh');
-		
-		
-			  $("#locationSearchList").on("click", "li", function() {
-				   var id = $(this).attr('id');
-				   var city = $(this).text();
-				   var urlByCity = 'http://localhost:8080/EventServiceApp/resources/events/location/' + id;
-				   loadEventsByCitiesAjax(urlByCity, city);
-							
-			  });
-		
-		  		$("#console").html("Data refreshed ..");  
-		}); 
-
-	});
-		
-		
-	function loadEventsByCitiesAjax(url, city) {
-		// obtain page reference
-		var $page = $("#eventsByCityPage");
-		
-		// get header 
-		$header = $page.children( ":jqmData(role=header)" );
-		// populate header with the name of the city we are selecting
-		$header.find( "h1" ).html( city );
-		
-		//obtain json info from ws (based on city id)
-		$.getJSON(url, function (json) {
-			 var html = '';
-			 $.each(json, function (i, item) {
-			       html += '<li ><a href=""><img alt="coverArt" src="images/mia.png" /><h3>' + item.title + '</h3>';
-			       html += '<p>' + item.startDate + '</p>';
-			       html += '<p>' + item.venue.location.city + '</p>';
-			       html += '</a></li>';
+			   // obtain ws info city -> nbrEvents	
+			   $.getJSON(url, function (json) {
+			       	//alert(json);
+			        alert(JSON.stringify(eval(json)));
+			   		var html = '';
+			   		// for each record
+			   		$.each(json, function (i, item) {
+			   	    
+			       		//html += '<li data-role="list-divider" data-theme="c"><a href="#">' + item.country + '</a> </li>';
+			       		html += '<li id="' + item.cityId+'"><a href="#eventsByCityPage">' + item.city + '<span class=ui-li-count>' + item.nbrEvents + '</span> </a> </li>';
 			       
-			  });
-			  console.log(html);
-			  $("#eventsByCitySearchList").html(html);
-			  $("#eventsByCitySearchList").listview('refresh');  
+			  		});
+			  		console.log(html);
+			  		$("#locationSearchList").html(html);
+			  		$("#locationSearchList").listview('refresh');
+			  		$("#console").html("Data refreshed ..");  
+				}); 
+			
+			// create a event listener for click events  on (#locationSearchList > li ... every li inside locationSearchList)
+			// the idea is to try to associate a click event in a way that we create dinamically the next page (events by city page)
+		    $("#locationSearchList").on("click", "li", function() {
+		    	// fetch the id of li (it was fulfilled with item.cityId )
+			    var id = $(this).attr('id');
+			    // fetch the text of li --> to display in the header of next page
+			    var city = $(this).text();
+			    // create ws url based on the city id clicked
+			    var urlByCity = 'http://localhost:8080/EventServiceApp/resources/events/location/' + id;
+			    // invoke function to create/fulfill new page results
+			    loadEventsByCitiesAjax(urlByCity, city);					
+		    });
+
 		});
 		
-	}
-	
-	// try to load webService info when byNameSearchPage loads		
-	//$('#byLocationSearchPage').live("pageinit", function(){
-		// callback funtion invocation
-	   //init('http://localhost:8080/EventServiceApp/resources/events/city');
-	//});
-
-	// callback funtion (populates one <li> with the info returned by the webService)
-	function init(url){
-		
-		alert("byLocationSearchPage__");
-		
-		$.getJSON(url, function (json) {
-		alert(json);
-		  var html = '';
-		   $.each(json, function (i, item) {
-		   	   html += '<li> <img src="images/mia.png" />'; 
-		       html += '<h2>' + item.title + '<h2>';
-		       html += '<h2>' + item.description + '<h2>';
-		       html += '<h2>' + this.artists.artist + '<h2>';					 
-			   html += '<h5>' + this.venue.location.country + '<h5>';
-			   html += '<h5>' + this.venue.location.city + '<h5>';
-			   html += '<h5>' + this.venue.location.latitude + 'º<h5>';
-			   html += '<h5>' + this.venue.location.longitude + 'º<h5>';
-		       html += "</li>";
-		       
-		  });
-		  console.log(html);
-		  $("#locationSearchList").append(html);
-		  $("#locationSearchList").listview('refresh');
-		  
-		}); 
-		
-	}
-
-
-	// this is a override of the function responsable for search in list view .. 
-	// this is a dummy redifinition because it has the same code as the original
-	// is a first try to have control of the search callback to be able to invoke the rest ws 
-	filterFunction = function( text, searchValue ){
+		// funtion for creating events by city page	
+		function loadEventsByCitiesAjax(url, city) {
+			// obtain page reference
+			var $page = $("#eventsByCityPage");
 			
-		  return text.toLowerCase().indexOf( searchValue ) === -1;
-	}
+			// get header 
+			$header = $page.children( ":jqmData(role=header)" );
+			// populate header with the name of the city we are selecting
+			$header.find( "h1" ).html( city );
+			
+			//obtain json info from ws (based on city id)
+			$.getJSON(url, function (json) {
+				 var html = '';
+				 $.each(json, function (i, item) {
+				       html += '<li ><a href=""><img alt="coverArt" src="images/mia.png" /><h3>' + item.title + '</h3>';
+				       html += '<p>' + item.startDate + '</p>';
+				       html += '<p>' + item.venue.location.city + '</p>';
+				       html += '</a></li>';
+				  });
+				  console.log(html);
+				  $("#eventsByCitySearchList").html(html);
+				  $("#eventsByCitySearchList").listview('refresh');  
+			});
+			
+		}
 	
-	$('#searchEventsList').listview( 'option', 'filterCallback', filterFunction);
-		
-	
-		
-		
-		
 	});
 </script>
 
@@ -294,7 +240,7 @@
 		</div>
 
 		<div data-role="content">
-			<p id="console"></p>
+			<h2><p id="console"></p></h2>
 			<ul id="locationSearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search locations ...">
 
 			</ul>

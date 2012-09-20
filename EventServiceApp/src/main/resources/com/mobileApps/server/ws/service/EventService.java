@@ -3,6 +3,7 @@ package com.mobileApps.server.ws.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.mobileApps.server.ws.domain.Artist;
 import com.mobileApps.server.ws.domain.Event;
@@ -45,6 +46,20 @@ public class EventService {
 	
 	public static List<Location> getAllLocations() {
 		return locationList;
+	}
+
+	public static List<Event> getEventsByLocation(Long id) {
+		
+		return findByLocationId(id);
+	}
+
+	private static List<Event> findByLocationId(Long id) {
+		List<Event> res = new ArrayList<Event>();
+		for (Event event : eventList) {
+			if(event.getVenue().getLocation().getId().equals(id))
+				res.add(event);
+		}
+		return res;
 	}
 	
 }

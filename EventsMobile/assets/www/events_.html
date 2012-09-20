@@ -96,13 +96,54 @@
 
 
 	}
+
+	var eventList = new Array();
+
+	function findEventsInEventList(eventId){
+		console.log("findEventsInEventList: " + eventId);
+		//This should be replaced by cache mechanisms ... until then :)
+		for(i=0;i < eventList.length; i++){
+		  var event = eventList[i];
+		  if(event && event.id === eventId) {
+		  	populateEventPage(event);
+		  }
+		};
+	}
 	
-	
+	function populateEventPage(event) {
+		var $page = $("#eventDetails");
+		$content = $page.children( ":jqmData(role=content)" );
+		$content.find( "h1" ).html( event.title );
+		
+		var html = '';
+		html += '<p><strong class="header"> ' + event.description + '</strong> <span class="detail">Description</span> </p>'
+		html += '<p><strong class="header"> ' + event.startDate + '</strong> <span class="detail">Description</span> </p>'
+		
+		console.log(html);
+		$content.find( "h1" ).append( html );
+		
+		// We change to the details page
+		$.mobile.changePage($("#eventDetails"));;
+	}
+
+	// create javascript event object	
+	function Event(id, title, startDate, description){
+		this.id = id;
+		this.title = title;
+		this.startDate = startDate;
+		this.description = description;
+		// create method toString (doing like this is not defined in the global namespace)  
+		this.toString = function(){
+			return '[id:' + this.id + ' ,title: '+ this.title + ' startDate: ' + this.startDate + ' description:' + this.description + ']'; 
+		};
+	}
 	
 	// funtion for creating events by city page	
 	function loadEventsByCitiesAjax(url, city) {
 		// obtain page reference
 		var $page = $("#eventsByCityPage");
+		
+		var event;
 		
 		// get header 
 		$header = $page.children( ":jqmData(role=header)" );
@@ -113,15 +154,21 @@
 		$.getJSON(url, function (json) {
 			 var html = '';
 			 $.each(json, function (i, item) {
-			       html += '<li ><a href=""><img alt="coverArt" src="images/mia.png" /><h3>' + item.title + '</h3>';
+			       html += '<li ><a href="javascript:findEventsInEventList('+ item.id +  ')"><img alt="coverArt" src="images/mia.png" /><h3>' + item.title + '</h3>';
 			       html += '<p>' + item.startDate + '</p>';
 			       html += '<p>' + item.venue.location.city + '</p>';
 			       html += '</a></li>';
+			       
+			       event = new Event(item.id, item.title, item.startDate, item.description);
+			       console.log(event.toString());
+			       eventList.push(event);
 			  });
 			  console.log(html);
 			  $("#eventsByCitySearchList").html(html);
 			  $("#eventsByCitySearchList").listview('refresh');  
 		});
+		
+		
 	}
 		
 	// callback function (populates one <li> with the info returned by the webService)

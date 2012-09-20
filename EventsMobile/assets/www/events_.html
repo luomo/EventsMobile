@@ -21,7 +21,6 @@
 	
 
 	$(function(){
-	
 		// try to sinalize in the console some events that are fired --- see 181 pro jquery mobile
 		$( "#home" ).live( " pagebeforechange pagebeforeload pagebeforecreate pagecreate", function(e, data){
 			console.log("Page events are being fired..." + e +  " "+data);
@@ -95,17 +94,20 @@
 			   $.each(json, function (i, item) {
 			   	    
 			       html += '<li data-role="list-divider" data-theme="c"><a href="#">' + item.country + '</a> </li>';
-			       html += '<li><a href="#">' + item.city + '<span class=ui-li-count>3</span> </a> </li>';
+			       html += '<li id="' + item.id+'"><a href="#eventsByCityPage">' + item.city + '<span class=ui-li-count>3</span> </a> </li>';
 			       
 			  });
 			  console.log(html);
 			  $("#locationSearchList").append(html);
 			  $("#locationSearchList").listview('refresh');
 			
-				$("#locationSearchList").on("click", "li", function() {
+			  $("#locationSearchList").on("click", "li", function() {
 					//alert("asdasd");
-  					alert( $(this).text() );
-  					
+				   var id = $(this).attr('id');
+  				   alert('City clicked' + id );
+				   var urlByCity = 'http://localhost:8080/EventServiceApp/resources/events/location/' + id;
+  				   loadCitiesAjax(urlByCity);
+  							
 				});
 			
 			  $("#console").html("Data refreshed ..");  
@@ -113,6 +115,24 @@
 
 		});
 		
+		
+		function loadCitiesAjax(url) {
+			$.getJSON(url, function (json) {
+				alert(json);
+				 var html = '';
+				 $.each(json, function (i, item) {
+				       html += '<li ><a href=""><h3>' + item.title + '</h3> </li>';
+				       html += '<p>' + item.startDate + '</p>';
+				       html += '<p>' + item.venue.location.city + '</p>';
+				       html += '</a></li>';
+				       
+				  });
+				  console.log(html);
+				  $("#eventsByCitySearchList").append(html);
+				  $("#eventsByCitySearchList").listview('refresh');  
+			});
+  			
+		}
 		
 		// try to load webService info when byNameSearchPage loads		
 		//$('#byLocationSearchPage').live("pageinit", function(){
@@ -306,6 +326,33 @@
 					<li><a href="#" data-icon="info">Genre</a></li>	
 					<li><a href="#byNameSearchPage" data-icon="Name">Name</a></li>
 					<li><a href="#" class="ui-btn-active"  data-icon="grid">Location</a></li>
+					<li><a href="#" data-icon="home">Nearby</a></li>
+					<li><a href="#" data-icon="star">Today</a></li>
+				</ul> 
+			</div>
+		</div>
+	</div>
+
+
+	<!-- Genre Search Page -->
+	<div data-role="page" id="eventsByCityPage"  data-add-back-btn="true">
+		<div data-role="header">
+			<h1></h1>
+			<a href="#settings" data-icon="gear" class="ui-btn-right">Settings</a>
+		</div>
+
+		<div data-role="content">
+			<ul id="eventsByCitySearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search events ...">
+
+			</ul>
+		</div>
+
+		<div data-role="footer" data-position="fixed">
+			<div data-role=navbar>
+				<ul>
+					<li><a href="#" data-icon="info">Genre</a></li>	
+					<li><a href="#byNameSearchPage" data-icon="Name">Name</a></li>
+					<li><a href="#" data-icon="grid">Location</a></li>
 					<li><a href="#" data-icon="home">Nearby</a></li>
 					<li><a href="#" data-icon="star">Today</a></li>
 				</ul> 

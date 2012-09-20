@@ -35,14 +35,14 @@
 		
 		
 		// try to load webService info when byNameSearchPage loads		
-		$('#byNameSearchPage').live("pageinit", function(){
+		$('#byNameSearchPage').live("pageshow", function(){
 			// callback funtion invocation
 		   init('http://localhost:8080/EventServiceApp/resources/events/city');
 		});
 	
 		// callback function (populates one <li> with the info returned by the webService)
 		function init(ws){
-
+			alert("init");
 			$.ajax( {
 				type:'get',
 				url:ws,
@@ -55,16 +55,15 @@
 					$.each(data, function() {
 						lang += this['title'] + + "<br/>";
 					});
-			      	alert(lang);
 			      	console.log(lang);
-					$("#searchEventsList").append('<li><a href="' + "#" + '">' +data + '</a></li>');
+					$("#searchEventsList").append('<li><a href="' + "#" + '">' +JSON.stringify(eval(data)) + '</a></li>');
 				    $("#searchEventsList").listview('refresh');
 				},
 				error: function(request,error)  {
-				 console.log(arguments);
-				 console.log("error: "  + error);
-				 $("#searchEventsList").append('<li><a href="' + "#" + '">' +error + '</a></li>');
-			     $("#searchEventsList").listview('refresh'); 
+					console.log(arguments);
+					console.log("error: "  + error);
+					$("#searchEventsList").append('<li><a href="' + "#" + '">' +error + '</a></li>');
+				    $("#searchEventsList").listview('refresh'); 
 				}
 			});
 		}

@@ -125,6 +125,9 @@
 		// We change to the details page
 		$.mobile.changePage($("#eventDetails"));;
 	}
+	
+	
+	
 
 	// create javascript event object	
 	function Event(id, title, startDate, description){
@@ -132,11 +135,13 @@
 		this.title = title;
 		this.startDate = startDate;
 		this.description = description;
-		// create method toString (doing like this is not defined in the global namespace)  
-		this.toString = function(){
-			return '[id:' + this.id + ' ,title: '+ this.title + ' startDate: ' + this.startDate + ' description:' + this.description + ']'; 
-		};
+	};
+	// adding methods to Event Object
+	// create method toString (doing like this is not defined in the global namespace). It belong to the class and aren't created everytime an object is created.   
+	Event.prototype.toString  = function(){
+		return '[id:' + this.id + ' ,title: '+ this.title + ' startDate: ' + this.startDate + ' description:' + this.description + ']';
 	}
+
 	
 	// funtion for creating events by city page	
 	function loadEventsByCitiesAjax(url, city) {
@@ -290,44 +295,7 @@
 
 <body>
 	
-	<div id="eventDetails" data-role="page" data-add-back-btn="true">
-
-		<div data-role="header">
-			<h1> Restaurant Picker</h1>
-		</div> 
 	
-		<div data-role="content">
-			<div class="ui-grid-a" id="event_info">
-				<div class="ui-block-a">
-					<h1> Event name</h1>
-					<p><strong class="header">  Event description</strong> <span class="detail">Description</span> </p>
-					<p><strong>  Date: </strong> 12/12/2000</p>
-					<p><strong>  Date: </strong> 12/12/2000</p>
-				</div>
-				<div class="ui-block-b">
-					<p><img src="images/mia_.png" alt="jeannette photo"/></p>
-				</div>
-			</div><!-- /grid-a -->
-			<hr/>
-	
-			<div class="ui-grid-a" id="venue_info">
-				<div class="ui-block-a" >
-					<h2> Contact venue</h2>
-					<p>30 Rue des Tonneliers</p>
-					<p> 67000 Strasbourg	</p>
-				</div>
-				<div class="ui-block-b">
-					<img src="images/maps_small.png" alt="maps"/>
-			    </div>
-			</div><!-- /grid-a -->
-			<div id="contact_buttons">
-				<a href="http://maps.google.com/maps?hl=en&safe=off&q=braga+ferreiros+google+maps&ie=UTF-8&hq=&hnear=0xd24fed6130e97f5:0x7dcd16ff52948be6,Ferreiros,+Portugal&ei=jAhbUKnaEoOGrAfho4DQCQ&ved=0CCAQ8gEwAA"  data-role="button" data-icon="maps"> Find in Google Maps </a>
-				<a href="tel:0388161072"  data-role="button" data-icon="tel"> Call </a>
-			</div>
-		</div>
-	
-	</div><!-- /page -->
-
 	<!-- Splash Screen -->
 	<div id="splash" data-role="page" data-theme="a" > 
 		<div data-role="content" class="logo" >    	
@@ -529,6 +497,44 @@
 
 	</div>
 
-</body>
+	<div id="eventDetails" data-role="page" data-add-back-btn="true">
+
+		<div data-role="header">
+			<h1> Restaurant Picker</h1>
+		</div> 
+	
+		<div data-role="content">
+			<div class="ui-grid-a" id="event_info">
+				<div class="ui-block-a">
+					<h1> Event name</h1>
+					<p><strong class="header">  Event description</strong> <span class="detail">Description</span> </p>
+					<p><strong>  Date: </strong> 12/12/2000</p>
+					<p><strong>  Date: </strong> 12/12/2000</p>
+				</div>
+				<div class="ui-block-b">
+					<p><img src="images/mia_.png" alt="photo"/></p>
+				</div>
+			</div><!-- /grid-a -->
+			<hr/>
+	
+			<div class="ui-grid-a" id="venue_info">
+				<div class="ui-block-a" >
+					<h2> Contact venue</h2>
+					<p>Oliver street</p>
+					<p> 67000 London</p>
+				</div>
+				<div class="ui-block-b">
+					<img src="images/maps_small.png" alt="maps"/>
+			    </div>
+			</div><!-- /grid-a -->
+			<div id="contact_buttons">
+				<a href="http://maps.google.com/maps?hl=en&safe=off&q=braga+ferreiros+google+maps&ie=UTF-8&hq=&hnear=0xd24fed6130e97f5:0x7dcd16ff52948be6,Ferreiros,+Portugal&ei=jAhbUKnaEoOGrAfho4DQCQ&ved=0CCAQ8gEwAA"  data-role="button" data-icon="maps"> Find in Google Maps </a>
+				<a href="tel:0388161072"  data-role="button" data-icon="tel"> Call </a>
+			</div>
+		</div>
+	
+	</div><!-- /page -->
+
+
 </body>
 </html>

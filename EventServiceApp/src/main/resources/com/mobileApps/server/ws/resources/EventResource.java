@@ -36,6 +36,17 @@ public class EventResource {
 		return Response.ok(eventService.getAllLocations()).header("Access-Control-Allow-Origin", "*")
 				 					    .build();
 	}
+	
+	@GET
+	@Path("/location/dto")
+	@Produces({ MediaType.APPLICATION_JSON })
+	@SuppressWarnings("static-access")
+	public Response getEventsByLocationSimple(){
+		
+		return Response.ok(eventService.getEventsByLocationSimple()).header("Access-Control-Allow-Origin", "*")
+				.build();
+	}
+	
 
 	@GET
 	@Path("/location/{id}")
@@ -46,4 +57,6 @@ public class EventResource {
 		return Response.ok(eventService.getEventsByLocation(id)).header("Access-Control-Allow-Origin", "*")
 				.build();
 	}
+
+	
 }

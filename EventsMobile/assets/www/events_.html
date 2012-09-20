@@ -25,8 +25,11 @@
 		$( "#home" ).live( " pagebeforechange pagebeforeload pagebeforecreate pagecreate", function(e, data){
 			console.log("Page events are being fired..." + e +  " "+data);
 		});
+		
+		
 	
-			
+	
+		
 		// try to create a splashScreen while a app loads
 		setTimeout(hideSplash, 1000);
 		function hideSplash() {
@@ -40,17 +43,11 @@
 		   init('http://localhost:8080/EventServiceApp/resources/events/city');
 		});
 
-		// callback funtion (populates one <li> with the info returned by the webService)
+		// callback function (populates one <li> with the info returned by the webService)
 		function init(ws){
 			
 			alert("init");
-			
-			//$.getJSON(ws, function (json) {
-			//    alert(json.result);
-			 //   $.each(json.list, function (i, fb) {
-			 //       alert(fb.result);
-			  //  });
-			//}); 
+
 			$.ajax( {
 				type:'get',
 				url:ws,
@@ -81,103 +78,115 @@
 			});
 		}
 		
+		
+		
+		// try to load webService info when byLocationSearchPage loads
 		$('#byLocationSearchPage').live("pageshow", function(){
-			// callback funtion invocation
+		  // callback function invocation
 		   $("#console").html("Downloading session data...");
-		   var url = 'http://localhost:8080/EventServiceApp/resources/events/location';
 		   
-		   //alert("byLocationSearchPage__");
+		   // url for invoking ws
+		   var url = 'http://localhost:8080/EventServiceApp/resources/events/location/dto';
 			
-			$.getJSON(url, function (json) {
-			alert(json);
-			  var html = '';
-			   $.each(json, function (i, item) {
-			   	    
-			       html += '<li data-role="list-divider" data-theme="c"><a href="#">' + item.country + '</a> </li>';
-			       html += '<li id="' + item.id+'"><a href="#eventsByCityPage">' + item.city + '<span class=ui-li-count>3</span> </a> </li>';
+		   $.getJSON(url, function (json) {
+		       	//alert(json);
+		        alert(JSON.stringify(eval(json)));
+		   		var html = '';
+		   		$.each(json, function (i, item) {
+		   	    
+		       		//html += '<li data-role="list-divider" data-theme="c"><a href="#">' + item.country + '</a> </li>';
+		       		html += '<li id="' + item.cityId+'"><a href="#eventsByCityPage">' + item.city + '<span class=ui-li-count>' + item.nbrEvents + '</span> </a> </li>';
+		       
+		  		});
+		  		console.log(html);
+		  		$("#locationSearchList").html(html);
+		  		$("#locationSearchList").listview('refresh');
+		
+		
+			  $("#locationSearchList").on("click", "li", function() {
+				   var id = $(this).attr('id');
+				   var city = $(this).text();
+				   var urlByCity = 'http://localhost:8080/EventServiceApp/resources/events/location/' + id;
+				   loadEventsByCitiesAjax(urlByCity, city);
+							
+			  });
+		
+		  		$("#console").html("Data refreshed ..");  
+		}); 
+
+	});
+		
+		
+	function loadEventsByCitiesAjax(url, city) {
+		// obtain page reference
+		var $page = $("#eventsByCityPage");
+		
+		// get header 
+		$header = $page.children( ":jqmData(role=header)" );
+		// populate header with the name of the city we are selecting
+		$header.find( "h1" ).html( city );
+		
+		//obtain json info from ws (based on city id)
+		$.getJSON(url, function (json) {
+			 var html = '';
+			 $.each(json, function (i, item) {
+			       html += '<li ><a href=""><img alt="coverArt" src="images/mia.png" /><h3>' + item.title + '</h3>';
+			       html += '<p>' + item.startDate + '</p>';
+			       html += '<p>' + item.venue.location.city + '</p>';
+			       html += '</a></li>';
 			       
 			  });
 			  console.log(html);
-			  $("#locationSearchList").append(html);
-			  $("#locationSearchList").listview('refresh');
-			
-			  $("#locationSearchList").on("click", "li", function() {
-					//alert("asdasd");
-				   var id = $(this).attr('id');
-  				   alert('City clicked' + id );
-				   var urlByCity = 'http://localhost:8080/EventServiceApp/resources/events/location/' + id;
-  				   loadCitiesAjax(urlByCity);
-  							
-				});
-			
-			  $("#console").html("Data refreshed ..");  
-			}); 
-
+			  $("#eventsByCitySearchList").html(html);
+			  $("#eventsByCitySearchList").listview('refresh');  
 		});
 		
-		
-		function loadCitiesAjax(url) {
-			$.getJSON(url, function (json) {
-				alert(json);
-				 var html = '';
-				 $.each(json, function (i, item) {
-				       html += '<li ><a href=""><h3>' + item.title + '</h3> </li>';
-				       html += '<p>' + item.startDate + '</p>';
-				       html += '<p>' + item.venue.location.city + '</p>';
-				       html += '</a></li>';
-				       
-				  });
-				  console.log(html);
-				  $("#eventsByCitySearchList").append(html);
-				  $("#eventsByCitySearchList").listview('refresh');  
-			});
-  			
-		}
-		
-		// try to load webService info when byNameSearchPage loads		
-		//$('#byLocationSearchPage').live("pageinit", function(){
-			// callback funtion invocation
-		   //init('http://localhost:8080/EventServiceApp/resources/events/city');
-		//});
+	}
+	
+	// try to load webService info when byNameSearchPage loads		
+	//$('#byLocationSearchPage').live("pageinit", function(){
+		// callback funtion invocation
+	   //init('http://localhost:8080/EventServiceApp/resources/events/city');
+	//});
 
-		// callback funtion (populates one <li> with the info returned by the webService)
-		function init(url){
-			
-			alert("byLocationSearchPage__");
-			
-			$.getJSON(url, function (json) {
-			alert(json);
-			  var html = '';
-			   $.each(json, function (i, item) {
-			   	   html += '<li> <img src="images/mia.png" />'; 
-			       html += '<h2>' + item.title + '<h2>';
-			       html += '<h2>' + item.description + '<h2>';
-			       html += '<h2>' + this.artists.artist + '<h2>';					 
-				   html += '<h5>' + this.venue.location.country + '<h5>';
-				   html += '<h5>' + this.venue.location.city + '<h5>';
-				   html += '<h5>' + this.venue.location.latitude + 'º<h5>';
-				   html += '<h5>' + this.venue.location.longitude + 'º<h5>';
-			       html += "</li>";
-			       
-			  });
-			  console.log(html);
-			  $("#locationSearchList").append(html);
-			  $("#locationSearchList").listview('refresh');
-			  
-			}); 
-			
-		}
+	// callback funtion (populates one <li> with the info returned by the webService)
+	function init(url){
+		
+		alert("byLocationSearchPage__");
+		
+		$.getJSON(url, function (json) {
+		alert(json);
+		  var html = '';
+		   $.each(json, function (i, item) {
+		   	   html += '<li> <img src="images/mia.png" />'; 
+		       html += '<h2>' + item.title + '<h2>';
+		       html += '<h2>' + item.description + '<h2>';
+		       html += '<h2>' + this.artists.artist + '<h2>';					 
+			   html += '<h5>' + this.venue.location.country + '<h5>';
+			   html += '<h5>' + this.venue.location.city + '<h5>';
+			   html += '<h5>' + this.venue.location.latitude + 'º<h5>';
+			   html += '<h5>' + this.venue.location.longitude + 'º<h5>';
+		       html += "</li>";
+		       
+		  });
+		  console.log(html);
+		  $("#locationSearchList").append(html);
+		  $("#locationSearchList").listview('refresh');
+		  
+		}); 
+		
+	}
 
 
-		// this is a override of the function responsable for search in list view .. 
-		// this is a dummy redifinition because it has the same code as the original
-		// is a first try to have control of the search callback to be able to invoke the rest ws 
-		filterFunction = function( text, searchValue ){
-				
-			  return text.toLowerCase().indexOf( searchValue ) === -1;
-		}
-		
-		$('#searchEventsList').listview( 'option', 'filterCallback', filterFunction);
+	// this is a override of the function responsable for search in list view .. 
+	// this is a dummy redifinition because it has the same code as the original
+	// is a first try to have control of the search callback to be able to invoke the rest ws 
+	filterFunction = function( text, searchValue ){
+			
+		  return text.toLowerCase().indexOf( searchValue ) === -1;
+	}
+	
+	$('#searchEventsList').listview( 'option', 'filterCallback', filterFunction);
 		
 	
 		
@@ -262,7 +271,7 @@
 			<ul data-role="listview" >
 				<!-- <li data-role="list-divider" data-theme="c">Event application</li> --> 
 				<li data-icon="false"> <a href="#loginPage" ><img alt="Log in" src="images/login.png" class="ui-li-icon">Log In</a></li>
-				<li data-icon="false"> <a href="#byGenreSearchPage" ><img alt="Events" src="images/_search.png" class="ui-li-icon">Events</a></li>
+				<li data-icon="false"> <a href="#byLocationSearchPage" ><img alt="Events" src="images/_search.png" class="ui-li-icon">Events</a></li>
 				<li data-icon="false"> <a href="#genreSearchPage" ><img alt="Sign Up" src="images/add_user.png" class="ui-li-icon">Sign Up</a></li>
 				<li data-icon="false"> <a href="#aboutPage" ><img alt="About" src="images/about.png" class="ui-li-icon">About</a></li>
 				<li data-icon="false"> <a href="feedback.html" data-rel="dialog"><img alt="Feedback" src="images/feedback.png" class="ui-li-icon">Feedback</a></li>
@@ -276,35 +285,6 @@
 
 	
 	
-	<!-- Genre Search Page -->
-	<div data-role="page" id="byGenreSearchPage"  data-add-back-btn="true">
-		<div data-role="header">
-			<h1>Events</h1>
-			<a href="#settings" data-icon="gear" class="ui-btn-right">Settings</a>
-		</div>
-
-		<div data-role="content">
-			<ul id="genreSearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search genres ...">
-				<li><a href="#">Reggae events <span class=ui-li-count>3</span> </a> </li>
-				<li><a href="#">Jazz events <span class=ui-li-count>10</span> </a> </li>
-				<li><a href="#">Electronic events <span class=ui-li-count>15</span> </a> </li>
-				<li><a href="#">World Music events <span class=ui-li-count>2</span> </a> </li>
-				<li><a href="#">Pop events <span class=ui-li-count>10</span> </a> </li>
-			</ul>
-		</div>
-
-		<div data-role="footer" data-position="fixed">
-			<div data-role=navbar>
-				<ul>
-					<li><a href="#" class="ui-btn-active" data-icon="info">Genre</a></li>	
-					<li><a href="#byNameSearchPage" data-icon="Name">Name</a></li>
-					<li><a href="#byLocationSearchPage" data-icon="grid">Location</a></li>
-					<li><a href="#" data-icon="home">Nearby</a></li>
-					<li><a href="#" data-icon="star">Today</a></li>
-				</ul> 
-			</div>
-		</div>
-	</div>
 	
 	<!-- Genre Search Page -->
 	<div data-role="page" id="byLocationSearchPage"  data-add-back-btn="true">
@@ -323,10 +303,10 @@
 		<div data-role="footer" data-position="fixed">
 			<div data-role=navbar>
 				<ul>
-					<li><a href="#" data-icon="info">Genre</a></li>	
-					<li><a href="#byNameSearchPage" data-icon="Name">Name</a></li>
+					<li><a href="#home" data-icon="info">Home</a></li>	
 					<li><a href="#" class="ui-btn-active"  data-icon="grid">Location</a></li>
-					<li><a href="#" data-icon="home">Nearby</a></li>
+					<li><a href="#byNameSearchPage" data-icon="Name">Name</a></li>
+					<li><a href="#" data-icon="info">Nearby</a></li>
 					<li><a href="#" data-icon="star">Today</a></li>
 				</ul> 
 			</div>
@@ -350,10 +330,10 @@
 		<div data-role="footer" data-position="fixed">
 			<div data-role=navbar>
 				<ul>
-					<li><a href="#" data-icon="info">Genre</a></li>	
-					<li><a href="#byNameSearchPage" data-icon="Name">Name</a></li>
+					<li><a href="#home" data-icon="home">Home</a></li>	
 					<li><a href="#" data-icon="grid">Location</a></li>
-					<li><a href="#" data-icon="home">Nearby</a></li>
+					<li><a href="#byNameSearchPage" data-icon="Name">Name</a></li>
+					<li><a href="#" data-icon="info">Nearby</a></li>
 					<li><a href="#" data-icon="star">Today</a></li>
 				</ul> 
 			</div>
@@ -399,9 +379,9 @@
 		<div data-role="footer" data-position="fixed">
 			<div data-role=navbar>
 			<ul>
-		        <li><a href="#byGenreSearchPage" data-icon="info">Genre</a></li>	
-				<li><a href="#byNameSearchPage" class="ui-btn-active"  data-icon="Name">Name</a></li>
+		        <li><a href="#home" data-icon="home">Home</a></li>	
 				<li><a href="#byLocationSearchPage" data-icon="grid">Location</a></li>
+				<li><a href="#byNameSearchPage" class="ui-btn-active" data-icon="Name">Name</a></li>
 				<li><a href="#" data-icon="home">Nearby</a></li>
 				<li><a href="#" data-icon="star">Today</a></li>
       		</ul> 

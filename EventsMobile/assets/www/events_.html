@@ -167,6 +167,13 @@
 			loadCitiesAjax();
 		});
 
+		$('#loginBtn').click(function() {
+			var userValue = $('#userLogin').val();	
+			var passValue = $('#passLogin').val();
+			alert("user: " + userValue + " / password: " + passValue);		
+		});
+
+
 	});
 	
 
@@ -185,7 +192,7 @@
 
 	
 	// utility function that loads cities with events and the number of events per city updating the GUI layer then
-	// It is called by refresh function()
+	// It is called by refresh function() and when the user opens the search part of the application (search by location) 
 	function loadCitiesAjax(){
 	   // callback function invocation
 	   $("#console").html("Downloading ws data...");
@@ -196,7 +203,7 @@
 	   // obtain ws info city -> nbrEvents	
 	   $.getJSON(url, function (json) {
 	       	//alert(json);
-	        alert(JSON.stringify(eval(json)));
+	        //alert(JSON.stringify(eval(json)));
 	   		var html = '';
 	   		// for each record
 	   		$.each(json, function (i, item) {
@@ -422,10 +429,7 @@
 		font-size: 18px;
 	}
 
-	#eventDetails div[data-role=content]  img{
-		margin: 0px auto 5px auto;
-		font-size: 18px;
-	}
+	
 	
 	#eventDetails div[data-role=content]  p {
 		margin: 0px auto 5px auto;
@@ -448,6 +452,12 @@
 		font-style: italic;
 	}
 
+	#eventDetails div[data-role=content]  img {
+		width: 80px;
+		height: 80px;
+		--float : left;
+		--padding-right: 50px;
+	} 
 
 
 </style>
@@ -635,17 +645,16 @@
 			<form action="" method="post" data-transition="none">
 
 			   <div data-role="fieldcontain">
-				 <label for="user">User:</label>
-				 <input type="text" name="user" id="user" value="" required="true" />
+				 <label for="userLogin">User:</label>
+				 <input type="text" name="user" id="userLogin" value="" required="true" />
 			   </div>
 
 			   <div data-role="fieldcontain">
-				 <label for="password">Password:</label>
-				 <input type="password" name="password" id="password" value="" required="true" />
+				 <label for="passLogin">Password:</label>
+				 <input type="password" name="password" id="passLogin" value="" required="true" />
 			   </div>
 			   
-			   
-			   <input type="submit" value="Login" data-theme="a">
+			   <input id="loginBtn" type="submit" value="Login" data-theme="a">
 			   <a href="#home" data-role="button">Cancel</a>
 			 
 			 </form>
@@ -670,7 +679,7 @@
 
 				</div>
 				<div class="ui-block-b">
-					<p><img src="images/mia_.png" alt="photo"/></p>
+					<p><img src="images/mia.png" alt="photo"/></p>
 				</div>
 			</div><!-- /grid-a -->
 			<hr/>

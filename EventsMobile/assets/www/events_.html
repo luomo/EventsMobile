@@ -18,8 +18,129 @@
 
 <script type="text/javascript">
  
+ 	// *******************************************************************************
+	// ****************** Start of definition of JavaScript objects ******************
+	// *******************************************************************************
 	
-	// ****************** Start of jQuery code ******************
+	
+	// **************************************************************************************************
+	// ********************************** Event Singleton application ***********************************
+	// **************************************************************************************************
+	// creation of a singleton object (as advised in mobile javascript mobile development book)
+	// One of the ideas is to create a singleton object that will maintain application state.
+	// When we add html5 offline support all the caching mechanism will be placed in this object 
+	var EventListApp = function () { 
+		var list;
+		return {
+			init : function() {
+				list = new Array();
+			},
+			clear : function(){
+				list = [];
+			},
+			size : function(){
+				return list.length;
+			},
+			addEvent : function(event){
+				list.push(event);
+			}, 
+			findEventsInEventList : function (eventId){
+				console.log("findEventsInEventList: " + eventId);
+				//This should be replaced by cache mechanisms ... until then :)
+				for(i=0;i < list.length; i++){
+			  		var event = list[i];
+			  		if(event && event.id === eventId) 
+			  			return event;
+				};
+			}
+		}
+	}(); // for what I read what makes it singleton are these last '()' !?!?? strange .. ah
+	
+	
+	// ********************************************************
+	// *************** Javascript Artist object ***************
+	// ******************************************************** 
+	EventListApp.Artist = function (id, artist){
+		this.id = id;
+		this.artist = artist;
+	}
+	// adding methods to Artist Object
+	// create method toString    
+	EventListApp.Artist.prototype.toString  = function(){
+		return '[id:' + this.id + ' ,artist: '+ this.artist + ']';
+	}
+
+	// ************************************************************ 
+	// ***************** Javascript Location object *************** 
+	// ************************************************************
+	EventListApp.Location = function ( id,city, country, street, postalCode, latitude, longitude){
+		this.id = id;
+		this.city = city;
+		this.country = country;
+		this.street = street;
+		this.postalCode = postalCode;
+		this.latitude = latitude;
+		this.longitude = longitude;
+	}
+	// adding methods to Location Object
+	// create method toString    
+	EventListApp.Location.prototype.toString  = function(){
+		return '[id:' + this.id + ' ,city: '+ this.city + ' ,country: ' + this.country + ' ,street:' + this.street 
+					+ ' ,postalCode:' + this.postalCode +' ,latitude:' + this.latitude +' ,longitude:' + this.longitude + ']';
+	}
+
+
+	// ********************************************************************
+	// ********************** Javascript Venue object *********************
+	// ********************************************************************
+	EventListApp.Venue = function (id,venueName, location, website,phoneNumber, image){
+		this.id = id;
+		this.venueName = venueName;
+		this.location = location;
+		this.website = website;
+		this.phoneNumber = phoneNumber;
+		this.image = image;
+	}
+	// adding methods to Venue Object
+	// create method toString    
+	EventListApp.Venue.prototype.toString  = function(){
+		return '[id:' + this.id + ' , venueName:' + this.venueName + ' , location: '+ this.location.toString() + ' ,website: ' + this.website 
+					+ ' ,phoneNumber:' + this.phoneNumber + ' ,image:' + this.image + ']';
+	}
+	
+	
+	// *********************************************************************
+	// ********************** Javascript Event object **********************
+	// *********************************************************************
+	// javascript Event object associated with our global singleton object
+	// This object will be the main javascript object for events 	
+	EventListApp.Event = function (id, title, startDate, description, image, website, artist, venue){
+		this.id = id;
+		this.title = title;
+		this.startDate = startDate;
+		this.description = description;
+		this.image = image;
+		this.website = website;
+		this.artist = artist;
+		this.venue = venue;
+	};
+	
+	// adding methods to Event Object
+	// create method toString (doing like this is not defined in the global namespace). It belong to the class and aren't created everytime an object is created.   
+	EventListApp.Event.prototype.toString  = function(){
+		return '[id:' + this.id + ' ,title: '+ this.title + ' ,startDate: ' + this.startDate + ' ,description:' + this.description + 
+					' ,image:' + this.image +' ,website:' + this.website +' ,artist:' + this.artist.toString() +' ,venue:' + this.venue.toString() +']';
+	}
+	
+
+	
+	// initialize our application singleton
+	EventListApp.init();
+
+
+	// *************************************************************************
+	// ************************ Start of jQuery code ***************************
+	// *************************************************************************
 
 	$(function(){
 		// try to sinalize in the console some events that are fired --- see 181 pro jquery mobile
@@ -49,13 +170,22 @@
 	});
 	
 
-	// ****************** Start of JavaScript functions ******************
+	// ********************************************************************************
+	// ************************ Start of JavaScript functions *************************
+	// ********************************************************************************
 	
+	
+	// Refresh function called whenever the user clicks on refresh button on searchByLocation page
+	// It should be refactored to be more generic (other pages call it too) or we should create other methods for the other pages  
 	function refresh(){
 		$("#console").html("Verifying...");
 		loadCitiesAjax();
 	}
+
+
 	
+	// utility function that loads cities with events and the number of events per city updating the GUI layer then
+	// It is called by refresh function()
 	function loadCitiesAjax(){
 	   // callback function invocation
 	   $("#console").html("Downloading ws data...");
@@ -94,177 +224,7 @@
 		    loadEventsByCitiesAjax(urlByCity, city);					
 	    });
 
-
 	}
-
-	var eventList = new Array();
-
-	
-	
-	function populateEventPage(event) {
-		// fetch eventDetails page
-		var $page = $("#eventDetails");
-		
-		// fetch page header
-		$header = $page.children( ":jqmData(role=header)" );
-		// find h1 header and fulfill it with event title 
-		$header.find( "h1" ).html( event.title );
-		
-		// fetch page content
-		$content = $page.children( ":jqmData(role=content)" );
-		
-		// Create event info
-		var html = '';
-		html += '<p><h1><strong> ' + event.description + '</strong></h1></p>'
-		html += '<p><strong> ' + event.artist.artist + '</strong></p>'
-		html += '<p>' + event.startDate + '</p>'
-		html += '<p><a href="'+ event.website + '">'+  event.website +'</a></p>'
-		
-		
-		console.log(html);
-		$content.find( "#eventInfo" ).append( html );
-		
-		
-		// create venue info
-		html = '';
-		html += '<p><h1><strong> ' + event.venue.venueName + '</strong></h1></p>'
-		html += '<p>' + event.venue.location.street + ' - ' + event.venue.location.country +'</p>'
-		html += '<p>' + event.venue.location.postalCode + ' - ' + event.venue.location.city +'</p>'
-		html += '<p> lat: ' + event.venue.location.latitude + 'º</p>'
-		html += '<p> long:' + event.venue.location.longitude +'º</p>'
-		html += '<p><a href="'+ event.venue.website + '">'+  event.venue.website +'</a></p>'
-		
-		
-		$content.find( "#venueInfo" ).append( html );
-
-		var tel = 'tel:' + event.venue.phoneNumber; 
-		$( "#phoneCallButton" ).attr('href', tel);
-		
-		// We change to the details page
-		$.mobile.changePage($("#eventDetails"));
-	}
-	
-	
-	function loadEventById(eventId){
-		var event = EventListApp.findEventsInEventList(eventId);
-		populateEventPage(event);
-	} 
-	
-	// **************************************************************************************************
-	// ********************************** Event Singleton application ***********************************
-	// **************************************************************************************************
-	// creation of a singleton object (as advised in mobile javascript mobile development book)
-	// One of the ideas is to create a singleton object that will maintain application state.
-	// When we add html5 offline support all the caching mechanism will be placed in this object 
-	var EventListApp = function () { 
-		var list;
-		return {
-			init : function() {
-				list = new Array();
-			},
-			clear : function(){
-				list = [];
-			},
-			size : function(){
-				return list.length;
-			},
-			addEvent : function(event){
-				list.push(event);
-			}, 
-			findEventsInEventList : function (eventId){
-				console.log("findEventsInEventList: " + eventId);
-				//This should be replaced by cache mechanisms ... until then :)
-				for(i=0;i < eventList.length; i++){
-			  		var event = eventList[i];
-			  		if(event && event.id === eventId) 
-			  			return event;
-				};
-			}
-		}
-	}(); // for what I read what makes it singleton are these last '()' !?!?? strange .. ah
-	
-	
-	// *********************************
-	// **** Javascript Artist object ****
-	// *********************************
-	EventListApp.Artist = function (id, artist){
-		this.id = id;
-		this.artist = artist;
-	}
-	// adding methods to Artist Object
-	// create method toString    
-	EventListApp.Artist.prototype.toString  = function(){
-		return '[id:' + this.id + ' ,artist: '+ this.artist + ']';
-	}
-
-	// ************************************
-	// **** Javascript Location object ****
-	// ************************************
-	EventListApp.Location = function ( id,city, country, street, postalCode, latitude, longitude){
-		this.id = id;
-		this.city = city;
-		this.country = country;
-		this.street = street;
-		this.postalCode = postalCode;
-		this.latitude = latitude;
-		this.longitude = longitude;
-	}
-	// adding methods to Location Object
-	// create method toString    
-	EventListApp.Location.prototype.toString  = function(){
-		return '[id:' + this.id + ' ,city: '+ this.city + ' ,country: ' + this.country + ' ,street:' + this.street 
-					+ ' ,postalCode:' + this.postalCode +' ,latitude:' + this.latitude +' ,longitude:' + this.longitude + ']';
-	}
-
-
-	// *********************************
-	// **** Javascript Venue object ****
-	// ********************************* 
-	EventListApp.Venue = function (id,venueName, location, website,phoneNumber, image){
-		this.id = id;
-		this.venueName = venueName;
-		this.location = location;
-		this.website = website;
-		this.phoneNumber = phoneNumber;
-		this.image = image;
-	}
-	// adding methods to Venue Object
-	// create method toString    
-	EventListApp.Venue.prototype.toString  = function(){
-		return '[id:' + this.id + ' , venueName:' + this.venueName + ' , location: '+ this.location.toString() + ' ,website: ' + this.website 
-					+ ' ,phoneNumber:' + this.phoneNumber + ' ,image:' + this.image + ']';
-	}
-	
-	
-	// *********************************
-	// **** Javascript Event object ****
-	// *********************************
-	// javascript Event object associated with our global singleton object
-	// This object will be the main javascript object for events 	
-	EventListApp.Event = function (id, title, startDate, description, image, website, artist, venue){
-		this.id = id;
-		this.title = title;
-		this.startDate = startDate;
-		this.description = description;
-		this.image = image;
-		this.website = website;
-		this.artist = artist;
-		this.venue = venue;
-	};
-	
-	// adding methods to Event Object
-	// create method toString (doing like this is not defined in the global namespace). It belong to the class and aren't created everytime an object is created.   
-	EventListApp.Event.prototype.toString  = function(){
-		return '[id:' + this.id + ' ,title: '+ this.title + ' ,startDate: ' + this.startDate + ' ,description:' + this.description + 
-					' ,image:' + this.image +' ,website:' + this.website +' ,artist:' + this.artist.toString() +' ,venue:' + this.venue.toString() +']';
-	}
-	
-	// initialize our application singleton
-	EventListApp.init();
-
-
-	// **************************************************************************************************
-	// **************************************************************************************************
 	
 	
 	// function for creating events by city page	
@@ -304,7 +264,7 @@
 			       								  						 item.venue.phoneNumber,
 			       								  						 item.venue.image));
 			       console.log(event.toString());
-			       eventList.push(event);
+			       EventListApp.addEvent(event);
 			  });
 			  console.log(html);
 			  $("#eventsByCitySearchList").html(html);
@@ -313,8 +273,71 @@
 		
 		
 	}
+	
+	
+		// utility function that loads event information whenever the user chooses and event - updates the GUI layer then
+	function loadEventById(eventId){
+		// looks in the singleton object for the event clicked/choosed
+		var event = EventListApp.findEventsInEventList(eventId);
+		// call function to update GUI with event details
+		populateEventPage(event);
+	} 
+
+	// This function is used to populate eventDetails page with event information
+	// It is called by loadEventById function()
+	function populateEventPage(event) {
+		// fetch eventDetails page
+		var $page = $("#eventDetails");
 		
-	// callback function (populates one <li> with the info returned by the webService)
+		// fetch page header
+		$header = $page.children( ":jqmData(role=header)" );
+		// find h1 header and fulfill it with event title 
+		$header.find( "h1" ).html( event.title );
+		
+		// fetch page content
+		$content = $page.children( ":jqmData(role=content)" );
+		
+		// Create event info
+		var html = '';
+		html += '<p><h1><strong> ' + event.description + '</strong></h1></p>'
+		html += '<p><strong> ' + event.artist.artist + '</strong></p>'
+		html += '<p>' + event.startDate + '</p>'
+		html += '<p><a href="'+ event.website + '">'+  event.website +'</a></p>'
+		
+		
+		console.log(html);	
+		// we reset the eventInfo from previous chosen events
+		$content.find( "#eventInfo" ).empty();
+		// append the info from the last event	
+		$content.find( "#eventInfo" ).append( html );
+		
+		
+		// create venue info
+		html = '';
+		html += '<p><h1><strong> ' + event.venue.venueName + '</strong></h1></p>'
+		html += '<p>' + event.venue.location.street + ' - ' + event.venue.location.country +'</p>'
+		html += '<p>' + event.venue.location.postalCode + ' - ' + event.venue.location.city +'</p>'
+		html += '<p> lat: ' + event.venue.location.latitude + 'º</p>'
+		html += '<p> long:' + event.venue.location.longitude +'º</p>'
+		html += '<p><a href="'+ event.venue.website + '">'+  event.venue.website +'</a></p>'
+		
+		// we reset the venueInfo from previous chosen events
+		$content.find( "#venueInfo" ).empty();
+		// append the info from the last event venue
+		$content.find( "#venueInfo" ).append( html );
+
+		var tel = 'tel:' + event.venue.phoneNumber; 
+		$( "#phoneCallButton" ).attr('href', tel);
+		
+		// We change to the details page
+		$.mobile.changePage($("#eventDetails"));
+	}
+	
+	
+		
+	// callback function (populates one <li> with the info returned by the webService) 
+	// this function will be refactored in some other best way 
+	// It was only for testing approaches 
 	function init(ws){
 		console.log("init");
 		$.ajax( {
@@ -341,6 +364,10 @@
 			}
 		});
 	}
+	
+	
+	// ********************************************************************************
+	// ********************************************************************************	
 
 </script>
 

@@ -102,19 +102,46 @@
 	
 	
 	function populateEventPage(event) {
+		// fetch eventDetails page
 		var $page = $("#eventDetails");
-		$content = $page.children( ":jqmData(role=content)" );
-		$content.find( "h1" ).html( event.title );
 		
+		// fetch page header
+		$header = $page.children( ":jqmData(role=header)" );
+		// find h1 header and fulfill it with event title 
+		$header.find( "h1" ).html( event.title );
+		
+		// fetch page content
+		$content = $page.children( ":jqmData(role=content)" );
+		
+		// Create event info
 		var html = '';
-		html += '<p><strong class="header"> ' + event.description + '</strong> <span class="detail">Description</span> </p>'
-		html += '<p><strong class="header"> ' + event.startDate + '</strong> <span class="detail">Description</span> </p>'
+		html += '<p><h1><strong> ' + event.description + '</strong></h1></p>'
+		html += '<p><strong> ' + event.artist.artist + '</strong></p>'
+		html += '<p>' + event.startDate + '</p>'
+		html += '<p><a href="'+ event.website + '">'+  event.website +'</a></p>'
+		
 		
 		console.log(html);
-		$content.find( "h1" ).append( html );
+		$content.find( "#eventInfo" ).append( html );
+		
+		
+		// create venue info
+		html = '';
+		html += '<p><h1><strong> ' + event.venue.venueName + '</strong></h1></p>'
+		html += '<p>' + event.venue.location.street + ' - ' + event.venue.location.country +'</p>'
+		html += '<p>' + event.venue.location.postalCode + ' - ' + event.venue.location.city +'</p>'
+		html += '<p> lat: ' + event.venue.location.latitude + 'º</p>'
+		html += '<p> long:' + event.venue.location.longitude +'º</p>'
+		html += '<p><a href="'+ event.venue.website + '">'+  event.venue.website +'</a></p>'
+		
+		
+		$content.find( "#venueInfo" ).append( html );
+
+		var tel = 'tel:' + event.venue.phoneNumber; 
+		$( "#phoneCallButton" ).attr('href', tel);
 		
 		// We change to the details page
-		$.mobile.changePage($("#eventDetails"));;
+		$.mobile.changePage($("#eventDetails"));
 	}
 	
 	
@@ -123,7 +150,7 @@
 		populateEventPage(event);
 	} 
 	
-	
+	// **************************************************************************************************
 	// ********************************** Event Singleton application ***********************************
 	// **************************************************************************************************
 	// creation of a singleton object (as advised in mobile javascript mobile development book)
@@ -156,17 +183,80 @@
 		}
 	}(); // for what I read what makes it singleton are these last '()' !?!?? strange .. ah
 	
-	// create javascript event object associated with our global singleton object	
-	EventListApp.Event = function (id, title, startDate, description){
+	
+	// *********************************
+	// **** Javascript Artist object ****
+	// *********************************
+	EventListApp.Artist = function (id, artist){
+		this.id = id;
+		this.artist = artist;
+	}
+	// adding methods to Artist Object
+	// create method toString    
+	EventListApp.Artist.prototype.toString  = function(){
+		return '[id:' + this.id + ' ,artist: '+ this.artist + ']';
+	}
+
+	// ************************************
+	// **** Javascript Location object ****
+	// ************************************
+	EventListApp.Location = function ( id,city, country, street, postalCode, latitude, longitude){
+		this.id = id;
+		this.city = city;
+		this.country = country;
+		this.street = street;
+		this.postalCode = postalCode;
+		this.latitude = latitude;
+		this.longitude = longitude;
+	}
+	// adding methods to Location Object
+	// create method toString    
+	EventListApp.Location.prototype.toString  = function(){
+		return '[id:' + this.id + ' ,city: '+ this.city + ' ,country: ' + this.country + ' ,street:' + this.street 
+					+ ' ,postalCode:' + this.postalCode +' ,latitude:' + this.latitude +' ,longitude:' + this.longitude + ']';
+	}
+
+
+	// *********************************
+	// **** Javascript Venue object ****
+	// ********************************* 
+	EventListApp.Venue = function (id,venueName, location, website,phoneNumber, image){
+		this.id = id;
+		this.venueName = venueName;
+		this.location = location;
+		this.website = website;
+		this.phoneNumber = phoneNumber;
+		this.image = image;
+	}
+	// adding methods to Venue Object
+	// create method toString    
+	EventListApp.Venue.prototype.toString  = function(){
+		return '[id:' + this.id + ' , venueName:' + this.venueName + ' , location: '+ this.location.toString() + ' ,website: ' + this.website 
+					+ ' ,phoneNumber:' + this.phoneNumber + ' ,image:' + this.image + ']';
+	}
+	
+	
+	// *********************************
+	// **** Javascript Event object ****
+	// *********************************
+	// javascript Event object associated with our global singleton object
+	// This object will be the main javascript object for events 	
+	EventListApp.Event = function (id, title, startDate, description, image, website, artist, venue){
 		this.id = id;
 		this.title = title;
 		this.startDate = startDate;
 		this.description = description;
+		this.image = image;
+		this.website = website;
+		this.artist = artist;
+		this.venue = venue;
 	};
+	
 	// adding methods to Event Object
 	// create method toString (doing like this is not defined in the global namespace). It belong to the class and aren't created everytime an object is created.   
 	EventListApp.Event.prototype.toString  = function(){
-		return '[id:' + this.id + ' ,title: '+ this.title + ' startDate: ' + this.startDate + ' description:' + this.description + ']';
+		return '[id:' + this.id + ' ,title: '+ this.title + ' ,startDate: ' + this.startDate + ' ,description:' + this.description + 
+					' ,image:' + this.image +' ,website:' + this.website +' ,artist:' + this.artist.toString() +' ,venue:' + this.venue.toString() +']';
 	}
 	
 	// initialize our application singleton
@@ -198,7 +288,21 @@
 			       html += '<p>' + item.venue.location.city + '</p>';
 			       html += '</a></li>';
 			       
-			       event = new EventListApp.Event(item.id, item.title, item.startDate, item.description);
+			       // Create a full Event JavaScript Object based on event object returned by restfull ws
+			       event = new EventListApp.Event(item.id, item.title, item.startDate, item.description, item.image, item.website, 
+			       								  new EventListApp.Artist(item.artists.id, item.artists.artist),
+			       								  new EventListApp.Venue(item.venue.id, 
+			       								  						 item.venue.venueName,
+			       								  						 new EventListApp.Location(item.venue.location.id,
+		       								  						 							   item.venue.location.city,
+		       								  						 							   item.venue.location.country,
+		       								  						 							   item.venue.location.street,
+		       								  						 							   item.venue.location.postalCode,
+		       								  						 							   item.venue.location.latitude,
+		       								  						 							   item.venue.location.longitude  ),
+			       								  						 item.venue.website,
+			       								  						 item.venue.phoneNumber,
+			       								  						 item.venue.image));
 			       console.log(event.toString());
 			       eventList.push(event);
 			  });
@@ -283,6 +387,9 @@
 		text-align: center;
 	}
 	
+
+	
+	
 	#eventDetails div[data-role=content]  h1, #eventDetails div[data-role=content]  h2 {
 		margin: 0px auto 5px auto;
 		font-size: 18px;
@@ -294,21 +401,14 @@
 	}
 	
 	#eventDetails div[data-role=content]  p {
-		margin: 2px auto 5px auto;
+		margin: 0px auto 5px auto;
 		padding-left: 5px;
 	}
 
-	#event_info .ui-block-b .ui-btn, #venue_info {
+	#eventInfo , #venueInfo {
 		font-size:12px;
 	}
 
-	#event_info .ui-block-a , #venue_info {
-		font-size:12px;
-	}
-
-	#event_info .ui-block-b .ui-btn-inner{
-		padding:5px;
-	}
 
 	#contact_buttons a{
 		color:rgb(63, 41, 39);
@@ -534,16 +634,13 @@
 	<div id="eventDetails" data-role="page" data-add-back-btn="true">
 
 		<div data-role="header">
-			<h1> Restaurant Picker</h1>
+			<h1> </h1>
 		</div> 
 	
 		<div data-role="content">
 			<div class="ui-grid-a" id="event_info">
-				<div class="ui-block-a">
-					<h1> Event name</h1>
-					<p><strong class="header">  Event description</strong> <span class="detail">Description</span> </p>
-					<p><strong>  Date: </strong> 12/12/2000</p>
-					<p><strong>  Date: </strong> 12/12/2000</p>
+				<div id="eventInfo" class="ui-block-a">
+
 				</div>
 				<div class="ui-block-b">
 					<p><img src="images/mia_.png" alt="photo"/></p>
@@ -551,11 +648,9 @@
 			</div><!-- /grid-a -->
 			<hr/>
 	
-			<div class="ui-grid-a" id="venue_info">
-				<div class="ui-block-a" >
-					<h2> Contact venue</h2>
-					<p>Oliver street</p>
-					<p> 67000 London</p>
+			<div class="ui-grid-a" >
+				<div id="venueInfo" class="ui-block-a" >
+					
 				</div>
 				<div class="ui-block-b">
 					<img src="images/maps_small.png" alt="maps"/>
@@ -563,7 +658,7 @@
 			</div><!-- /grid-a -->
 			<div id="contact_buttons">
 				<a href="http://maps.google.com/maps?hl=en&safe=off&q=braga+ferreiros+google+maps&ie=UTF-8&hq=&hnear=0xd24fed6130e97f5:0x7dcd16ff52948be6,Ferreiros,+Portugal&ei=jAhbUKnaEoOGrAfho4DQCQ&ved=0CCAQ8gEwAA"  data-role="button" data-icon="maps"> Find in Google Maps </a>
-				<a href="tel:0388161072"  data-role="button" data-icon="tel"> Call </a>
+				<a id="phoneCallButton" href="tel:0388161072"  data-role="button" data-icon="tel"> Call </a>
 			</div>
 		</div>
 	

@@ -35,6 +35,7 @@ public class Venue implements Serializable {
 
 	
 	private Long id;
+	private String venueName;
 	private Location location;
 	private String website;
 	private String phoneNumber;
@@ -45,10 +46,11 @@ public class Venue implements Serializable {
 	
 	
 
-	public Venue(Long id, Location location, String website,
+	public Venue(Long id, String venueName, Location location, String website,
 			String phoneNumber, String image) {
 		super();
 		this.id = id;
+		this.venueName = venueName;
 		this.location = location;
 		this.website = website;
 		this.phoneNumber = phoneNumber;
@@ -96,13 +98,27 @@ public class Venue implements Serializable {
 		this.image = image;
 	}
 
+
+
+	public String getVenueName() {
+		return venueName;
+	}
+
+
+
+	public void setVenueName(String venueName) {
+		this.venueName = venueName;
+	}
+
+
+
 	@Override
 	public String toString() {
-		return "Venue [id=" + id + ", location=" + location + ", website="
-				+ website + ", phoneNumber=" + phoneNumber + ", image=" + image
-				+ "]";
+		return "Venue [id=" + id + ", venueName=" + venueName + ", location="
+				+ location + ", website=" + website + ", phoneNumber="
+				+ phoneNumber + ", image=" + image + "]";
 	}
-	
+
 	
 	
 }

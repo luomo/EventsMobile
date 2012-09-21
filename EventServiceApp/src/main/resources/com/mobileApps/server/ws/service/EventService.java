@@ -25,9 +25,9 @@ public class EventService {
 		Location locationPorto = new Location(2l, "Porto", "pt", "Avenida Liberdade", "4000", 12f, -34.5f);
 		Location locationCoimbra = new Location(3l, "Coimbra", "co", "Avenida xpto", "2000", 12f, -34.5f);
 
-		Venue venueBraga = new Venue(1l,  locationBraga,	"www.teatro-circo.com", "253272000", "imageLocation");
-		Venue venuePorto = new Venue(2l,  locationPorto, "www.trintaeum.com", "222272000", "imageLocation");
-		Venue venueCoimbra = new Venue(2l,  locationCoimbra, "www.xpto.com", "222272000", "imageLocation");
+		Venue venueBraga = new Venue(1l, "Teatro Circo",locationBraga,	"www.teatro-circo.com", "253272000", "imageLocation");
+		Venue venuePorto = new Venue(2l,  "Trintaeum ", locationPorto, "www.trintaeum.com", "222272000", "imageLocation");
+		Venue venueCoimbra = new Venue(2l, "Coimbra place", locationCoimbra, "www.xpto.com", "222272000", "imageLocation");
 		
 		Artist artist = new Artist(1L, "artist");
 		Provider provider = new Provider(1l, "lastFm", "www.lastfm.com", new Date().toString());

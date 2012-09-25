@@ -4,11 +4,14 @@ Created on 25 de Set de 2012
 @author: pedsilv
 '''
 
-from scrapy.spider import BaseSpider
+from scrapy.contrib.spiders import CrawlSpider, Rule
+from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
+#from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
-from scrapy.http.request import Request
+#from scrapy.http.request import Request
 
-class EventsSpider(BaseSpider):
+
+class EventsSpider(CrawlSpider):
     name = "ptyeaaah"
     allowed_domains = ["pt.yeaaaah.com"]
     start_urls = [
@@ -16,21 +19,26 @@ class EventsSpider(BaseSpider):
         ##"http://www.dmoz.org/Computers/Programming/Languages/Python/Resources/"
     ]
 
-    def parse(self, response):
+    rules = (
+             Rule (SgmlLinkExtractor(allow=(r'concert/\d+/*', ))
+                   , callback='parse_item', follow= True),
+             )
+    
+    def parse_item(self, response):
         hxs = HtmlXPathSelector(response)
         
         # hxs.select("/html/body/div/div[@id='content']/div[@class='concerts_listing']")
-        sites = hxs.select("/html/body/div/div[@id='content']/div[@class='concerts_listing']/table/tr/td[@class='artists']")
+        #sites = hxs.select("/html/body/div/div[@id='content']/div[@class='concerts_listing']/table/tr/td[@class='artists']")
         
         
         ## /html/body/div/div[2]/div[2]/h3/text()
         
-        for site in sites:
-            links = site.select('a/@href').extract()
+        #for site in sites:
+        #    links = site.select('a/@href').extract()
             
-            for link in links:
-                if not not link:
-                    yield Request('http://pt.yeaaaah.com' + link, self.parse)
+        #    for link in links:
+        #        if not not link:
+        #            yield Request('http://pt.yeaaaah.com' + link, self.parse)
                 
         artists = hxs.select("//div[@class='main_artists']/a/text()").extract()
         date = hxs.select("//time/@datetime").extract()

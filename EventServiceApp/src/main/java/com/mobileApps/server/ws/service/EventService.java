@@ -66,6 +66,14 @@ public class EventService {
 		}
 		return res;
 	}
+	
+	public static Event getEventsById(Long id) {
+		for (Event event : eventList) {
+			if(event.getId().equals(id))
+				return event;
+		}
+		return null;
+	}
 
 	public static Collection<EventsByCityDto> getEventsByLocationSimple() {
 		Map<String, EventsByCityDto> map = new HashMap<String, EventsByCityDto>();
@@ -84,5 +92,7 @@ public class EventService {
 		}
 		return map.values();
 	}
+
+	
 	
 }

@@ -31,7 +31,6 @@ public class Event implements Serializable {
 	private Long id;
 
 	private String title;
-	@XmlJavaTypeAdapter(JsonDateAdapter.class)
 	private Date startDate;
 	private String description;
 	private byte[] image;
@@ -41,7 +40,6 @@ public class Event implements Serializable {
 	
 	//control fields
 	private Long owner;
-	@XmlJavaTypeAdapter(JsonDateAdapter.class)
 	private Date processDate;
 	private String url;
 	
@@ -96,7 +94,7 @@ public class Event implements Serializable {
 		this.title = title;
 	}
 
-
+	@XmlJavaTypeAdapter(JsonDateAdapter.class)
 	public Date getStartDate() {
 		return startDate;
 	}
@@ -154,6 +152,7 @@ public class Event implements Serializable {
 		this.owner = owner;
 	}
 
+	@XmlJavaTypeAdapter(JsonDateAdapter.class)
 	public Date getProcessDate() {
 		return processDate;
 	}
@@ -203,13 +202,13 @@ public class Event implements Serializable {
 
 
 	//	@PrePersist
-	public void test(){
-		System.out.println("***********************");
-		//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd hh:mm:ss"); 
-		//this.setProcessDate(sdf.format(new Date()));
-		this.setProcessDate(new Date());
-
-	}
+//	public void test(){
+//		System.out.println("***********************");
+//		//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd hh:mm:ss"); 
+//		//this.setProcessDate(sdf.format(new Date()));
+//		this.setProcessDate(new Date());
+//
+//	}
 
 
 

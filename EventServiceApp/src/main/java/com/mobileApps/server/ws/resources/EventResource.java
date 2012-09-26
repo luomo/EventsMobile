@@ -20,6 +20,17 @@ public class EventResource {
 	private EventService eventService;
 	
 	@GET
+	@Path("/{eventId}")
+	@Produces({ MediaType.APPLICATION_JSON })
+	@SuppressWarnings("static-access")
+	public Response getEventsById(@PathParam("eventId") Long id){
+		
+		return Response.ok(eventService.getEventsById(id)).header("Access-Control-Allow-Origin", "*")
+				.build();
+	}
+	
+	
+	@GET
 	@Path("/city")
 	@SuppressWarnings("static-access")
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -61,6 +72,8 @@ public class EventResource {
 		return Response.ok(eventService.getEventsByLocation(id)).header("Access-Control-Allow-Origin", "*")
 				.build();
 	}
+
+	
 
 //	@GET
 //	@Path("/location/{city}/date/{date}")

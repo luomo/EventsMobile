@@ -4,6 +4,7 @@
 package com.mobileApps.server.ws.domain;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -35,11 +36,11 @@ public class Venue implements Serializable {
 
 	
 	private Long id;
-	private String venueName;
+	private String name;
 	private Location location;
 	private String website;
 	private String phoneNumber;
-	private String image;
+	private byte[] image;
 
 	
 	public Venue(){}
@@ -47,10 +48,10 @@ public class Venue implements Serializable {
 	
 
 	public Venue(Long id, String venueName, Location location, String website,
-			String phoneNumber, String image) {
+			String phoneNumber, byte[] image) {
 		super();
 		this.id = id;
-		this.venueName = venueName;
+		this.name = venueName;
 		this.location = location;
 		this.website = website;
 		this.phoneNumber = phoneNumber;
@@ -90,33 +91,34 @@ public class Venue implements Serializable {
 		this.location = location;
 	}
 
-	public String getImage() {
+
+	public byte[] getImage() {
 		return image;
 	}
 
-	public void setImage(String image) {
+	public void setImage(byte[] image) {
 		this.image = image;
 	}
 
 
 
-	public String getVenueName() {
-		return venueName;
+	public String getName() {
+		return name;
 	}
 
 
 
-	public void setVenueName(String venueName) {
-		this.venueName = venueName;
+	public void setName(String venueName) {
+		this.name = venueName;
 	}
 
 
 
 	@Override
 	public String toString() {
-		return "Venue [id=" + id + ", venueName=" + venueName + ", location="
-				+ location + ", website=" + website + ", phoneNumber="
-				+ phoneNumber + ", image=" + image + "]";
+		return "Venue [id=" + id + ", name=" + name + ", location=" + location
+				+ ", website=" + website + ", phoneNumber=" + phoneNumber
+				+ ", image=" + Arrays.toString(image) + "]";
 	}
 
 	

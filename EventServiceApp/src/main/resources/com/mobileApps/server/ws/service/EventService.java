@@ -21,23 +21,23 @@ public class EventService {
 	 
 	
 	static {
-		Location locationBraga = new Location(1l, "braga", "pt", "Avenida Liberdade", "4700", 12f, -34.5f);
-		Location locationPorto = new Location(2l, "Porto", "pt", "Avenida Liberdade", "4000", 12f, -34.5f);
-		Location locationCoimbra = new Location(3l, "Coimbra", "co", "Avenida xpto", "2000", 12f, -34.5f);
+		Location locationBraga = new Location("braga", "pt", "Avenida Liberdade", "4700", 12f, -34.5f);
+		Location locationPorto = new Location("Porto", "pt", "Avenida Liberdade", "4000", 12f, -34.5f);
+		Location locationCoimbra = new Location("Coimbra", "co", "Avenida xpto", "2000", 12f, -34.5f);
 
-		Venue venueBraga = new Venue(1l, "Teatro Circo",locationBraga,	"www.teatro-circo.com", "253272000", "imageLocation");
-		Venue venuePorto = new Venue(2l,  "Trintaeum ", locationPorto, "www.trintaeum.com", "222272000", "imageLocation");
-		Venue venueCoimbra = new Venue(2l, "Coimbra place", locationCoimbra, "www.xpto.com", "222272000", "imageLocation");
+		Venue venueBraga = new Venue(1l, "Teatro Circo",locationBraga,	"www.teatro-circo.com", "253272000", null);
+		Venue venuePorto = new Venue(2l,  "Trintaeum ", locationPorto, "www.trintaeum.com", "222272000", null);
+		Venue venueCoimbra = new Venue(2l, "Coimbra place", locationCoimbra, "www.xpto.com", "222272000", null);
 		
 		Artist artist = new Artist(1L, "artist");
 		Provider provider = new Provider(1l, "lastFm", "www.lastfm.com", new Date().toString());
 		
 		eventList = new ArrayList<Event>();
-		eventList.add(new Event(1l, "Event 1", "12-12-2012", "Music event", "image tag", "12", "tag", "url", "website", artist, venueBraga, provider));
-		eventList.add(new Event(2l, "Event 2", "01-12-2012", "Other Music event", "image tag", "12", "tag", "url", "website", artist, venuePorto, provider));
-		eventList.add(new Event(3l, "Event 3", "01-12-2012", "AnOther Music event", "image tag", "12", "tag", "url", "website", artist, venueCoimbra, provider));
-		eventList.add(new Event(4l, "Event 4", "01-12-2012", "AnOther Music event", "image tag", "12", "tag", "url", "website", artist, venueBraga, provider));
-		eventList.add(new Event(5l, "Event 5", "11-12-2012", "Music event", "image tag", "12", "tag", "url", "website", artist, venueBraga, provider));
+		eventList.add(new Event(1l, "Event 1", new Date(), "Music event", null, "12", 12F,"tag", 1L, new Date(), "url", artist, venueBraga));
+		eventList.add(new Event(2l, "Event 2", new Date(), "Other Music event",  null, "12", 10F, "tag", 1L, new Date(),"url", artist, venuePorto));
+		eventList.add(new Event(3l, "Event 3", new Date(), "AnOther Music event", null,"12",10F, "tag", 1L, new Date(),"url", artist, venueCoimbra));
+		eventList.add(new Event(4l, "Event 4", new Date(), "AnOther Music event", null, "12", 10F, "tag", 1L, new Date(),"url", artist, venueBraga));
+		eventList.add(new Event(5l, "Event 5", new Date(), "Music event", null, "12", 10F, "tag",1L, new Date(), "url", artist, venueBraga));
 		
 		locationList = new ArrayList<Location>();
 		locationList.add(locationBraga);
@@ -53,31 +53,31 @@ public class EventService {
 		return locationList;
 	}
 
-	public static List<Event> getEventsByLocation(Long id) {
+	public static List<Event> getEventsByLocation(String id) {
 		
 		return findByLocationId(id);
 	}
 
-	private static List<Event> findByLocationId(Long id) {
+	private static List<Event> findByLocationId(String city) {
 		List<Event> res = new ArrayList<Event>();
 		for (Event event : eventList) {
-			if(event.getVenue().getLocation().getId().equals(id))
+			if(event.getVenue().getLocation().getCity().equalsIgnoreCase(city))
 				res.add(event);
 		}
 		return res;
 	}
 
 	public static Collection<EventsByCityDto> getEventsByLocationSimple() {
-		Map<Long, EventsByCityDto> map = new HashMap<Long, EventsByCityDto>();
+		Map<String, EventsByCityDto> map = new HashMap<String, EventsByCityDto>();
 		Location location = null;
-		Long locId = null;
+		String city = null;
 		for (Event event : eventList) {
 			location = event.getVenue().getLocation();
-			locId = location.getId();
-			EventsByCityDto eventsByCityDto = map.get(locId);
+			city = location.getCity();
+			EventsByCityDto eventsByCityDto = map.get(city);
 			if(eventsByCityDto == null) {
-				eventsByCityDto = new EventsByCityDto(locId, location.getCity(),1L);
-				map.put(locId, eventsByCityDto);
+				eventsByCityDto = new EventsByCityDto(location.getCity(),1L);
+				map.put(city, eventsByCityDto);
 			}
 			else
 				eventsByCityDto.addEvents();

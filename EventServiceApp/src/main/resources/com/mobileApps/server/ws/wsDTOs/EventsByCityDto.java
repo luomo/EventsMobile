@@ -5,7 +5,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "eventByCity")
 public class EventsByCityDto {
 
-	private Long cityId;
 	private String city;
 	private Long nbrEvents;
 	
@@ -13,18 +12,12 @@ public class EventsByCityDto {
 	public EventsByCityDto(){}
 	
 	
-	public EventsByCityDto(Long cityId, String city, Long nbrEvents) {
+	public EventsByCityDto(String city, Long nbrEvents) {
 		super();
-		this.cityId = cityId;
 		this.city = city;
 		this.nbrEvents = nbrEvents;
 	}
-	public Long getCityId() {
-		return cityId;
-	}
-	public void setCityId(Long cityId) {
-		this.cityId = cityId;
-	}
+	
 	public String getCity() {
 		return city;
 	}

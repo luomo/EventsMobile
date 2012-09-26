@@ -73,8 +73,7 @@
 	// ************************************************************ 
 	// ***************** Javascript Location object *************** 
 	// ************************************************************
-	EventListApp.Location = function ( id,city, country, street, postalCode, latitude, longitude){
-		this.id = id;
+	EventListApp.Location = function ( city, country, street, postalCode, latitude, longitude){
 		this.city = city;
 		this.country = country;
 		this.street = street;
@@ -93,18 +92,19 @@
 	// ********************************************************************
 	// ********************** Javascript Venue object *********************
 	// ********************************************************************
-	EventListApp.Venue = function (id,venueName, location, website,phoneNumber, image){
+	EventListApp.Venue = function (id,name, location, website,phoneNumber, image){
 		this.id = id;
-		this.venueName = venueName;
+		this.name = name;
 		this.location = location;
 		this.website = website;
 		this.phoneNumber = phoneNumber;
 		this.image = image;
 	}
+	
 	// adding methods to Venue Object
 	// create method toString    
 	EventListApp.Venue.prototype.toString  = function(){
-		return '[id:' + this.id + ' , venueName:' + this.venueName + ' , location: '+ this.location.toString() + ' ,website: ' + this.website 
+		return '[id:' + this.id + ' , name:' + this.name + ' , location: '+ this.location.toString() + ' ,website: ' + this.website 
 					+ ' ,phoneNumber:' + this.phoneNumber + ' ,image:' + this.image + ']';
 	}
 	
@@ -114,22 +114,28 @@
 	// *********************************************************************
 	// javascript Event object associated with our global singleton object
 	// This object will be the main javascript object for events 	
-	EventListApp.Event = function (id, title, startDate, description, image, website, artist, venue){
+	EventListApp.Event = function (id, title, startDate, description, image, attendance,  price, tag, owner, processDate, url, artist, venue){
 		this.id = id;
 		this.title = title;
 		this.startDate = startDate;
 		this.description = description;
 		this.image = image;
-		this.website = website;
+		this.attendance = attendance;
+		this.price = price;
+		this.tag = tag;
+		this.owner = owner;
+		this.processDate = processDate;
+		this.url = url;
 		this.artist = artist;
 		this.venue = venue;
 	};
-	
+
 	// adding methods to Event Object
 	// create method toString (doing like this is not defined in the global namespace). It belong to the class and aren't created everytime an object is created.   
 	EventListApp.Event.prototype.toString  = function(){
 		return '[id:' + this.id + ' ,title: '+ this.title + ' ,startDate: ' + this.startDate + ' ,description:' + this.description + 
-					' ,image:' + this.image +' ,website:' + this.website +' ,artist:' + this.artist.toString() +' ,venue:' + this.venue.toString() +']';
+					' ,image:' + this.image +' ,attendance:' + this.attendance +' ,price:' + this.price +' ,tag:' + this.tag +
+					' ,owner:' + this.owner +' ,processDate:' + this.processDate + ' ,url:' + this.url +' ,artist:' + this.artist.toString() +' ,venue:' + this.venue.toString() +']';
 	}
 	
 
@@ -209,7 +215,7 @@
 	   		$.each(json, function (i, item) {
 	   	    
 	       		//html += '<li data-role="list-divider" data-theme="c"><a href="#">' + item.country + '</a> </li>';
-	       		html += '<li id="' + item.cityId+'"><a href="#eventsByCityPage">' + item.city + '<span class=ui-li-count>' + item.nbrEvents + '</span> </a> </li>';
+	       		html += '<li id="' + item.city+'"><a href="#eventsByCityPage">' + item.city + '<span class=ui-li-count>' + item.nbrEvents + '</span> </a> </li>';
 	       
 	  		});
 	  		console.log(html);
@@ -221,7 +227,7 @@
 		// create a event listener for click events  on (#locationSearchList > li ... every li inside locationSearchList)
 		// the idea is to try to associate a click event in a way that we create dinamically the next page (events by city page)
 	    $("#locationSearchList").on("click", "li", function() {
-	    	// fetch the id of li (it was fulfilled with item.cityId )
+	    	// fetch the id of li (it was fulfilled with item.city )
 		    var id = $(this).attr('id');
 		    // fetch the text of li --> to display in the header of next page
 		    var city = $(this).text();
@@ -254,14 +260,13 @@
 			       html += '<p>' + item.startDate + '</p>';
 			       html += '<p>' + item.venue.location.city + '</p>';
 			       html += '</a></li>';
-			       
 			       // Create a full Event JavaScript Object based on event object returned by restfull ws
-			       event = new EventListApp.Event(item.id, item.title, item.startDate, item.description, item.image, item.website, 
-			       								  new EventListApp.Artist(item.artists.id, item.artists.artist),
+			       event = new EventListApp.Event(item.id, item.title, item.startDate, item.description, item.image, item.attendance,  
+			    		   						  item.price, item.tag, item.owner, item.processDate, item.url,
+			       								  new EventListApp.Artist(item.artist.id, item.artist.artist),
 			       								  new EventListApp.Venue(item.venue.id, 
-			       								  						 item.venue.venueName,
-			       								  						 new EventListApp.Location(item.venue.location.id,
-		       								  						 							   item.venue.location.city,
+			       								  						 item.venue.name,
+			       								  						 new EventListApp.Location(item.venue.location.city,
 		       								  						 							   item.venue.location.country,
 		       								  						 							   item.venue.location.street,
 		       								  						 							   item.venue.location.postalCode,
@@ -282,7 +287,7 @@
 	}
 	
 	
-		// utility function that loads event information whenever the user chooses and event - updates the GUI layer then
+	// utility function that loads event information whenever the user chooses and event - updates the GUI layer then
 	function loadEventById(eventId){
 		// looks in the singleton object for the event clicked/choosed
 		var event = EventListApp.findEventsInEventList(eventId);
@@ -309,7 +314,7 @@
 		html += '<p><h1><strong> ' + event.description + '</strong></h1></p>'
 		html += '<p><strong> ' + event.artist.artist + '</strong></p>'
 		html += '<p>' + event.startDate + '</p>'
-		html += '<p><a href="'+ event.website + '">'+  event.website +'</a></p>'
+		html += '<p><a href="'+ event.url+ '">'+  event.url +'</a></p>'
 		
 		
 		console.log(html);	

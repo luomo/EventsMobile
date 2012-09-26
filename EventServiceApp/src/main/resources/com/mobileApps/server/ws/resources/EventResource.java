@@ -49,10 +49,10 @@ public class EventResource {
 	
 
 	@GET
-	@Path("/location/{id}")
+	@Path("/location/{city}")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@SuppressWarnings("static-access")
-	public Response getEventsByLocation(@PathParam("id") Long id){
+	public Response getEventsByLocation(@PathParam("city") String id){
 		
 		return Response.ok(eventService.getEventsByLocation(id)).header("Access-Control-Allow-Origin", "*")
 				.build();

@@ -7,7 +7,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "location")
 public class Location {
 
-	private Long id;
 	private String city;
 	private String country; 
 	private String street;
@@ -18,27 +17,15 @@ public class Location {
 	public Location(){}
 	
 
-	public Location(Long id,String city, String country, String street,
+	public Location(String city, String country, String street,
 			String postalCode, Float latitude, Float longitude) {
 		super();
-		this.id = id;
 		this.city = city;
 		this.country = country;
 		this.street = street;
 		this.postalCode = postalCode;
 		this.latitude = latitude;
 		this.longitude = longitude;
-	}
-
-
-
-	public Long getId() {
-		return id;
-	}
-
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 
@@ -79,6 +66,7 @@ public class Location {
 	public void setLongitude(Float longitude) {
 		this.longitude = longitude;
 	}
+	
 	@Override
 	public String toString() {
 		return "Location [city=" + city + ", country=" + country + ", street="

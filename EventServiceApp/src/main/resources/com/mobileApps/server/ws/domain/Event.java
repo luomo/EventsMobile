@@ -4,10 +4,13 @@
 package com.mobileApps.server.ws.domain;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import com.mobileApps.server.ws.jaxb.adapters.JsonDateAdapter;
 
 /**
  * @author templth
@@ -28,26 +31,34 @@ public class Event implements Serializable {
 	private Long id;
 
 	private String title;
-	private String startDate;
+	@XmlJavaTypeAdapter(JsonDateAdapter.class)
+	private Date startDate;
 	private String description;
-	private String image;
+	private byte[] image;
 	private String attendance;
+	private Float price;
 	private String tag;
+	
+	//control fields
+	private Long owner;
+	@XmlJavaTypeAdapter(JsonDateAdapter.class)
+	private Date processDate;
 	private String url;
-	private String website;
+	
 
-
-	private Artist artists;
+	private Artist artist;
 	private Venue venue;
-	private Provider provider;
+
 	
 
 	public Event() {
 	}
 	
-	public Event(Long id, String title, String startDate, String description,
-			String image, String attendance, String tag, String url,
-			String website, Artist artists, Venue venue, Provider provider ) {
+
+	
+	public Event(Long id, String title, Date startDate, String description,
+			byte[] image, String attendance, Float price, String tag,
+			Long owner, Date processDate, String url, Artist artist, Venue venue) {
 		super();
 		this.id = id;
 		this.title = title;
@@ -55,135 +66,149 @@ public class Event implements Serializable {
 		this.description = description;
 		this.image = image;
 		this.attendance = attendance;
+		this.price = price;
 		this.tag = tag;
+		this.owner = owner;
+		this.processDate = processDate;
 		this.url = url;
-		this.website = website;
-		this.artists = artists;
+		this.artist = artist;
 		this.venue = venue;
-		this.provider = provider;
 	}
-
 
 
 	public Long getId() {
 		return id;
 	}
+
+
 	public void setId(Long id) {
 		this.id = id;
 	}
 
 
 
-
 	public String getTitle() {
 		return title;
 	}
+
+
 	public void setTitle(String title) {
 		this.title = title;
 	}
 
 
-	public String getStartDate() {
+	public Date getStartDate() {
 		return startDate;
 	}
-	public void setStartDate(String startDate) {
+
+
+	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
-
 
 	public String getDescription() {
 		return description;
 	}
+
 	public void setDescription(String description) {
 		this.description = description;
 	}
 
-
-	public String getImage() {
+	public byte[] getImage() {
 		return image;
 	}
-	public void setImage(String image) {
+
+	public void setImage(byte[] image) {
 		this.image = image;
 	}
-
 
 	public String getAttendance() {
 		return attendance;
 	}
+
 	public void setAttendance(String attendance) {
 		this.attendance = attendance;
 	}
 
+	public Float getPrice() {
+		return price;
+	}
+
+	public void setPrice(Float price) {
+		this.price = price;
+	}
 
 	public String getTag() {
 		return tag;
 	}
+
 	public void setTag(String tag) {
 		this.tag = tag;
 	}
 
+	public Long getOwner() {
+		return owner;
+	}
+
+	public void setOwner(Long owner) {
+		this.owner = owner;
+	}
+
+	public Date getProcessDate() {
+		return processDate;
+	}
+
+	public void setProcessDate(Date processDate) {
+		this.processDate = processDate;
+	}
 
 	public String getUrl() {
 		return url;
 	}
+
 	public void setUrl(String url) {
 		this.url = url;
 	}
 
-
-	public String getWebsite() {
-		return website;
-	}
-	public void setWebsite(String website) {
-		this.website = website;
+	public Artist getArtist() {
+		return artist;
 	}
 
-
-	public Provider getProvider() {
-		return provider;
+	public void setArtist(Artist artist) {
+		this.artist = artist;
 	}
-	public void setProvider(Provider provider) {
-		this.provider = provider;
-	}
-
 
 	public Venue getVenue() {
 		return venue;
 	}
+
 
 	public void setVenue(Venue venue) {
 		this.venue = venue;
 	}
 
 
-	public Artist getArtists() {
-		return artists;
-	}
-	public void setArtists(Artist artists) {
-		this.artists = artists;
-	}
-
-
-
 	@Override
 	public String toString() {
 		return "Event [id=" + id + ", title=" + title + ", startDate="
 				+ startDate + ", description=" + description + ", image="
-				+ image + ", attendance=" + attendance + ", tag=" + tag
-				+ ", url=" + url + ", website=" + website + ", artists="
-				+ artists + ", venue=" + venue + ", provider=" + provider + "]";
+				+ Arrays.toString(image) + ", attendance=" + attendance
+				+ ", price=" + price + ", tag=" + tag + ", owner=" + owner
+				+ ", processDate=" + processDate + ", url=" + url + ", artist="
+				+ artist + ", venue=" + venue + "]";
 	}
-	
+
+
+
+
+
 	//	@PrePersist
 	public void test(){
 		System.out.println("***********************");
-		if(provider == null) {
-			provider = new Provider();
-			provider.setName("test");
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd hh:mm:ss"); 
-			provider.setProcessDate(sdf.format(new Date()));
-			provider.setUrl(this.getUrl());
-		}
+		//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd hh:mm:ss"); 
+		//this.setProcessDate(sdf.format(new Date()));
+		this.setProcessDate(new Date());
+
 	}
 
 

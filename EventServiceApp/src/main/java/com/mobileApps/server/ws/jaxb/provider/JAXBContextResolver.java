@@ -1,16 +1,16 @@
 package com.mobileApps.server.ws.jaxb.provider;
-
-import javax.xml.bind.JAXBContext;
-
-import com.mobileApps.server.ws.domain.Artist;
-import com.mobileApps.server.ws.domain.Event;
-import com.mobileApps.server.ws.domain.Feed;
-import com.mobileApps.server.ws.domain.Location;
-import com.mobileApps.server.ws.domain.Provider;
-import com.mobileApps.server.ws.domain.Venue;
-import com.mobileApps.server.ws.wsDTOs.EventsByCityDto;
-import com.sun.jersey.api.json.JSONConfiguration;
-import com.sun.jersey.api.json.JSONJAXBContext;
+//
+//import javax.xml.bind.JAXBContext;
+//
+//import com.mobileApps.server.ws.domain.Artist;
+//import com.mobileApps.server.ws.domain.Event;
+//import com.mobileApps.server.ws.domain.Feed;
+//import com.mobileApps.server.ws.domain.Location;
+//import com.mobileApps.server.ws.domain.Provider;
+//import com.mobileApps.server.ws.domain.Venue;
+//import com.mobileApps.server.ws.wsDTOs.EventsByCityDto;
+//import com.sun.jersey.api.json.JSONConfiguration;
+//import com.sun.jersey.api.json.JSONJAXBContext;
 
 public class JAXBContextResolver {
 

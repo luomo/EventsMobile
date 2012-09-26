@@ -7,54 +7,125 @@
   <version>1.0-SNAPSHOT</version>
   <name>EventServiceApp Maven Webapp</name>
   <url>http://maven.apache.org</url>
-  
-  <repositories>
-    <repository>
-      <id>maven2-repository.dev.java.net</id>
-      <name>Java.net Repository for Maven</name>
-      <url>http://download.java.net/maven/2/</url>
-      <layout>default</layout>
-    </repository>
 
-  </repositories>
   
+  <properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<spring.version>3.0.5.RELEASE</spring.version>
+		<junit.version>4.9</junit.version>
+		<jersey.version>1.13</jersey.version>	
+	</properties>
   
-  
+   
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.9</version>
+      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency> 
     
-    <!-- Jersey Server -->
+    <!-- Jersey -->
 	 <dependency>
 	      <groupId>com.sun.jersey</groupId>
 	      <artifactId>jersey-server</artifactId>
-	      <version>1.11</version>
-	 </dependency> 
-	
+	      <version>${jersey.version}</version>
+	 </dependency>
+	 
+	<dependency>
+		<groupId>com.sun.jersey.jersey-test-framework</groupId>
+		<artifactId>jersey-test-framework-core</artifactId>
+		<version>${jersey.version}</version>
+		<scope>test</scope>
+	</dependency>
+            
+      
+	<dependency>
+		<groupId>com.sun.jersey</groupId>
+		<artifactId>jersey-client</artifactId>
+		<version>${jersey.version}</version>
+	</dependency>
+
 	<!-- Jersey Servlet container -->
 	<dependency>
 	      <groupId>com.sun.jersey</groupId>
 	      <artifactId>jersey-servlet</artifactId>
-	       <version>1.11</version>
+	       <version>${jersey.version}</version>
 	 </dependency>
 	
 	<!-- JSON Support -->
 	<dependency>
 	     <groupId>com.sun.jersey</groupId>
 	     <artifactId>jersey-json</artifactId>
-	     <version>1.14</version>
+	     <version>${jersey.version}</version>
 	 </dependency>
 	 
 
     
   </dependencies>
+
+  <repositories>
+    <repository>
+      <id>maven2-repository.dev.java.net</id>
+      <name>Java.net Repository for Maven</name>
+      <url>http://repo.maven.apache.org/maven2/</url>
+      <layout>default</layout>
+    </repository>
+
+  </repositories>
+  
+  
   <build>
-    <finalName>EventServiceApp</finalName> 
-  </build>
+   	 	<finalName>EventServiceApp</finalName> 
+
+
+		<plugins>
+
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<reportPlugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-project-info-reports-plugin</artifactId>
+							<version>2.4</version>
+							<configuration>
+								<dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+								<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+							</configuration>
+							<!-- simpler configuration without reportSets available for usual 
+								cases -->
+							<reports>
+								<report>dependencies</report>
+								<report>scm</report>
+							</reports>
+						</plugin>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-javadoc-plugin</artifactId>
+							<version>2.8</version>
+						</plugin>
+					</reportPlugins>
+				</configuration>
+			</plugin>
+
+		</plugins>
+
+	</build>
   
   
 </project>

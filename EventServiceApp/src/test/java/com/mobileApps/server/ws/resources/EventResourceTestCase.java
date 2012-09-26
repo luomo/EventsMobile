@@ -39,7 +39,6 @@ public class EventResourceTestCase {//extends JerseyTest {
 							   .accept(MediaType.APPLICATION_JSON)
 							   .get(new GenericType< List<Event>>(){} );
 		
-
         Assert.assertEquals(res.size(), EventService.getAllEvents().size());
 	}
 

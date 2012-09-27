@@ -2,13 +2,13 @@ package com.mobileApps.server.ws.resources;
 
 import java.net.URI;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -26,7 +26,9 @@ public class UserResource {
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response  registerUser(@Context UriInfo ui, @Context HttpHeaders hh, UserInfo user){
+	public Response registerUser(@Context UriInfo ui, 
+		    					 @Context HttpServletResponse response,  
+								 UserInfo user){
 		
 		boolean registerUser = true;//UserService.registerUser(user);
 		
@@ -38,8 +40,10 @@ public class UserResource {
 			          .build()
 			      );
 //		return new JSONWithPadding(
-//		        new GenericEntity(entity, genericType)<User>(competitions) {
+//		        new GenericEntity<UserInfo>(user, UserInfo.class) {
 //		        }, callback);
+//		response.setHeader("Access-Control-Allow-Origin", "*");
+//		return Response.seeOther(url_you_want_to_redirect_to).build();.
 		return Response.created(URI.create("/users/" + user.getUsername())).entity(user).header("Access-Control-Allow-Origin", "*").build();
 	}
 	

@@ -22,7 +22,8 @@
 	// ****************** Start of definition of JavaScript objects ******************
 	// *******************************************************************************
 	var AjaxEventHelper = function(){
-		var rootURL = 'http://localhost:8081/EventServiceApp/resources/';
+		//var rootURL = 'http://localhost:8081/EventServiceApp/resources/';
+		var rootURL = 'http://localhost/crossDomain/';
 		
 		errorFunction = function(xhRequest, ErrorText, thrownError){
 			console.log('xhRequest: ' + xhRequest.responseText);
@@ -47,7 +48,7 @@
 					    404: function() {
 					      alert("page not found");
 					    }
-					 }
+					}
 			    });
 			},
 			createPOSTRequestAjax : function(url, callbackfuntion, dataToBePosted){
@@ -55,9 +56,9 @@
 				$.ajax({
 			        type: 'POST',
 			        url: url,
-			        contentType: 'application/json',
+			        contentType: "application/json; charset=utf-8",
 			        dataType: 'json', // data type of response  try jsonp
-			        jsonData: dataToBePosted, // jsonData:   dsfsdkfsld
+			        data:dataToBePosted,// JSON.stringify({username:"test", password:"data"}),//{ username: "John", password: "2pm" } , //dataToBePosted,// jsonData:   dsfsdkfsld
 			        success: callbackfuntion,
 			        error: errorFunction,
 					statusCode: {
@@ -241,6 +242,7 @@
 			//var userValue = $('#userLogin').val();	
 			//var passValue = $('#passLogin').val();
 			//alert("user: " + userValue + " / password: " + passValue);
+			//event.preventDefault();
 			var url = AjaxEventHelper.getRootURL() + 'users';
 			AjaxEventHelper.createPOSTRequestAjax(url, 
 												  function(data){
@@ -718,7 +720,7 @@
 		<div data-role="content">
 			<h1>Login</h1>
 			
-			<form action="" method="post" data-transition="none">
+			<form id="loginForm" method="post" data-transition="none">
 
 			   <div data-role="fieldcontain">
 				 <label for="userLogin">User:</label>

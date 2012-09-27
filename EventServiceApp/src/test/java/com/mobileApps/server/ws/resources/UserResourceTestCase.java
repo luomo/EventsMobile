@@ -3,10 +3,10 @@ package com.mobileApps.server.ws.resources;
 import java.net.URI;
 
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
-import org.codehaus.jettison.json.JSONObject;
+import junit.framework.Assert;
+
 import org.junit.Test;
 
 import com.mobileApps.server.ws.domain.UserInfo;
@@ -33,12 +33,12 @@ public class UserResourceTestCase {//extends JerseyTest {
 		UserInfo userInfo = new UserInfo("aasd", "asd");
 		
 	    WebResource webResource = client.resource(getBaseURI());
-	    webResource.type(MediaType.APPLICATION_JSON).post(userInfo);
+	    UserInfo resp = webResource.type(MediaType.APPLICATION_JSON).post(UserInfo.class, userInfo);
 
 
 	    
-//	    Assert.assertEquals(resp.getPassword(), userInfo.getPassword());
-//	    Assert.assertEquals(resp.getUsername(), userInfo.getPassword());
+	    Assert.assertEquals(resp.getUsername(), userInfo.getUsername());
+	    Assert.assertEquals(resp.getPassword(), userInfo.getPassword());
 
 				
 //	    ClientResponse clientResponse = webResource.path(beginPath + methodPath + "/" + uniqueField).get(

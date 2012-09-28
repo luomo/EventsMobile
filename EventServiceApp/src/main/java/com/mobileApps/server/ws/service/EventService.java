@@ -49,7 +49,7 @@ public class EventService {
 		eventList.add(new Event(2l, "yFestival Event 20", new Date(), "Other Music event",  null, "12", 10F, "tag", 1L, new Date(),"url", artist, venuePorto));
 		eventList.add(new Event(3l, "z XX - Event 3", tomorowDate, "AnOther Music event", null,"12",10F, "tag", 1L, new Date(),"url", artist, venueCoimbra));
 		eventList.add(new Event(4l, "Festival - Event 4", new Date(), "AnOther Music event", null, "12", 10F, "tag", 1L, new Date(),"url", artist, venueBraga));
-		eventList.add(new Event(5l, "aClubbing - 5", new Date(), "Music event", null, "12", 10F, "tag",1L, new Date(), "url", artist, venueBraga));
+		eventList.add(new Event(5l, "AClubbing - 5", new Date(), "Music event", null, "12", 10F, "tag",1L, new Date(), "url", artist, venueBraga));
 		
 		locationList = new ArrayList<Location>();
 		locationList.add(locationBraga);

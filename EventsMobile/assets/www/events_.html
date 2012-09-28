@@ -308,17 +308,22 @@
 		var curr_year = d.getFullYear(); 
 		var date = curr_year  + "/" + curr_month + "/" + curr_date; 
 		var url = AjaxEventHelper.getRootURL() + 'events/date?searchDate=' + date;
+		
 		AjaxEventHelper.createGETRequestAjax(url, function(data){
 			var html = '';
 			
 			//if (!data )
 			// validar se existe events .. se n fazer display ao user
 			
-			$.each(data, function(index, item) {
-				html += '<li id="' + item.city+'"><a href="#eventsByCityPage">' + item.city + '<span class=ui-li-count>' + item.nbrEvents + '</span> </a> </li>';
-				var list = item.eventList;
+			$.each(data, function(index, _eventDto) {
+				html += '<li data-role="list-divider">' + _eventDto.city + '</li>';
+				var list = _eventDto.eventList;
 				for(var i = 0; i < list.length ; i++) {	
 					var _event = list[i];
+					html += '<li ><a href="javascript:loadEventById('+ _event.id +  ')"><img alt="coverArt" src="images/mia.png" /><h3>' + _event.title + '</h3>';
+			        html += '<p>' + _event.startDate + '</p>';
+			        html += '<p>' + _event.venue.location.city + '</p>';
+			        html += '</a></li>';
 					eventLocal = createEventJSObjectBasedOnJsonAjaxReq(_event);
 					EventListApp.addEvent(eventLocal);
 				}
@@ -328,7 +333,6 @@
 	  		$("#eventsForTodaySearchList").listview('refresh');
 	  		$(".console").html("Data refreshed ..");
 	    });
-		
 		
 	}
 	

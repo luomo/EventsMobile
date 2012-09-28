@@ -328,10 +328,8 @@
 				var list = _eventDto.eventList;
 				for(var i = 0; i < list.length ; i++) {	
 					var _event = list[i];
-					html += '<li ><a href="javascript:loadEventById('+ _event.id +  ')"><img alt="coverArt" src="images/mia.png" /><h3>' + _event.title + '</h3>';
-			        html += '<p>' + _event.startDate + '</p>';
-			        html += '<p>' + _event.venue.location.city + '</p>';
-			        html += '</a></li>';
+					// Create html row for displaying event
+					html += createHtmlEventRow(_event);
 					eventLocal = createEventJSObjectBasedOnJsonAjaxReq(_event);
 					EventListApp.addEvent(eventLocal);
 				}
@@ -411,10 +409,8 @@
 	    
 	    for(var i = 0; i < eventListByCity.length ; i++) {		
 	    	var _event = eventListByCity[i];
-	    	html += '<li ><a href="javascript:loadEventById('+ _event.id +  ')"><img alt="coverArt" src="images/mia.png" /><h3>' + _event.title + '</h3>';
-	        html += '<p>' + _event.startDate + '</p>';
-	        html += '<p>' + _event.venue.location.city + '</p>';
-	        html += '</a></li>';
+	    	// Create html row for displaying event
+	    	html += createHtmlEventRow(_event);
 	        // Create a full Event JavaScript Object based on event object returned by restfull ws
 	        event = createEventJSObjectBasedOnJsonAjaxReq(_event);
 	        console.log(event.toString());
@@ -446,14 +442,12 @@
 			
 			var html = '';
 			$.each(data, function (i, _event) {
-			       html += '<li ><a href="javascript:loadEventById('+ _event.id +  ')"><img alt="coverArt" src="images/mia.png" /><h3>' + _event.title + '</h3>';
-			       html += '<p>' + _event.startDate + '</p>';
-			       html += '<p>' + _event.venue.location.city + '</p>';
-			       html += '</a></li>';
-			       // Create a full Event JavaScript Object based on event object returned by restfull ws
-			       event = createEventJSObjectBasedOnJsonAjaxReq(_event);
-			       console.log(event.toString());
-			       EventListApp.addEvent(event);
+				// Create html row for displaying event
+				html += createHtmlEventRow(_event);
+		        // Create a full Event JavaScript Object based on event object returned by restfull ws
+		        event = createEventJSObjectBasedOnJsonAjaxReq(_event);
+		        console.log(event.toString());
+		        EventListApp.addEvent(event);
 			  });
 			  console.log(html);
 			  $("#eventsByCitySearchList").html(html);
@@ -461,6 +455,15 @@
 	    });
 		
 		
+	}
+	
+	function createHtmlEventRow(_event) {
+		var html = '';
+		html += '<li ><a href="javascript:loadEventById('+ _event.id +  ')"><img alt="coverArt" src="images/mia.png" /><h3>' + _event.title + '</h3>';
+	    html += '<p>' + _event.startDate + '</p>';
+	    html += '<p>' + _event.venue.location.city + '</p>';
+	    html += '</a></li>';
+	    return html;
 	}
 	
 	// utility function that loads event information whenever the user chooses and event - updates the GUI layer then

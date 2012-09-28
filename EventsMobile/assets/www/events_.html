@@ -301,6 +301,14 @@
 	}
 	
 	
+	// Refresh function called whenever the user clicks on refresh button on searchByDate page
+	// It should be refactored to be more generic (other pages call it too) or we should create other methods for the other pages  
+	function refreshByDate(){
+		$(".console").html("Verifying...");
+		loadEventsForTodayAjax();
+	}
+	
+	
 	function loadEventsForTodayAjax(){
 		var d = new Date();
 		var curr_date = d.getDate();
@@ -337,9 +345,11 @@
 	}
 	
 	
+
+
 	// Refresh function called whenever the user clicks on refresh button on searchByLocation page
 	// It should be refactored to be more generic (other pages call it too) or we should create other methods for the other pages  
-	function refresh(){
+	function refreshByLocation(){
 		$(".console").html("Verifying...");
 		loadCitiesAjax();
 	}
@@ -666,7 +676,6 @@
 	<!-- Home Page -->
 	<div data-role="page" id="home" data-theme="c">
 		<div data-role="header">
-			
 			<h1>						
 			<img alt="Events" src="images/eventsLogo_small_.png" class="logo">
 			</h1>
@@ -701,12 +710,12 @@
 	<div data-role="page" id="byLocationSearchPage"  data-add-back-btn="true">
 		<div data-role="header">
 			<h1>Events</h1>
-			<a href='javascript:refresh();' data-icon="refresh" id="refresh" 
+			<a href='javascript:refreshByLocation();' data-icon="refresh" id="refresh" 
 					class="ui-btn-right" >Refresh</a>
 		</div>
 
 		<div data-role="content">
-			<h4><p class="console"></p></h4>
+			<h6><p class="console"></p></h6>
 			<ul id="locationSearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search locations ..." >
 
 			</ul>
@@ -730,7 +739,8 @@
 	<div data-role="page" id="eventsByCityPage"  data-add-back-btn="true">
 		<div data-role="header">
 			<h1></h1>
-			<a href="#settings" data-icon="gear" class="ui-btn-right">Settings</a>
+			<a href='' data-icon="refresh" id="refresh" 
+					class="ui-btn-right" >Refresh</a>
 		</div>
 
 		<div data-role="content">
@@ -755,12 +765,13 @@
 	<!-- today date Search Page -->
 	<div data-role="page" id="byDateSearchPage"  data-add-back-btn="true">
 		<div data-role="header">
-			<h1></h1>
-			<a href="#settings" data-icon="gear" class="ui-btn-right">Settings</a>
+			<h1>Events</h1>
+			<a href='javascript:refreshByDate();' data-icon="refresh" id="refresh" 
+					class="ui-btn-right" >Refresh</a>
 		</div>
 
 		<div data-role="content">
-			<h4><p class="console"></p></h4>
+			<h6><p class="console"></p></h6>
 			<ul id="eventsForTodaySearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search events ...">
 
 			</ul>
@@ -785,7 +796,8 @@
 	<div data-role="page" id="byNameSearchPage"  data-add-back-btn="true">
 		<div data-role="header">
 			<h1>Events</h1>
-			<a href="#settings" data-icon="gear" class="ui-btn-right">Settings</a>
+			<a href='' data-icon="refresh" id="refresh" 
+					class="ui-btn-right" >Refresh</a>
 		</div>
 
 		<div data-role="content" >
@@ -834,7 +846,7 @@
 	<div data-role="page" id="settings" data-add-back-btn="true">
 		<div data-role="header">
 			<h1>Events</h1>
-			<a href="#settings" data-icon="gear" class="ui-btn-right">Settings</a>
+			
 		</div>
 
 		<div data-role="content">

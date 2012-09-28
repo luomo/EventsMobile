@@ -11,13 +11,14 @@ import com.mobileApps.server.ws.domain.Artist;
 import com.mobileApps.server.ws.domain.Event;
 import com.mobileApps.server.ws.domain.Location;
 import com.mobileApps.server.ws.domain.Provider;
+import com.mobileApps.server.ws.domain.UserInfo;
 import com.mobileApps.server.ws.domain.Venue;
 import com.mobileApps.server.ws.wsDTOs.EventsByCityDto;
 
 public class EventService {
 
 	private static final List<Event> eventList;
-	private static final List<Location> locationList;
+	private static final List<Location> locationList; 
 	 
 	
 	static {
@@ -43,6 +44,7 @@ public class EventService {
 		locationList.add(locationBraga);
 		locationList.add(locationPorto);
 		locationList.add(locationCoimbra);
+
 	}
 	
 	public static List<Event> getAllEvents(){
@@ -93,6 +95,6 @@ public class EventService {
 		return map.values();
 	}
 
-	
+
 	
 }

@@ -21,7 +21,71 @@
  	// *******************************************************************************
 	// ****************** Start of definition of JavaScript objects ******************
 	// *******************************************************************************
+	var AjaxEventHelper = function(){
+		//var rootURL = 'http://localhost:8081/EventServiceApp/resources/';
+		var rootURL = 'http://localhost/crossDomain/';
+		
+		errorFunction = function(xhRequest, ErrorText, thrownError){
+			console.log('xhRequest: ' + xhRequest.responseText);
+			console.log('ErrorText: ' + ErrorText);
+			console.log("thrownError: "  + thrownError); 
+			alert('Error conecting to requested web Service ..check log console');
+		}
+		
+		return {
+			getRootURL : function(event){
+				return rootURL;
+			}, 
+			createGETRequestAjax : function(url, callbackfuntion){
+				console.log(url);
+				$.ajax({
+			        type: 'GET',
+			        url: url,
+			        dataType: 'json', // data type of response
+			        success: callbackfuntion,
+			        error: errorFunction,
+					statusCode: {
+					    404: function() {
+					      alert("page not found");
+					    }
+					}
+			    });
+			},
+			createPOSTRequestAjax : function(url, callbackfuntion, dataToBePosted){
+				console.log(url);
+				$.ajax({
+			        type: 'POST',
+			        url: url,
+			        contentType: "application/json; charset=utf-8",
+			        dataType: 'json', // data type of response  try jsonp
+			        data:dataToBePosted,// JSON.stringify({username:"test", password:"data"}),//{ username: "John", password: "2pm" } , //dataToBePosted,// jsonData:   dsfsdkfsld
+			        success: callbackfuntion,
+			        error: errorFunction,
+					statusCode: {
+					    404: function() {
+					      alert("page not found");
+					    }
+					 }
+			    });
+			} 
+			
+		}
+	}(); 
 	
+	function createUserInfoRequest(){
+		var username = $('#userLogin').val();	
+		var password = $('#passLogin').val();
+		// do data validation
+		//"username": wineId == "" ? null : wineId,
+		var json = JSON.stringify({
+			"username": username, 
+			"password": password, 
+			});
+		console.log("json object create: " + json);
+		return json;
+		
+	}
+ 	
 	
 	// **************************************************************************************************
 	// ********************************** Event Singleton application ***********************************
@@ -31,6 +95,7 @@
 	// When we add html5 offline support all the caching mechanism will be placed in this object 
 	var EventListApp = function () { 
 		var list;
+		
 		return {
 			init : function() {
 				list = new Array();
@@ -165,7 +230,7 @@
 		// try to load webService info when byNameSearchPage loads		
 		$('#byNameSearchPage').live("pageshow", function(){
 			// callback funtion invocation
-		   init('http://localhost:8080/EventServiceApp/resources/events/city');
+		   init(AjaxEventHelper.getRootURL() + 'events/city');
 		});
 			
 		// try to load webService info when byLocationSearchPage loads
@@ -174,11 +239,29 @@
 		});
 
 		$('#loginBtn').click(function() {
-			var userValue = $('#userLogin').val();	
-			var passValue = $('#passLogin').val();
-			alert("user: " + userValue + " / password: " + passValue);		
+			//var userValue = $('#userLogin').val();	
+			//var passValue = $('#passLogin').val();
+			//alert("user: " + userValue + " / password: " + passValue);
+			//event.preventDefault();
+			var url = AjaxEventHelper.getRootURL() + 'users';
+			AjaxEventHelper.createPOSTRequestAjax(url, 
+												  function(data){
+														$('#consoleLoginPage').append("dfsdfsd").append(data);
+												  }, 
+												  createUserInfoRequest());
+					
 		});
 
+		// create a event listener for click events  on (#locationSearchList > li ... every li inside locationSearchList)
+		// the idea is to try to associate a click event in a way that we create dinamically the next page (events by city page)
+	    $("#locationSearchList").on("click", "li", function() {
+	    	// fetch the id of li (it was fulfilled with item.city )
+		    var city = $(this).attr('id');
+		    // fetch the text of li --> to display in the header of next page
+		    //var city = $(this).text();
+		    // invoke function to create/fulfill new page results
+		    loadEventsByCitiesAjax( city );					
+	    });
 
 	});
 	
@@ -195,67 +278,54 @@
 		loadCitiesAjax();
 	}
 
-
+	
 	
 	// utility function that loads cities with events and the number of events per city updating the GUI layer then
 	// It is called by refresh function() and when the user opens the search part of the application (search by location) 
 	function loadCitiesAjax(){
-	   // callback function invocation
-	   $("#console").html("Downloading ws data...");
-	   
-	   // url for invoking ws
-	   var url = 'http://localhost:8080/EventServiceApp/resources/events/location/dto';
+	    // callback function invocation
+	    $("#console").html("Downloading ws data...");
 	
-	   // obtain ws info city -> nbrEvents	
-	   $.getJSON(url, function (json) {
-	       	//alert(json);
-	        //alert(JSON.stringify(eval(json)));
-	   		var html = '';
-	   		// for each record
-	   		$.each(json, function (i, item) {
-	   	    
-	       		//html += '<li data-role="list-divider" data-theme="c"><a href="#">' + item.country + '</a> </li>';
-	       		html += '<li id="' + item.city+'"><a href="#eventsByCityPage">' + item.city + '<span class=ui-li-count>' + item.nbrEvents + '</span> </a> </li>';
-	       
-	  		});
-	  		console.log(html);
+	    // Create WS url
+	   
+	    // create ws url based on the city id clicked
+	    var urlByCity = AjaxEventHelper.getRootURL() + 'events/location/dto';
+	    AjaxEventHelper.createGETRequestAjax(urlByCity, function(data){
+			var html = '';
+			$.each(data, function(index, item) {
+				html += '<li id="' + item.city+'"><a href="#eventsByCityPage">' + item.city + '<span class=ui-li-count>' + item.nbrEvents + '</span> </a> </li>';
+			});
+			console.log(html);
 	  		$("#locationSearchList").html(html);
 	  		$("#locationSearchList").listview('refresh');
-	  		$("#console").html("Data refreshed ..");  
-		}); 
-		
-		// create a event listener for click events  on (#locationSearchList > li ... every li inside locationSearchList)
-		// the idea is to try to associate a click event in a way that we create dinamically the next page (events by city page)
-	    $("#locationSearchList").on("click", "li", function() {
-	    	// fetch the id of li (it was fulfilled with item.city )
-		    var id = $(this).attr('id');
-		    // fetch the text of li --> to display in the header of next page
-		    var city = $(this).text();
-		    // create ws url based on the city id clicked
-		    var urlByCity = 'http://localhost:8080/EventServiceApp/resources/events/location/' + id;
-		    // invoke function to create/fulfill new page results
-		    loadEventsByCitiesAjax(urlByCity, city);					
+	  		$("#console").html("Data refreshed ..");
 	    });
+		
 
 	}
 	
 	
+	
 	// function for creating events by city page	
-	function loadEventsByCitiesAjax(url, city) {
+	function loadEventsByCitiesAjax(city) {
+		console.log('city:' + city);
+		// create event var
+		var event;
 		// obtain page reference
 		var $page = $("#eventsByCityPage");
-		
-		var event;
-		
+
 		// get header 
 		$header = $page.children( ":jqmData(role=header)" );
 		// populate header with the name of the city we are selecting
 		$header.find( "h1" ).html( city );
 		
-		//obtain json info from ws (based on city id)
-		$.getJSON(url, function (json) {
-			 var html = '';
-			 $.each(json, function (i, item) {
+		// create ws url based on the city id clicked
+	    var url = AjaxEventHelper.getRootURL() + 'events/location/' + city;
+	    
+		AjaxEventHelper.createGETRequestAjax(url, function(data){
+			
+			var html = '';
+			$.each(data, function (i, item) {
 			       html += '<li ><a href="javascript:loadEventById('+ item.id +  ')"><img alt="coverArt" src="images/mia.png" /><h3>' + item.title + '</h3>';
 			       html += '<p>' + item.startDate + '</p>';
 			       html += '<p>' + item.venue.location.city + '</p>';
@@ -281,7 +351,7 @@
 			  console.log(html);
 			  $("#eventsByCitySearchList").html(html);
 			  $("#eventsByCitySearchList").listview('refresh');  
-		});
+	    });
 		
 		
 	}
@@ -650,7 +720,7 @@
 		<div data-role="content">
 			<h1>Login</h1>
 			
-			<form action="" method="post" data-transition="none">
+			<form id="loginForm" method="post" data-transition="none">
 
 			   <div data-role="fieldcontain">
 				 <label for="userLogin">User:</label>
@@ -666,6 +736,7 @@
 			   <a href="#home" data-role="button">Cancel</a>
 			 
 			 </form>
+			 <div id="consoleLoginPage"></div>
 		</div>
 
 		<div data-role="footer">

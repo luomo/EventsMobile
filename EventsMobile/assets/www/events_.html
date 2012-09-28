@@ -28,7 +28,9 @@
 		errorFunction = function(xhRequest, ErrorText, thrownError){
 			console.log('xhRequest: ' + xhRequest.responseText);
 			console.log('ErrorText: ' + ErrorText);
-			console.log("thrownError: "  + thrownError); 
+			console.log("thrownError: "  + thrownError);
+			$.mobile.hidePageLoadingMsg();
+			$('.console').html('Error conecting to webservice');
 			alert('Error conecting to requested web Service ..check log console');
 		}
 		
@@ -238,9 +240,14 @@
 		   init(AjaxEventHelper.getRootURL() + 'events/city');
 		});
 			
-		// try to load webService info when byLocationSearchPage loads
+		// load webService info when byLocationSearchPage loads
 		$('#byLocationSearchPage').live("pageshow", function(){
 			loadCitiesAjax();
+		});
+
+		// load webService info when #byDateSearchPage loads
+		$('#byDateSearchPage').live("pageshow", function(){
+			loadEventsForTodayAjax();
 		});
 
 		$('#loginBtn').click(function() {
@@ -294,10 +301,42 @@
 	}
 	
 	
+	function loadEventsForTodayAjax(){
+		var d = new Date();
+		var curr_date = d.getDate();
+		var curr_month = d.getMonth() +1 ; // 0 based
+		var curr_year = d.getFullYear(); 
+		var date = curr_year  + "/" + curr_month + "/" + curr_date; 
+		var url = AjaxEventHelper.getRootURL() + 'events/date?searchDate=' + date;
+		AjaxEventHelper.createGETRequestAjax(url, function(data){
+			var html = '';
+			
+			//if (!data )
+			// validar se existe events .. se n fazer display ao user
+			
+			$.each(data, function(index, item) {
+				html += '<li id="' + item.city+'"><a href="#eventsByCityPage">' + item.city + '<span class=ui-li-count>' + item.nbrEvents + '</span> </a> </li>';
+				var list = item.eventList;
+				for(var i = 0; i < list.length ; i++) {	
+					var _event = list[i];
+					eventLocal = createEventJSObjectBasedOnJsonAjaxReq(_event);
+					EventListApp.addEvent(eventLocal);
+				}
+			});
+			console.log(html);
+	  		$("#eventsForTodaySearchList").html(html);
+	  		$("#eventsForTodaySearchList").listview('refresh');
+	  		$(".console").html("Data refreshed ..");
+	    });
+		
+		
+	}
+	
+	
 	// Refresh function called whenever the user clicks on refresh button on searchByLocation page
 	// It should be refactored to be more generic (other pages call it too) or we should create other methods for the other pages  
 	function refresh(){
-		$("#console").html("Verifying...");
+		$(".console").html("Verifying...");
 		loadCitiesAjax();
 	}
 
@@ -308,7 +347,7 @@
 	function loadCitiesAjax(){
 
 	    // callback function invocation
-	    $("#console").html("Downloading ws data...");
+	    $(".console").html("Downloading ws data...");
 	
 	    var eventLocal;
 	    var event;
@@ -331,7 +370,7 @@
 			console.log(html);
 	  		$("#locationSearchList").html(html);
 	  		$("#locationSearchList").listview('refresh');
-	  		$("#console").html("Data refreshed ..");
+	  		$(".console").html("Data refreshed ..");
 	    });
 		
 
@@ -659,11 +698,11 @@
 		<div data-role="header">
 			<h1>Events</h1>
 			<a href='javascript:refresh();' data-icon="refresh" id="refresh" 
-					class="ui-btn-right" data-iconpos="notext"></a>
+					class="ui-btn-right" >Refresh</a>
 		</div>
 
 		<div data-role="content">
-			<h2><p id="console"></p></h2>
+			<h4><p class="console"></p></h4>
 			<ul id="locationSearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search locations ..." >
 
 			</ul>
@@ -673,17 +712,17 @@
 			<div data-role=navbar>
 				<ul>
 					<li><a href="#home" data-icon="info">Home</a></li>	
-					<li><a href="#" class="ui-btn-active"  data-icon="grid">Location</a></li>
+					<li><a href="#byLocationSearchPage" class="ui-btn-active"  data-icon="grid">Location</a></li>
 					<li><a href="#byNameSearchPage" data-icon="Name">Name</a></li>
 					<li><a href="#" data-icon="info">Nearby</a></li>
-					<li><a href="#" data-icon="star">Today</a></li>
+					<li><a href="#byDateSearchPage" data-icon="star">Today</a></li>
 				</ul> 
 			</div>
 		</div>
 	</div>
 
 
-	<!-- Genre Search Page -->
+	<!-- location Search Page -->
 	<div data-role="page" id="eventsByCityPage"  data-add-back-btn="true">
 		<div data-role="header">
 			<h1></h1>
@@ -700,10 +739,37 @@
 			<div data-role=navbar>
 				<ul>
 					<li><a href="#home" data-icon="home">Home</a></li>	
-					<li><a href="#" data-icon="grid">Location</a></li>
+					<li><a href="#byLocationSearchPage" data-icon="grid">Location</a></li>
 					<li><a href="#byNameSearchPage" data-icon="Name">Name</a></li>
 					<li><a href="#" data-icon="info">Nearby</a></li>
-					<li><a href="#" data-icon="star">Today</a></li>
+					<li><a href="#byDateSearchPage" data-icon="star">Today</a></li>
+				</ul> 
+			</div>
+		</div>
+	</div>
+
+	<!-- today date Search Page -->
+	<div data-role="page" id="byDateSearchPage"  data-add-back-btn="true">
+		<div data-role="header">
+			<h1></h1>
+			<a href="#settings" data-icon="gear" class="ui-btn-right">Settings</a>
+		</div>
+
+		<div data-role="content">
+			<h4><p class="console"></p></h4>
+			<ul id="eventsForTodaySearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search events ...">
+
+			</ul>
+		</div>
+
+		<div data-role="footer" data-position="fixed">
+			<div data-role=navbar>
+				<ul>
+					<li><a href="#home" data-icon="home">Home</a></li>	
+					<li><a href="#byLocationSearchPage" data-icon="grid">Location</a></li>
+					<li><a href="#byNameSearchPage" data-icon="Name">Name</a></li>
+					<li><a href="#" data-icon="info">Nearby</a></li>
+					<li><a href="#byDateSearchPage" class="ui-btn-active" data-icon="star">Today</a></li>
 				</ul> 
 			</div>
 		</div>
@@ -752,7 +818,7 @@
 				<li><a href="#byLocationSearchPage" data-icon="grid">Location</a></li>
 				<li><a href="#byNameSearchPage" class="ui-btn-active" data-icon="Name">Name</a></li>
 				<li><a href="#" data-icon="home">Nearby</a></li>
-				<li><a href="#" data-icon="star">Today</a></li>
+				<li><a href="#byDateSearchPage" data-icon="star">Today</a></li>
       		</ul> 
 	    </div>
 		</div>

@@ -78,6 +78,11 @@ public class EventsByCityDto {
 				Collections.sort(eventList,Event.Order.ByCity.ascending());
 			else
 				Collections.sort(eventList,Event.Order.ByCity.descending());
+		if(sortBy.equalsIgnoreCase("ByCity"))
+			if(sortMode.equalsIgnoreCase("ASC"))				
+				Collections.sort(eventList,Event.Order.ByStartDate.ascending());
+			else
+				Collections.sort(eventList,Event.Order.ByStartDate.descending());
 		
 	}
 	

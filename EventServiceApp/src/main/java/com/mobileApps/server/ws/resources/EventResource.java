@@ -8,10 +8,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import com.mobileApps.server.ws.service.EventService;
 
@@ -32,15 +30,15 @@ public class EventResource {
 	}
 	
 	
+
 	@GET
-	@Path("/city")
-	@SuppressWarnings("static-access")
+	@Path("/date")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getEventsByCity(){		
+	public Response getEventsForToday( @QueryParam("searchDate") Date date){		
 		
-		return Response.ok(eventService.getAllEvents()).header("Access-Control-Allow-Origin", "*")
-									 .build();
-									 //.header("Content-Type", "application/json")
+		return Response.ok(EventService.getEventsForSpecificDate(date)).header("Access-Control-Allow-Origin", "*")
+				.build();
+		//.header("Content-Type", "application/json")
 	}
 
 	

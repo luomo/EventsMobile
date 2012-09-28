@@ -44,8 +44,16 @@ public class Event implements Serializable {
 				String city_ev_2 = ev_2.getVenue().getLocation().getCity();
 				return city_ev_1.compareTo(city_ev_2);
 			}
+		} ,
+		ByStartDate {
+			@Override
+			public int compare(Event ev_1, Event ev_2) {
+				Date city_ev_1 = ev_1.getStartDate();
+				Date city_ev_2 = ev_2.getStartDate();
+				return city_ev_1.compareTo(city_ev_2);
+			}
 		} ;
-
+		
 		public abstract int compare(Event lhs, Event rhs);
 
 		public Comparator<Event> ascending() {

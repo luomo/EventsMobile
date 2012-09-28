@@ -78,19 +78,6 @@
 		}
 	}(); 
 	
-	function createUserInfoRequest(){
-		var username = $('#userLogin').val();	
-		var password = $('#passLogin').val();
-		// do data validation
-		//"username": wineId == "" ? null : wineId,
-		var json = JSON.stringify({
-			"username": username, 
-			"password": password, 
-			});
-		console.log("json object create: " + json);
-		return json;
-		
-	}
  	
 	
 	// **************************************************************************************************
@@ -123,6 +110,18 @@
 			  		if(event && event.id === eventId) 
 			  			return event;
 				};
+			}, 
+			findEventsInEventListByCity : function (cityId) {
+				console.log("findEventsInEventListByCity: " + cityId);
+				//This should be replaced by cache mechanisms ... until then :)
+				var eventsByCity = new Array();
+				var event;
+				for(i=0;i < list.length; i++){
+					event = list[i];
+			  		if(event && event.venue.location.city === cityId)
+			  			eventsByCity.push(event);
+				}
+				return eventsByCity;
 			}
 		}
 	}(); // for what I read what makes it singleton are these last '()' !?!?? strange .. ah
@@ -245,9 +244,6 @@
 		});
 
 		$('#loginBtn').click(function() {
-			//var userValue = $('#userLogin').val();	
-			//var passValue = $('#passLogin').val();
-			//alert("user: " + userValue + " / password: " + passValue);
 			//event.preventDefault();
 			var url = AjaxEventHelper.getRootURL() + 'users';
 			AjaxEventHelper.createPOSTRequestAjax(url, 
@@ -266,7 +262,8 @@
 		    // fetch the text of li --> to display in the header of next page
 		    //var city = $(this).text();
 		    // invoke function to create/fulfill new page results
-		    loadEventsByCitiesAjax( city );					
+		    //loadEventsByCitiesInMemory( city );
+		    loadEventsByCitiesAjax(city)
 	    });
 
 	});
@@ -275,6 +272,26 @@
 	// ********************************************************************************
 	// ************************ Start of JavaScript functions *************************
 	// ********************************************************************************
+
+	// Create a full Event JavaScript Object based on event object returned by restfull ws
+	function createEventJSObjectBasedOnJsonAjaxReq(eventJson) {
+		var event;
+		event = new EventListApp.Event( eventJson.id, eventJson.title, eventJson.startDate, eventJson.description, eventJson.image, eventJson.attendance,  
+					  					eventJson.price, eventJson.tag, eventJson.owner, eventJson.processDate, eventJson.url,
+				  						new EventListApp.Artist(eventJson.artist.id, eventJson.artist.artist),
+				  						new EventListApp.Venue( eventJson.venue.id, 
+				  												eventJson.venue.name,
+				  						 						new EventListApp.Location(eventJson.venue.location.city,
+			  						 							   						  eventJson.venue.location.country,
+			  						 							   						  eventJson.venue.location.street,
+			  						 							   						  eventJson.venue.location.postalCode,
+			  						 							   						  eventJson.venue.location.latitude,
+			  						 							   						  eventJson.venue.location.longitude  ),
+				  						 eventJson.venue.website,
+				  						 eventJson.venue.phoneNumber,
+				  						 eventJson.venue.image));
+		return event;
+	}
 	
 	
 	// Refresh function called whenever the user clicks on refresh button on searchByLocation page
@@ -293,14 +310,23 @@
 	    // callback function invocation
 	    $("#console").html("Downloading ws data...");
 	
+	    var eventLocal;
+	    var event;
 	    // Create WS url
 	   
 	    // create ws url based on the city id clicked
-	    var urlByCity = AjaxEventHelper.getRootURL() + 'events/location/dto';
+	    var urlByCity = AjaxEventHelper.getRootURL() + 'events/location/country/pt';
+	    // invoke web service
 	    AjaxEventHelper.createGETRequestAjax(urlByCity, function(data){
 			var html = '';
 			$.each(data, function(index, item) {
 				html += '<li id="' + item.city+'"><a href="#eventsByCityPage">' + item.city + '<span class=ui-li-count>' + item.nbrEvents + '</span> </a> </li>';
+				var list = item.eventList;
+				for(var i = 0; i < list.length ; i++) {	
+					var _event = list[i];
+					eventLocal = createEventJSObjectBasedOnJsonAjaxReq(_event);
+					EventListApp.addEvent(eventLocal);
+				}
 			});
 			console.log(html);
 	  		$("#locationSearchList").html(html);
@@ -310,8 +336,42 @@
 		
 
 	}
+
 	
-	
+	// function for creating events by city page	
+	function loadEventsByCitiesInMemory(city) {
+		console.log('city:' + city);
+		// create event var
+		var event;
+		// obtain page reference
+		var $page = $("#eventsByCityPage");
+
+		// get header 
+		$header = $page.children( ":jqmData(role=header)" );
+		// populate header with the name of the city we are selecting
+		$header.find( "h1" ).html( city );
+		
+		// create ws url based on the city id clicked
+	    var url = AjaxEventHelper.getRootURL() + 'events/location/' + city;
+	    var html = '';
+	    var eventListByCity = EventListApp.findEventsInEventListByCity(city);
+	    
+	    for(var i = 0; i < eventListByCity.length ; i++) {		
+	    	var _event = eventListByCity[i];
+	    	html += '<li ><a href="javascript:loadEventById('+ _event.id +  ')"><img alt="coverArt" src="images/mia.png" /><h3>' + _event.title + '</h3>';
+	        html += '<p>' + _event.startDate + '</p>';
+	        html += '<p>' + _event.venue.location.city + '</p>';
+	        html += '</a></li>';
+	        // Create a full Event JavaScript Object based on event object returned by restfull ws
+	        event = createEventJSObjectBasedOnJsonAjaxReq(_event);
+	        console.log(event.toString());
+	        EventListApp.addEvent(event);
+		};
+		console.log(html);
+		$("#eventsByCitySearchList").html(html);
+		$("#eventsByCitySearchList").listview('refresh');  
+	    
+	}
 	
 	// function for creating events by city page	
 	function loadEventsByCitiesAjax(city) {
@@ -327,31 +387,18 @@
 		$header.find( "h1" ).html( city );
 		
 		// create ws url based on the city id clicked
-	    var url = AjaxEventHelper.getRootURL() + 'events/location/' + city;
+	    var url = AjaxEventHelper.getRootURL() + 'events/location/country/pt/city/' + city;
 	    
 		AjaxEventHelper.createGETRequestAjax(url, function(data){
 			
 			var html = '';
-			$.each(data, function (i, item) {
-			       html += '<li ><a href="javascript:loadEventById('+ item.id +  ')"><img alt="coverArt" src="images/mia.png" /><h3>' + item.title + '</h3>';
-			       html += '<p>' + item.startDate + '</p>';
-			       html += '<p>' + item.venue.location.city + '</p>';
+			$.each(data, function (i, _event) {
+			       html += '<li ><a href="javascript:loadEventById('+ _event.id +  ')"><img alt="coverArt" src="images/mia.png" /><h3>' + _event.title + '</h3>';
+			       html += '<p>' + _event.startDate + '</p>';
+			       html += '<p>' + _event.venue.location.city + '</p>';
 			       html += '</a></li>';
 			       // Create a full Event JavaScript Object based on event object returned by restfull ws
-			       event = new EventListApp.Event(item.id, item.title, item.startDate, item.description, item.image, item.attendance,  
-			    		   						  item.price, item.tag, item.owner, item.processDate, item.url,
-			       								  new EventListApp.Artist(item.artist.id, item.artist.artist),
-			       								  new EventListApp.Venue(item.venue.id, 
-			       								  						 item.venue.name,
-			       								  						 new EventListApp.Location(item.venue.location.city,
-		       								  						 							   item.venue.location.country,
-		       								  						 							   item.venue.location.street,
-		       								  						 							   item.venue.location.postalCode,
-		       								  						 							   item.venue.location.latitude,
-		       								  						 							   item.venue.location.longitude  ),
-			       								  						 item.venue.website,
-			       								  						 item.venue.phoneNumber,
-			       								  						 item.venue.image));
+			       event = createEventJSObjectBasedOnJsonAjaxReq(_event);
 			       console.log(event.toString());
 			       EventListApp.addEvent(event);
 			  });
@@ -362,7 +409,6 @@
 		
 		
 	}
-	
 	
 	// utility function that loads event information whenever the user chooses and event - updates the GUI layer then
 	function loadEventById(eventId){
@@ -422,6 +468,20 @@
 		$.mobile.changePage($("#eventDetails"));
 	}
 	
+	
+	function createUserInfoRequest(){
+		var username = $('#userLogin').val();	
+		var password = $('#passLogin').val();
+		// do data validation
+		//"username": wineId == "" ? null : wineId,
+		var json = JSON.stringify({
+			"username": username, 
+			"password": password, 
+			});
+		console.log("json object create: " + json);
+		return json;
+		
+	}
 	
 		
 	// callback function (populates one <li> with the info returned by the webService) 
@@ -576,7 +636,7 @@
 				<p>	<h4>Simple apps to search for fun !!!</h4> </p>
 			</div>
 
-			<ul data-role="listview" >
+			<ul data-role="listview"  data-inset="true">
 				<!-- <li data-role="list-divider" data-theme="c">Event application</li> --> 
 				<li data-icon="false"> <a href="#loginPage" ><img alt="Log in" src="images/login.png" class="ui-li-icon">Log In</a></li>
 				<li data-icon="false"> <a href="#byLocationSearchPage" ><img alt="Events" src="images/_search.png" class="ui-li-icon">Events</a></li>
@@ -604,7 +664,7 @@
 
 		<div data-role="content">
 			<h2><p id="console"></p></h2>
-			<ul id="locationSearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search locations ..." data-autodividers="true">
+			<ul id="locationSearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search locations ..." >
 
 			</ul>
 		</div>

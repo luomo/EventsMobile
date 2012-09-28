@@ -5,6 +5,8 @@ package com.mobileApps.server.ws.domain;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -28,6 +30,35 @@ import com.mobileApps.server.ws.jaxb.adapters.JsonDateAdapter;
 public class Event implements Serializable {
 
 
+	public static enum Order implements Comparator<Event>{
+		ByTitle {
+			@Override
+			public int compare(Event ev_1, Event ev_2) {				
+				return ev_1.getTitle().compareTo(ev_2.getTitle());
+			}
+		} ,
+		ByCity {
+			@Override
+			public int compare(Event ev_1, Event ev_2) {
+				String city_ev_1 = ev_1.getVenue().getLocation().getCity();
+				String city_ev_2 = ev_2.getVenue().getLocation().getCity();
+				return city_ev_1.compareTo(city_ev_2);
+			}
+		} ;
+
+		public abstract int compare(Event lhs, Event rhs);
+
+		public Comparator<Event> ascending() {
+			return this;
+		}
+
+		public Comparator<Event> descending() {
+			return Collections.reverseOrder(this);
+		}
+
+
+	}
+	
 	private Long id;
 
 	private String title;

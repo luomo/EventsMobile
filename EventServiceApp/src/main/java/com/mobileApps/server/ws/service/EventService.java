@@ -2,6 +2,7 @@ package com.mobileApps.server.ws.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +23,7 @@ public class EventService {
 	 
 	
 	static {
-		Location locationBraga = new Location("braga", "pt", "Avenida Liberdade", "4700", 12f, -34.5f);
+		Location locationBraga = new Location("Braga", "pt", "Avenida Liberdade", "4700", 12f, -34.5f);
 		Location locationPorto = new Location("Porto", "pt", "Avenida Liberdade", "4000", 12f, -34.5f);
 		Location locationCoimbra = new Location("Coimbra", "co", "Avenida xpto", "2000", 12f, -34.5f);
 
@@ -34,11 +35,11 @@ public class EventService {
 		Provider provider = new Provider(1l, "lastFm", "www.lastfm.com", new Date().toString());
 		
 		eventList = new ArrayList<Event>();
-		eventList.add(new Event(1l, "Event 1", new Date(), "Music event", null, "12", 12F,"tag", 1L, new Date(), "url", artist, venueBraga));
-		eventList.add(new Event(2l, "Event 2", new Date(), "Other Music event",  null, "12", 10F, "tag", 1L, new Date(),"url", artist, venuePorto));
-		eventList.add(new Event(3l, "Event 3", new Date(), "AnOther Music event", null,"12",10F, "tag", 1L, new Date(),"url", artist, venueCoimbra));
-		eventList.add(new Event(4l, "Event 4", new Date(), "AnOther Music event", null, "12", 10F, "tag", 1L, new Date(),"url", artist, venueBraga));
-		eventList.add(new Event(5l, "Event 5", new Date(), "Music event", null, "12", 10F, "tag",1L, new Date(), "url", artist, venueBraga));
+		eventList.add(new Event(1l, "Music - Event 1", new Date(), "Music event", null, "12", 12F,"tag", 1L, new Date(), "url", artist, venueBraga));
+		eventList.add(new Event(2l, "Festival Event 2", new Date(), "Other Music event",  null, "12", 10F, "tag", 1L, new Date(),"url", artist, venuePorto));
+		eventList.add(new Event(3l, "XX - Event 3", new Date(), "AnOther Music event", null,"12",10F, "tag", 1L, new Date(),"url", artist, venueCoimbra));
+		eventList.add(new Event(4l, "Festival - Event 4", new Date(), "AnOther Music event", null, "12", 10F, "tag", 1L, new Date(),"url", artist, venueBraga));
+		eventList.add(new Event(5l, "Clubbing - 5", new Date(), "Music event", null, "12", 10F, "tag",1L, new Date(), "url", artist, venueBraga));
 		
 		locationList = new ArrayList<Location>();
 		locationList.add(locationBraga);
@@ -77,7 +78,7 @@ public class EventService {
 		return null;
 	}
 
-	public static Collection<EventsByCityDto> getEventsByLocationSimple() {
+	public static Collection<EventsByCityDto> getEventsByLocationSimple(String country, String sortBy, String sortMode) {
 		Map<String, EventsByCityDto> map = new HashMap<String, EventsByCityDto>();
 		Location location = null;
 		String city = null;
@@ -86,13 +87,17 @@ public class EventService {
 			city = location.getCity();
 			EventsByCityDto eventsByCityDto = map.get(city);
 			if(eventsByCityDto == null) {
-				eventsByCityDto = new EventsByCityDto(location.getCity(),1L);
+				eventsByCityDto = new EventsByCityDto(location.getCity());
 				map.put(city, eventsByCityDto);
 			}
-			else
-				eventsByCityDto.addEvents();
+			eventsByCityDto.addEvent(event);
 		}
-		return map.values();
+		List<EventsByCityDto> values = new ArrayList<EventsByCityDto>(map.values());
+		for (EventsByCityDto eventsByCityDto : values) {
+			eventsByCityDto.orderEventsBySortCondition(sortBy,sortMode);
+		}
+		Collections.sort(values, EventsByCityDto.byCityASC);
+		return values;
 	}
 
 

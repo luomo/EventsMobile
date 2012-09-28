@@ -38,6 +38,9 @@
 			}, 
 			createGETRequestAjax : function(url, callbackfuntion){
 				console.log(url);
+				//Starting loading animation        
+				$.mobile.showPageLoadingMsg();
+					
 				$.ajax({
 			        type: 'GET',
 			        url: url,
@@ -49,6 +52,9 @@
 					      alert("page not found");
 					    }
 					}
+			    }).then(function(){
+					//cue the page loader   
+			    	$.mobile.hidePageLoadingMsg();
 			    });
 			},
 			createPOSTRequestAjax : function(url, callbackfuntion, dataToBePosted){
@@ -283,6 +289,7 @@
 	// utility function that loads cities with events and the number of events per city updating the GUI layer then
 	// It is called by refresh function() and when the user opens the search part of the application (search by location) 
 	function loadCitiesAjax(){
+
 	    // callback function invocation
 	    $("#console").html("Downloading ws data...");
 	
@@ -597,7 +604,7 @@
 
 		<div data-role="content">
 			<h2><p id="console"></p></h2>
-			<ul id="locationSearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search locations ...">
+			<ul id="locationSearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search locations ..." data-autodividers="true">
 
 			</ul>
 		</div>

@@ -28,7 +28,9 @@
 		errorFunction = function(xhRequest, ErrorText, thrownError){
 			console.log('xhRequest: ' + xhRequest.responseText);
 			console.log('ErrorText: ' + ErrorText);
-			console.log("thrownError: "  + thrownError); 
+			console.log("thrownError: "  + thrownError);
+			$.mobile.hidePageLoadingMsg();
+			$('.console').html('Error conecting to webservice');
 			alert('Error conecting to requested web Service ..check log console');
 		}
 		
@@ -38,6 +40,9 @@
 			}, 
 			createGETRequestAjax : function(url, callbackfuntion){
 				console.log(url);
+				//Starting loading animation        
+				$.mobile.showPageLoadingMsg();
+					
 				$.ajax({
 			        type: 'GET',
 			        url: url,
@@ -49,6 +54,9 @@
 					      alert("page not found");
 					    }
 					}
+			    }).then(function(){
+					//cue the page loader   
+			    	$.mobile.hidePageLoadingMsg();
 			    });
 			},
 			createPOSTRequestAjax : function(url, callbackfuntion, dataToBePosted){
@@ -72,19 +80,6 @@
 		}
 	}(); 
 	
-	function createUserInfoRequest(){
-		var username = $('#userLogin').val();	
-		var password = $('#passLogin').val();
-		// do data validation
-		//"username": wineId == "" ? null : wineId,
-		var json = JSON.stringify({
-			"username": username, 
-			"password": password, 
-			});
-		console.log("json object create: " + json);
-		return json;
-		
-	}
  	
 	
 	// **************************************************************************************************
@@ -117,6 +112,18 @@
 			  		if(event && event.id === eventId) 
 			  			return event;
 				};
+			}, 
+			findEventsInEventListByCity : function (cityId) {
+				console.log("findEventsInEventListByCity: " + cityId);
+				//This should be replaced by cache mechanisms ... until then :)
+				var eventsByCity = new Array();
+				var event;
+				for(i=0;i < list.length; i++){
+					event = list[i];
+			  		if(event && event.venue.location.city === cityId)
+			  			eventsByCity.push(event);
+				}
+				return eventsByCity;
 			}
 		}
 	}(); // for what I read what makes it singleton are these last '()' !?!?? strange .. ah
@@ -233,15 +240,17 @@
 		   init(AjaxEventHelper.getRootURL() + 'events/city');
 		});
 			
-		// try to load webService info when byLocationSearchPage loads
+		// load webService info when byLocationSearchPage loads
 		$('#byLocationSearchPage').live("pageshow", function(){
 			loadCitiesAjax();
 		});
 
+		// load webService info when #byDateSearchPage loads
+		$('#byDateSearchPage').live("pageshow", function(){
+			loadEventsForTodayAjax();
+		});
+
 		$('#loginBtn').click(function() {
-			//var userValue = $('#userLogin').val();	
-			//var passValue = $('#passLogin').val();
-			//alert("user: " + userValue + " / password: " + passValue);
 			//event.preventDefault();
 			var url = AjaxEventHelper.getRootURL() + 'users';
 			AjaxEventHelper.createPOSTRequestAjax(url, 
@@ -260,7 +269,8 @@
 		    // fetch the text of li --> to display in the header of next page
 		    //var city = $(this).text();
 		    // invoke function to create/fulfill new page results
-		    loadEventsByCitiesAjax( city );					
+		    //loadEventsByCitiesInMemory( city );
+		    loadEventsByCitiesAjax(city)
 	    });
 
 	});
@@ -269,12 +279,76 @@
 	// ********************************************************************************
 	// ************************ Start of JavaScript functions *************************
 	// ********************************************************************************
+
+	// Create a full Event JavaScript Object based on event object returned by restfull ws
+	function createEventJSObjectBasedOnJsonAjaxReq(eventJson) {
+		var event;
+		event = new EventListApp.Event( eventJson.id, eventJson.title, eventJson.startDate, eventJson.description, eventJson.image, eventJson.attendance,  
+					  					eventJson.price, eventJson.tag, eventJson.owner, eventJson.processDate, eventJson.url,
+				  						new EventListApp.Artist(eventJson.artist.id, eventJson.artist.artist),
+				  						new EventListApp.Venue( eventJson.venue.id, 
+				  												eventJson.venue.name,
+				  						 						new EventListApp.Location(eventJson.venue.location.city,
+			  						 							   						  eventJson.venue.location.country,
+			  						 							   						  eventJson.venue.location.street,
+			  						 							   						  eventJson.venue.location.postalCode,
+			  						 							   						  eventJson.venue.location.latitude,
+			  						 							   						  eventJson.venue.location.longitude  ),
+				  						 eventJson.venue.website,
+				  						 eventJson.venue.phoneNumber,
+				  						 eventJson.venue.image));
+		return event;
+	}
 	
 	
+	// Refresh function called whenever the user clicks on refresh button on searchByDate page
+	// It should be refactored to be more generic (other pages call it too) or we should create other methods for the other pages  
+	function refreshByDate(){
+		$(".console").html("Verifying...");
+		loadEventsForTodayAjax();
+	}
+	
+	
+	function loadEventsForTodayAjax(){
+		var d = new Date();
+		var curr_date = d.getDate();
+		var curr_month = d.getMonth() +1 ; // 0 based
+		var curr_year = d.getFullYear(); 
+		var date = curr_year  + "/" + curr_month + "/" + curr_date; 
+		var url = AjaxEventHelper.getRootURL() + 'events/date?searchDate=' + date;
+		
+		AjaxEventHelper.createGETRequestAjax(url, function(data){
+			var html = '';
+			
+			//if (!data )
+			// validar se existe events .. se n fazer display ao user
+			
+			$.each(data, function(index, _eventDto) {
+				html += '<li data-role="list-divider">' + _eventDto.city + '</li>';
+				var list = _eventDto.eventList;
+				for(var i = 0; i < list.length ; i++) {	
+					var _event = list[i];
+					// Create html row for displaying event
+					html += createHtmlEventRow(_event);
+					eventLocal = createEventJSObjectBasedOnJsonAjaxReq(_event);
+					EventListApp.addEvent(eventLocal);
+				}
+			});
+			console.log(html);
+	  		$("#eventsForTodaySearchList").html(html);
+	  		$("#eventsForTodaySearchList").listview('refresh');
+	  		$(".console").html("Data refreshed ..");
+	    });
+		
+	}
+	
+	
+
+
 	// Refresh function called whenever the user clicks on refresh button on searchByLocation page
 	// It should be refactored to be more generic (other pages call it too) or we should create other methods for the other pages  
-	function refresh(){
-		$("#console").html("Verifying...");
+	function refreshByLocation(){
+		$(".console").html("Verifying...");
 		loadCitiesAjax();
 	}
 
@@ -283,28 +357,70 @@
 	// utility function that loads cities with events and the number of events per city updating the GUI layer then
 	// It is called by refresh function() and when the user opens the search part of the application (search by location) 
 	function loadCitiesAjax(){
+
 	    // callback function invocation
-	    $("#console").html("Downloading ws data...");
+	    $(".console").html("Downloading ws data...");
 	
+	    var eventLocal;
+	    var event;
 	    // Create WS url
 	   
 	    // create ws url based on the city id clicked
-	    var urlByCity = AjaxEventHelper.getRootURL() + 'events/location/dto';
+	    var urlByCity = AjaxEventHelper.getRootURL() + 'events/location/country/pt';
+	    // invoke web service
 	    AjaxEventHelper.createGETRequestAjax(urlByCity, function(data){
 			var html = '';
 			$.each(data, function(index, item) {
 				html += '<li id="' + item.city+'"><a href="#eventsByCityPage">' + item.city + '<span class=ui-li-count>' + item.nbrEvents + '</span> </a> </li>';
+				var list = item.eventList;
+				for(var i = 0; i < list.length ; i++) {	
+					var _event = list[i];
+					eventLocal = createEventJSObjectBasedOnJsonAjaxReq(_event);
+					EventListApp.addEvent(eventLocal);
+				}
 			});
 			console.log(html);
 	  		$("#locationSearchList").html(html);
 	  		$("#locationSearchList").listview('refresh');
-	  		$("#console").html("Data refreshed ..");
+	  		$(".console").html("Data refreshed ..");
 	    });
 		
 
 	}
+
 	
-	
+	// function for creating events by city page	
+	function loadEventsByCitiesInMemory(city) {
+		console.log('city:' + city);
+		// create event var
+		var event;
+		// obtain page reference
+		var $page = $("#eventsByCityPage");
+
+		// get header 
+		$header = $page.children( ":jqmData(role=header)" );
+		// populate header with the name of the city we are selecting
+		$header.find( "h1" ).html( city );
+		
+		// create ws url based on the city id clicked
+	    var url = AjaxEventHelper.getRootURL() + 'events/location/' + city;
+	    var html = '';
+	    var eventListByCity = EventListApp.findEventsInEventListByCity(city);
+	    
+	    for(var i = 0; i < eventListByCity.length ; i++) {		
+	    	var _event = eventListByCity[i];
+	    	// Create html row for displaying event
+	    	html += createHtmlEventRow(_event);
+	        // Create a full Event JavaScript Object based on event object returned by restfull ws
+	        event = createEventJSObjectBasedOnJsonAjaxReq(_event);
+	        console.log(event.toString());
+	        EventListApp.addEvent(event);
+		};
+		console.log(html);
+		$("#eventsByCitySearchList").html(html);
+		$("#eventsByCitySearchList").listview('refresh');  
+	    
+	}
 	
 	// function for creating events by city page	
 	function loadEventsByCitiesAjax(city) {
@@ -320,33 +436,18 @@
 		$header.find( "h1" ).html( city );
 		
 		// create ws url based on the city id clicked
-	    var url = AjaxEventHelper.getRootURL() + 'events/location/' + city;
+	    var url = AjaxEventHelper.getRootURL() + 'events/location/country/pt/city/' + city;
 	    
 		AjaxEventHelper.createGETRequestAjax(url, function(data){
 			
 			var html = '';
-			$.each(data, function (i, item) {
-			       html += '<li ><a href="javascript:loadEventById('+ item.id +  ')"><img alt="coverArt" src="images/mia.png" /><h3>' + item.title + '</h3>';
-			       html += '<p>' + item.startDate + '</p>';
-			       html += '<p>' + item.venue.location.city + '</p>';
-			       html += '</a></li>';
-			       // Create a full Event JavaScript Object based on event object returned by restfull ws
-			       event = new EventListApp.Event(item.id, item.title, item.startDate, item.description, item.image, item.attendance,  
-			    		   						  item.price, item.tag, item.owner, item.processDate, item.url,
-			       								  new EventListApp.Artist(item.artist.id, item.artist.artist),
-			       								  new EventListApp.Venue(item.venue.id, 
-			       								  						 item.venue.name,
-			       								  						 new EventListApp.Location(item.venue.location.city,
-		       								  						 							   item.venue.location.country,
-		       								  						 							   item.venue.location.street,
-		       								  						 							   item.venue.location.postalCode,
-		       								  						 							   item.venue.location.latitude,
-		       								  						 							   item.venue.location.longitude  ),
-			       								  						 item.venue.website,
-			       								  						 item.venue.phoneNumber,
-			       								  						 item.venue.image));
-			       console.log(event.toString());
-			       EventListApp.addEvent(event);
+			$.each(data, function (i, _event) {
+				// Create html row for displaying event
+				html += createHtmlEventRow(_event);
+		        // Create a full Event JavaScript Object based on event object returned by restfull ws
+		        event = createEventJSObjectBasedOnJsonAjaxReq(_event);
+		        console.log(event.toString());
+		        EventListApp.addEvent(event);
 			  });
 			  console.log(html);
 			  $("#eventsByCitySearchList").html(html);
@@ -356,6 +457,14 @@
 		
 	}
 	
+	function createHtmlEventRow(_event) {
+		var html = '';
+		html += '<li ><a href="javascript:loadEventById('+ _event.id +  ')"><img alt="coverArt" src="images/mia.png" /><h3>' + _event.title + '</h3>';
+	    html += '<p>' + _event.startDate + '</p>';
+	    html += '<p>' + _event.venue.location.city + '</p>';
+	    html += '</a></li>';
+	    return html;
+	}
 	
 	// utility function that loads event information whenever the user chooses and event - updates the GUI layer then
 	function loadEventById(eventId){
@@ -415,6 +524,20 @@
 		$.mobile.changePage($("#eventDetails"));
 	}
 	
+	
+	function createUserInfoRequest(){
+		var username = $('#userLogin').val();	
+		var password = $('#passLogin').val();
+		// do data validation
+		//"username": wineId == "" ? null : wineId,
+		var json = JSON.stringify({
+			"username": username, 
+			"password": password, 
+			});
+		console.log("json object create: " + json);
+		return json;
+		
+	}
 	
 		
 	// callback function (populates one <li> with the info returned by the webService) 
@@ -556,7 +679,6 @@
 	<!-- Home Page -->
 	<div data-role="page" id="home" data-theme="c">
 		<div data-role="header">
-			
 			<h1>						
 			<img alt="Events" src="images/eventsLogo_small_.png" class="logo">
 			</h1>
@@ -569,7 +691,7 @@
 				<p>	<h4>Simple apps to search for fun !!!</h4> </p>
 			</div>
 
-			<ul data-role="listview" >
+			<ul data-role="listview"  data-inset="true">
 				<!-- <li data-role="list-divider" data-theme="c">Event application</li> --> 
 				<li data-icon="false"> <a href="#loginPage" ><img alt="Log in" src="images/login.png" class="ui-li-icon">Log In</a></li>
 				<li data-icon="false"> <a href="#byLocationSearchPage" ><img alt="Events" src="images/_search.png" class="ui-li-icon">Events</a></li>
@@ -591,13 +713,13 @@
 	<div data-role="page" id="byLocationSearchPage"  data-add-back-btn="true">
 		<div data-role="header">
 			<h1>Events</h1>
-			<a href='javascript:refresh();' data-icon="refresh" id="refresh" 
-					class="ui-btn-right" data-iconpos="notext"></a>
+			<a href='javascript:refreshByLocation();' data-icon="refresh" id="refresh" 
+					class="ui-btn-right" >Refresh</a>
 		</div>
 
 		<div data-role="content">
-			<h2><p id="console"></p></h2>
-			<ul id="locationSearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search locations ...">
+			<h6><p class="console"></p></h6>
+			<ul id="locationSearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search locations ..." >
 
 			</ul>
 		</div>
@@ -606,21 +728,22 @@
 			<div data-role=navbar>
 				<ul>
 					<li><a href="#home" data-icon="info">Home</a></li>	
-					<li><a href="#" class="ui-btn-active"  data-icon="grid">Location</a></li>
+					<li><a href="#byLocationSearchPage" class="ui-btn-active"  data-icon="grid">Location</a></li>
 					<li><a href="#byNameSearchPage" data-icon="Name">Name</a></li>
 					<li><a href="#" data-icon="info">Nearby</a></li>
-					<li><a href="#" data-icon="star">Today</a></li>
+					<li><a href="#byDateSearchPage" data-icon="star">Today</a></li>
 				</ul> 
 			</div>
 		</div>
 	</div>
 
 
-	<!-- Genre Search Page -->
+	<!-- location Search Page -->
 	<div data-role="page" id="eventsByCityPage"  data-add-back-btn="true">
 		<div data-role="header">
 			<h1></h1>
-			<a href="#settings" data-icon="gear" class="ui-btn-right">Settings</a>
+			<a href='' data-icon="refresh" id="refresh" 
+					class="ui-btn-right" >Refresh</a>
 		</div>
 
 		<div data-role="content">
@@ -633,10 +756,38 @@
 			<div data-role=navbar>
 				<ul>
 					<li><a href="#home" data-icon="home">Home</a></li>	
-					<li><a href="#" data-icon="grid">Location</a></li>
+					<li><a href="#byLocationSearchPage" data-icon="grid">Location</a></li>
 					<li><a href="#byNameSearchPage" data-icon="Name">Name</a></li>
 					<li><a href="#" data-icon="info">Nearby</a></li>
-					<li><a href="#" data-icon="star">Today</a></li>
+					<li><a href="#byDateSearchPage" data-icon="star">Today</a></li>
+				</ul> 
+			</div>
+		</div>
+	</div>
+
+	<!-- today date Search Page -->
+	<div data-role="page" id="byDateSearchPage"  data-add-back-btn="true">
+		<div data-role="header">
+			<h1>Events</h1>
+			<a href='javascript:refreshByDate();' data-icon="refresh" id="refresh" 
+					class="ui-btn-right" >Refresh</a>
+		</div>
+
+		<div data-role="content">
+			<h6><p class="console"></p></h6>
+			<ul id="eventsForTodaySearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search events ...">
+
+			</ul>
+		</div>
+
+		<div data-role="footer" data-position="fixed">
+			<div data-role=navbar>
+				<ul>
+					<li><a href="#home" data-icon="home">Home</a></li>	
+					<li><a href="#byLocationSearchPage" data-icon="grid">Location</a></li>
+					<li><a href="#byNameSearchPage" data-icon="Name">Name</a></li>
+					<li><a href="#" data-icon="info">Nearby</a></li>
+					<li><a href="#byDateSearchPage" class="ui-btn-active" data-icon="star">Today</a></li>
 				</ul> 
 			</div>
 		</div>
@@ -648,7 +799,8 @@
 	<div data-role="page" id="byNameSearchPage"  data-add-back-btn="true">
 		<div data-role="header">
 			<h1>Events</h1>
-			<a href="#settings" data-icon="gear" class="ui-btn-right">Settings</a>
+			<a href='' data-icon="refresh" id="refresh" 
+					class="ui-btn-right" >Refresh</a>
 		</div>
 
 		<div data-role="content" >
@@ -685,7 +837,7 @@
 				<li><a href="#byLocationSearchPage" data-icon="grid">Location</a></li>
 				<li><a href="#byNameSearchPage" class="ui-btn-active" data-icon="Name">Name</a></li>
 				<li><a href="#" data-icon="home">Nearby</a></li>
-				<li><a href="#" data-icon="star">Today</a></li>
+				<li><a href="#byDateSearchPage" data-icon="star">Today</a></li>
       		</ul> 
 	    </div>
 		</div>
@@ -697,7 +849,7 @@
 	<div data-role="page" id="settings" data-add-back-btn="true">
 		<div data-role="header">
 			<h1>Events</h1>
-			<a href="#settings" data-icon="gear" class="ui-btn-right">Settings</a>
+			
 		</div>
 
 		<div data-role="content">

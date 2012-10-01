@@ -10,10 +10,22 @@
 <link rel="stylesheet" href="css/themes/events-theme.css" /> 
 <link rel="stylesheet" href="jquery.mobile/jquery.mobile-1.1.1.min.css" />
 
+<link rel="stylesheet" type="text/css" href="css/datebox/jqm-datebox.min.css" /> 
+
 <script src="jquery.mobile/jquery-1.7.2.min"></script>
 <script src="custom/jQueryMobile/jQuery-mobile-init.js"></script>
 <script src="jquery.mobile/jquery.mobile-1.1.1.min.js"></script>
 <script type="text/javascript" charset="utf-8" src="cordova-2.0.0.js"></script>
+
+<script type="text/javascript" src="js/datebox/jqm-datebox.core.min.js"></script>
+<script type="text/javascript" src="js/datebox/jqm-datebox.mode.calbox.min.js"></script>
+<script type="text/javascript" src="js/datebox/jqm-datebox.mode.custombox.min.js"></script>
+<script type="text/javascript" src="js/datebox/jqm-datebox.mode.customflip.min.js"></script>
+<script type="text/javascript" src="js/datebox/jqm-datebox.mode.datebox.min.js"></script>
+<script type="text/javascript" src="js/datebox/jqm-datebox.mode.durationbox.min.js"></script>
+<script type="text/javascript" src="js/datebox/jqm-datebox.mode.flipbox.min.js"></script>
+<script type="text/javascript" src="js/datebox/jqm-datebox.mode.slidebox.min.js"></script>
+<script type="text/javascript" src="js/datebox/jquery.mobile.datebox.i18n.en_US.utf8.js"></script>
 
 
 <script type="text/javascript">
@@ -656,7 +668,17 @@
 		--float : left;
 		--padding-right: 50px;
 	} 
-
+	
+	.localnav {
+		margin:0 0 20px 0;
+	}
+	.ui-mobile-viewport .localnav li {
+		--float:left;
+	}
+	.localnav .ui-btn-inner { 
+		padding: .6em 10px; 
+		font-size:80%; 
+	}
 
 </style>
 
@@ -679,6 +701,7 @@
 	<!-- Home Page -->
 	<div data-role="page" id="home" data-theme="c">
 		<div data-role="header">
+			
 			<h1>						
 			<img alt="Events" src="images/eventsLogo_small_.png" class="logo">
 			</h1>
@@ -695,6 +718,7 @@
 				<!-- <li data-role="list-divider" data-theme="c">Event application</li> --> 
 				<li data-icon="false"> <a href="#loginPage" ><img alt="Log in" src="images/login.png" class="ui-li-icon">Log In</a></li>
 				<li data-icon="false"> <a href="#byLocationSearchPage" ><img alt="Events" src="images/_search.png" class="ui-li-icon">Events</a></li>
+				<li data-icon="false"> <a href="#personalPage" ><img alt="Events" src="images/_search.png" class="ui-li-icon">Personal area</a></li>
 				<li data-icon="false"> <a href="#genreSearchPage" ><img alt="Sign Up" src="images/add_user.png" class="ui-li-icon">Sign Up</a></li>
 				<li data-icon="false"> <a href="#eventDetails" ><img alt="About" src="images/about.png" class="ui-li-icon">About</a></li>
 				<li data-icon="false"> <a href="feedback.html" data-rel="dialog"><img alt="Feedback" src="images/feedback.png" class="ui-li-icon">Feedback</a></li>
@@ -706,7 +730,29 @@
 		</div>
 	</div>
 
-	
+	<!-- personal Page -->
+	<div data-role="page" id="personalPage" data-theme="c">
+		<div data-role="header">
+			
+			<h1>						
+			<img alt="Events" src="images/eventsLogo_small_.png" class="logo">
+			</h1>
+			<a href="#settings" data-icon="gear" class="ui-btn-right">Settings</a>
+		</div>
+
+		<div data-role="content" >
+
+			<ul data-role="listview" >
+				<!-- <li data-role="list-divider" data-theme="c">Event application</li> --> 
+				<li > <a href="#loginPage" ><img alt="Log in" src="images/_search.png" class="ui-li-icon">Edit Events</a></li>
+				<li > <a href="#createEventPage" ><img alt="Events" src="images/add_user.png" class="ui-li-icon">Create Event</a></li>
+			</ul>
+		</div>
+		
+		<div data-role="footer" data-position="fixed">
+			<h5>@Mobile Applications</h5>
+		</div>
+	</div>
 	
 	
 	<!-- Genre Search Page -->
@@ -882,6 +928,63 @@
 			   <div data-role="fieldcontain">
 				 <label for="passLogin">Password:</label>
 				 <input type="password" name="password" id="passLogin" value="" required="true" />
+			   </div>
+			   
+			   <input id="loginBtn" type="submit" value="Login" data-theme="a">
+			   <a href="#home" data-role="button">Cancel</a>
+			 
+			 </form>
+			 <div id="consoleLoginPage"></div>
+		</div>
+
+		<div data-role="footer">
+			<h4>@Mobile Applications</h4>
+		</div>
+
+
+	</div>
+
+	<div data-role="page" id="createEventPage" data-add-back-btn="true">
+
+		<div data-role="header">
+			<h1>Events</h1>
+		</div>
+
+		<div data-role="content" >
+			
+			<form id="createForm" method="post" data-transition="none">
+
+				<ul data-role="controlgroup" data-type="horizontal" class="localnav" data-mini="true">
+					<li><a href="index.html" data-role="button" data-transition="fade" class="ui-btn-active">Basics</a></li>
+					<li><a href="options.html" data-role="button" data-transition="fade">Options</a></li>
+					<li><a href="methods.html" data-role="button" data-transition="fade">Methods</a></li>
+					<li><a href="events.html" data-role="button" data-transition="fade">Events</a></li>
+				</ul>
+
+			   <div data-role="fieldcontain">
+				 <label for="title">Title:</label>
+				 <input type="text" name="title" id="title" value="" required="true" />
+			   </div>
+
+			   <div data-role="fieldcontain">
+				 <label for="startDate">Date:</label>
+				 <input name="startDate" id="startDate" type="date" data-role="datebox" data-options='{"mode": "calbox"}'>
+	
+			   </div>
+
+			   <div data-role="fieldcontain">
+				 <label for="startTime">Start Time:</label>
+				 <input name="startTime" id="startTime" type="date" data-role="datebox" data-options='{"mode": "timebox", "overrideTimeFormat": 24}'>
+			   </div>
+			   
+			   <div data-role="fieldcontain">
+				 <label for="title">Artist:</label>
+				 <input type="text" name="artist" id="artist" value="" required="true" />
+			   </div>
+			   
+			   <div data-role="fieldcontain">
+				 <label for="price">Price:</label>
+				 <input type="text" name="price" id="price" value="" required="true" />
 			   </div>
 			   
 			   <input id="loginBtn" type="submit" value="Login" data-theme="a">

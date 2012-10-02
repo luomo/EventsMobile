@@ -159,6 +159,15 @@ public class EventService {
 		return id;
 	}
 
+	public static List<Event> getEventsByUserId(Long userId) {
+		List<Event> res = new ArrayList<Event>();
+		for (Event event : eventList) {
+			if(event.getOwner().equals(userId))
+				res.add(event);
+		}
+		return res;
+	}
+
 
 	
 }

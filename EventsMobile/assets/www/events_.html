@@ -263,6 +263,11 @@
 		$('#byDateSearchPage').live("pageshow", function(){
 			loadEventsForTodayAjax();
 		});
+		
+		// load webService info when #byDateSearchPage loads
+		$('#byUserSearchPage').live("pageshow", function(){
+			loadEventsForUserAjax();
+		});
 
 		$('#loginBtn').click(function() {
 			//event.preventDefault();
@@ -306,6 +311,23 @@
 	    	// collapsable other panels
 	    	$("#evColapInfo, #vnColapInfo, #arColapInfo ").trigger('collapse');
 	    });
+
+	    // code to execute when user clicks in add event button
+	    /*
+	    $('#evBasicColapInfo').click( function(){
+	    	alert("dfgdfg");
+	    	$("#evColapInfo, #vnColapInfo, #arColapInfo ").trigger('collapse');
+	    });
+	    $('#evColapInfo').click( function(){
+	    	$("#evBasicColapInfo, #vnColapInfo, #arColapInfo ").trigger('collapse');
+	    });
+	    $('#vnColapInfo ').click( function(){
+	    	$("#evColapInfo, #evBasicColapInfo, #arColapInfo ").trigger('collapse');
+	    });
+	    $('#arColapInfo').click( function(){
+	    	$("#evColapInfo, #vnColapInfo, #evBasicColapInfo ").trigger('collapse');
+	    });
+	    */
 
 	  
 		// Validation configuration for createEventForm
@@ -446,6 +468,30 @@
 		loadEventsForTodayAjax();
 	}
 	
+	function loadEventsForUserAjax(){
+		
+		var url = AjaxEventHelper.getRootURL() + 'events/user/' + 0 ; // it should be the user id already logged in. We are creating events with owner == 0
+		AjaxEventHelper.createGETRequestAjax(url, function(data){
+			var html = '';
+			
+			//if (!data )
+			// validar se existe events .. se n fazer display ao user
+			
+			$.each(data, function(index, _event) {
+
+				// Create html row for displaying event
+				html += createHtmlEventRow(_event);
+				eventLocal = createEventJSObjectBasedOnJsonAjaxReq(_event);
+				EventListApp.addEvent(eventLocal);
+
+			});
+			console.log(html);
+	  		$("#eventsForUserSearchList").html(html);
+	  		$("#eventsForUserSearchList").listview('refresh');
+	  		$(".console").html("Data refreshed ..");
+	    });
+		
+	}
 	
 	function loadEventsForTodayAjax(){
 		var d = new Date();
@@ -866,7 +912,7 @@
 				<!-- <li data-role="list-divider" data-theme="c">Event application</li> --> 
 				<li data-icon="false"> <a href="#loginPage" ><img alt="Log in" src="images/login.png" class="ui-li-icon">Log In</a></li>
 				<li data-icon="false"> <a href="#byLocationSearchPage" ><img alt="Events" src="images/_search.png" class="ui-li-icon">Events</a></li>
-				<li data-icon="false"> <a href="#personalPage" ><img alt="Events" src="images/_search.png" class="ui-li-icon">Personal area</a></li>
+				<li data-icon="false"> <a href="#byUserSearchPage" ><img alt="Events" src="images/_search.png" class="ui-li-icon">Personal area</a></li>
 				<li data-icon="false"> <a href="#genreSearchPage" ><img alt="Sign Up" src="images/add_user.png" class="ui-li-icon">Sign Up</a></li>
 				<li data-icon="false"> <a href="#eventDetails" ><img alt="About" src="images/about.png" class="ui-li-icon">About</a></li>
 				<li data-icon="false"> <a href="feedback.html" data-rel="dialog"><img alt="Feedback" src="images/feedback.png" class="ui-li-icon">Feedback</a></li>
@@ -879,8 +925,9 @@
 	</div>
 
 	<!-- personal Page -->
-	<div data-role="page" id="personalPage" data-theme="c">
+	<div data-role="page" id="byUserSearchPage" data-theme="c">
 		<div data-role="header">
+			
 			
 			<h1>						
 			<img alt="Events" src="images/eventsLogo_small_.png" class="logo">
@@ -889,8 +936,8 @@
 		</div>
 
 		<div data-role="content" >
-
-			<ul data-role="listview" data-filter="true" data-filter-placeholder="Search Personal Events ..." >
+			<h6><p class="console"></p></h6>
+			<ul id="eventsForUserSearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search Personal Events ..." >
 
 			</ul>
 		</div>
@@ -1128,10 +1175,7 @@
 					 	<label for="evDescr">Description:</label>
 					 	<input type="text" name="evDescr" id="evDescr" value=""/>
 				   	</div>	
-				   	<div data-role="fieldcontain">
-					 	<label for="evPrice">Price:</label>
-					 	<input type="text" name="evPrice" id="evPrice" value="" />
-				   	</div>
+
 				   	<div data-role="fieldcontain">
 					 	<label for="evTags">Tags: (separated with ;)</label>
 					 	<input type="text" name="evTags" id="evTags" value="" />
@@ -1184,7 +1228,7 @@
 				</div>		   
 	 
 		   		<input class="submit" type="submit" value="Submit" data-theme="a"/>
-		   		<a href="#personalPage" data-role="button">Cancel</a>
+		   		<a href="#byUserSearchPage" data-role="button">Cancel</a>
 	 
 	 
 			 </form>

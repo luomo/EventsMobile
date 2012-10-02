@@ -59,6 +59,16 @@ public class EventResource {
 		return Response.ok(eventService.getEventsById(id)).header("Access-Control-Allow-Origin", "*")
 				.build();
 	}
+
+	@GET
+	@Path("/user/{userId}")
+	@Produces({ MediaType.APPLICATION_JSON })
+	@SuppressWarnings("static-access")
+	public Response getEventsByUserId(@PathParam("userId") Long id){
+		
+		return Response.ok(EventService.getEventsByUserId(id)).header("Access-Control-Allow-Origin", "*")
+				.build();
+	}
 	
 	
 

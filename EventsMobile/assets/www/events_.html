@@ -27,6 +27,8 @@
 <script type="text/javascript" src="js/datebox/jqm-datebox.mode.slidebox.min.js"></script>
 <script type="text/javascript" src="js/datebox/jquery.mobile.datebox.i18n.en_US.utf8.js"></script>
 
+<script type="text/javascript" src="js/validate/jquery.validate.min.js"></script>
+
 
 <script type="text/javascript">
  
@@ -294,7 +296,7 @@
 		
 	    showEventTab();
 	    
-	    
+	    /*
 	    $('#evSubmitBtn').click(function() {
 	    	var url = AjaxEventHelper.getRootURL() + 'events';
 			AjaxEventHelper.createPOSTRequestAjax(url, 
@@ -304,9 +306,82 @@
 												  createEventRegisterRequest());
 	    });
 		
+	     */
+ 
+	        
+	   $(document).on('pageshow', 'div:jqmData(role="dialog")', function(event){
+		   var today = new Date();
+		  var todayStr = today.getDate() +"/"+(today.getMonth()+1)+"/"+ today.getFullYear();
+	      $('#evStartDate').trigger('datebox', {'method':'set', 'value':todayStr});
+	   });
+	        
+	        
+	    $('#addEventBtn').click( function(){
+	    	resetEventCreationFields();
+	    });
+	     
+
+	    $("#createForm").validate({
+	    
+		    // 1. prepare the validation rules and messages.
+	        rules : {
+	    		evTitle: {  
+	               	required: true,
+	               	minlength: 2
+	            }, 
+	            vnName: {
+	            	required: true,
+	            }
+	        },
+	        messages : {
+	        	evTitle: {
+	                required: "Event Title is required",
+	                minlength: "Event Title needs to be at least length 2"
+	            },
+	        	vnName: {
+	            	required: "Venue Title is required"
+	            }
+	        },
+	        
+	     	// the errorPlacement has to take the table layout into account
+	     	/*
+			errorPlacement: function(error, element) {
+				alert("error: " + error);
+			},*/
+			// specifying a submitHandler prevents the default submit, good for the demo
+			submitHandler: function() {
+				alert("submitted!");
+				var url = AjaxEventHelper.getRootURL() + 'events';
+				AjaxEventHelper.createPOSTRequestAjax(url, 
+													  function(data){
+															$('#consoleLoginPage').append("dfsdfsd").append(data);
+														
+															//$.mobile.changePage($("#personalPage"));
+															$("#createEventPage").dialog('close');
+													  }, 
+													  createEventRegisterRequest());
+			},
+			// set this class to error-labels to indicate valid fields
+			success: function(label) {
+				
+				label.html("&nbsp;").addClass("checked");
+			}
+ 
+	    });
+	    
+	    
 	    //$(":jqmData(role=datebox)").css({"width":"60%"});
 	    //$(":jqmData(role=datebox)").parent("div").css({"display":"inline-block","width":"60%"});
 	});
+	
+	function resetEventCreationFields(){
+		//var validator = $("#createForm").validate();
+		//validator.resetForm();
+		//reset previous values
+		$('#createForm')[0].reset();
+		//document.getElementById('createForm').reset();
+		$('#eaEventBtn').addClass('ui-btn-active');
+	} 
 	
 	
 	function createEventRegisterRequest(){
@@ -318,7 +393,7 @@
 		var evTags = $('#evTags').val();
 		var evUrl = $('#evUrl').val();
 		
-		var vnName = $('#vnN$(e').val();
+		var vnName = $('#vnName(e').val();
 		var vnUrl = $('#vnUrl').val();
 		var vnPhone = $('#vnPhone').val();
 		var veLocCountry = $('#veLocCountry').val();
@@ -755,6 +830,26 @@
 		padding: .6em 10px; 
 		font-size:80%; 
 	}
+	
+	label.error {
+    color: red;
+    font-size: 16px;
+    font-weight: normal;
+    line-height: 1.4;
+    margin-top: 0.5em;
+    width: 100%;
+    float: none;
+}
+
+@media screen and (orientation: portrait){
+    label.error { margin-left: 0; display: block; }
+}
+
+@media screen and (orientation: landscape){
+    label.error { display: inline-block; margin-left: 22%; }
+}
+
+em { color: red; font-weight: bold; padding-right: .25em; }
 
 </style>
 
@@ -813,7 +908,7 @@
 			<h1>						
 			<img alt="Events" src="images/eventsLogo_small_.png" class="logo">
 			</h1>
-			<a href="#createEventPage" data-rel="dialog" data-icon="plus" class="ui-btn-right">Add</a>
+			<a id="addEventBtn" href="#createEventPage" data-rel="dialog" data-icon="plus" class="ui-btn-right">Add</a>
 		</div>
 
 		<div data-role="content" >
@@ -1064,7 +1159,8 @@
 					 <input type="url" name="evUrl" id="evUrl" value="" />
 				   </div>
 				   
-				    <input id="evSubmitBtn" type="submit" value="Create event" data-theme="a">
+			   		<a id="evSubmitBtn" href="#personalPage" data-role="button" data-theme="a">Create Event</a>
+			   		<input class="submit" type="submit" value="Submit"/>
 			   		<a href="#home" data-role="button">Cancel</a>
 			   	</div>
 
@@ -1142,7 +1238,7 @@
 			   </div>
 			   
 			   <input id="crLocatDetails" type="submit" value="OK" data-theme="a">
-			   <a href="#createEventPage" data-role="button">Cancel</a>
+			   <a id="crLocatCancelBtn" href="#createEventPage" data-role="button">Cancel</a>
 			 
 			 <div id="consoleLoginPage"></div>
 		</div>

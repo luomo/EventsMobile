@@ -233,7 +233,7 @@
 	// *************************************************************************
 	// ************************ Start of jQuery code ***************************
 	// *************************************************************************
-
+	
 	$(function(){
 		// try to sinalize in the console some events that are fired --- see 181 pro jquery mobile
 		$( "#home" ).live( " pagebeforechange pagebeforeload pagebeforecreate pagecreate", function(e, data){
@@ -287,42 +287,29 @@
 		    loadEventsByCitiesAjax(city)
 	    });
 
-	    $('#eaVenueBtn').click(function() {
-	    	showVenueTab();	
-	    });
-	    $('#eaEventBtn').click(function() {
-	    	showEventTab();	
-	    });
-		
-	    showEventTab();
-	    
-	    /*
-	    $('#evSubmitBtn').click(function() {
-	    	var url = AjaxEventHelper.getRootURL() + 'events';
-			AjaxEventHelper.createPOSTRequestAjax(url, 
-												  function(data){
-														$('#consoleLoginPage').append("dfsdfsd").append(data);
-												  }, 
-												  createEventRegisterRequest());
-	    });
-		
-	     */
  
-	        
+	   // Setting the startDate of the event creation form to the current date
+	   // It MUST exist a better way of doing this 
 	   $(document).on('pageshow', 'div:jqmData(role="dialog")', function(event){
 		   var today = new Date();
-		  var todayStr = today.getDate() +"/"+(today.getMonth()+1)+"/"+ today.getFullYear();
-	      $('#evStartDate').trigger('datebox', {'method':'set', 'value':todayStr});
+		   var todayStr = today.getDate() +"/"+(today.getMonth()+1)+"/"+ today.getFullYear();
+	       $('#evStartDate').trigger('datebox', {'method':'set', 'value':todayStr});
 	   });
 	        
-	        
+	   
+	    // code to execute when user clicks in add event button
 	    $('#addEventBtn').click( function(){
-	    	resetEventCreationFields();
+	    	//reset form values
+	   		resetEventCreationFields();
+	    	// expand basic collapsable panel
+	    	$("#evBasicColapInfo").trigger('expand');
+	    	// collapsable other panels
+	    	$("#evColapInfo, #vnColapInfo, #arColapInfo ").trigger('collapse');
 	    });
-	     
 
-	    $("#createForm").validate({
-	    
+	  
+		// Validation configuration for createEventForm
+	    $("#createEventForm").validate({
 		    // 1. prepare the validation rules and messages.
 	        rules : {
 	    		evTitle: {  
@@ -355,39 +342,39 @@
 				AjaxEventHelper.createPOSTRequestAjax(url, 
 													  function(data){
 															$('#consoleLoginPage').append("dfsdfsd").append(data);
-														
-															//$.mobile.changePage($("#personalPage"));
+									
 															$("#createEventPage").dialog('close');
 													  }, 
 													  createEventRegisterRequest());
 			},
 			// set this class to error-labels to indicate valid fields
 			success: function(label) {
-				
 				label.html("&nbsp;").addClass("checked");
 			}
  
 	    });
 	    
+	 	
 	    
 	    //$(":jqmData(role=datebox)").css({"width":"60%"});
 	    //$(":jqmData(role=datebox)").parent("div").css({"display":"inline-block","width":"60%"});
 	});
 	
+	
 	function resetEventCreationFields(){
-		//var validator = $("#createForm").validate();
+		//var validator = $("#createEventForm").validate();
 		//validator.resetForm();
 		//reset previous values
-		$('#createForm')[0].reset();
-		//document.getElementById('createForm').reset();
-		$('#eaEventBtn').addClass('ui-btn-active');
+		$('#createEventForm')[0].reset();
+		//document.getElementById('createEventForm').reset();
 	} 
 	
 	
 	function createEventRegisterRequest(){
+		
 		var evTitle = $('#evTitle').val();
 		var evDescr = $('#evDescr').val();
-		var evStartDate = $('#evStartDate').data('datebox').theDate; //'2012/12/12';//$('#evStartDate').val(); $('#myDateInput').data('datebox').theDate;
+		var evStartDate = $('#evStartDate').data('datebox').theDate; 
 		var evStartTime = $('#evStartTime').val();
 		var evPrice = $('#evPrice').val();
 		var evTags = $('#evTags').val();
@@ -425,19 +412,7 @@
 		return json;
 	} 
 	
-	function showEventTab(){
-		$('#eaEventBtn').addClass("ui-btn-active");
-		$('#eaVenueBtn').removeClass("ui-btn-active");
-	   	$('#eventInfoDiv').show();	
-	   	$('#venueInfoDiv').hide();		    
-	}
-
-	function showVenueTab(){
-		$('#eaEventBtn').removeClass("ui-btn-active");
-		$('#eaVenueBtn').addClass("ui-btn-active");
-	   	$('#venueInfoDiv').show();		    
-	   	$('#eventInfoDiv').hide();	
-	}
+	
 
 	// ********************************************************************************
 	// ************************ Start of JavaScript functions *************************
@@ -831,25 +806,27 @@
 		font-size:80%; 
 	}
 	
+	/*Css style for validation plugin*/
 	label.error {
-    color: red;
-    font-size: 16px;
-    font-weight: normal;
-    line-height: 1.4;
-    margin-top: 0.5em;
-    width: 100%;
-    float: none;
-}
+	    color: red;
+	    font-size: 16px;
+	    font-weight: normal;
+	    line-height: 1.4;
+	    margin-top: 0.5em;
+	    width: 100%;
+	    float: none;
+	}
 
-@media screen and (orientation: portrait){
-    label.error { margin-left: 0; display: block; }
-}
-
-@media screen and (orientation: landscape){
-    label.error { display: inline-block; margin-left: 22%; }
-}
-
-em { color: red; font-weight: bold; padding-right: .25em; }
+	@media screen and (orientation: portrait){
+	    label.error { margin-left: 0; display: block; }
+	}
+	
+	@media screen and (orientation: landscape){
+	    label.error { display: inline-block; margin-left: 22%; }
+	}
+	/*----------------------------------------*/
+	
+	em { color: red; font-weight: bold; padding-right: .25em; }
 
 </style>
 
@@ -1121,89 +1098,99 @@ em { color: red; font-weight: bold; padding-right: .25em; }
 
 		<div data-role="content" >
 			
-			<form id="createForm" method="post" data-transition="none">
+			<form id="createEventForm" method="post" data-transition="none">
 
-				<ul data-role="controlgroup" data-type="horizontal" class="localnav" data-mini="true">
-					<li><a id="eaEventBtn" href="" data-role="button" data-transition="fade" class="ui-btn-active">Event</a></li>
-					<li><a id="eaVenueBtn" href="" data-role="button" data-transition="fade">Venue</a></li>
-					<li><a href="methods.html" data-role="button" data-transition="fade">Artists</a></li>
-				</ul>
-
-				<div id="eventInfoDiv"> 
-				   <div data-role="fieldcontain">
-					 <label for="evTitle">Title:</label>
-					 <input type="text" name="evTitle" id="evTitle" value="" required="true" />
-				   </div>
-				   <div data-role="fieldcontain">
-					 <label for="evStartDate">Date:</label>
-					 <input name="evStartDate" id="evStartDate" type="date" data-role="datebox" data-options='{"mode": "calbox"}'>
-				   </div>
-				   <div data-role="fieldcontain">
-					 <label for="evStartTime">Start Time:</label>
-					 <input name="evStartTime" id="evStartTime" type="date" data-role="datebox" data-options='{"mode": "timeflipbox", "overrideTimeFormat": 24}'>
-				   </div>
-				   <div data-role="fieldcontain">
-					 <label for="evDescr">Description:</label>
-					 <input type="text" name="evDescr" id="evDescr" value=""/>
-				   </div>	
-				   <div data-role="fieldcontain">
-					 <label for="evPrice">Price:</label>
-					 <input type="text" name="evPrice" id="evPrice" value="" />
-				   </div>
-				   <div data-role="fieldcontain">
-					 <label for="evTags">Tags: (separated with ;)</label>
-					 <input type="text" name="evTags" id="evTags" value="" />
-				   </div>
-				   <div data-role="fieldcontain">
-					 <label for="evUrl">URL:</label>
-					 <input type="url" name="evUrl" id="evUrl" value="" />
-				   </div>
-				   
-			   		<a id="evSubmitBtn" href="#personalPage" data-role="button" data-theme="a">Create Event</a>
-			   		<input class="submit" type="submit" value="Submit"/>
-			   		<a href="#home" data-role="button">Cancel</a>
-			   	</div>
-
-				<div id="venueInfoDiv">
 				
-					<div data-role="fieldcontain"> 
-						<a href="#byLocationSearchPage" data-role="button" data-rel="dialog" data-icon="search">Search existent venue</a>
-					</div>
-					
+				<div id="evBasicColapInfo"  data-role="collapsible" data-collapsed="false">
+					<h2>Event Info</h2> 
+				   	<div data-role="fieldcontain">
+						<label for="evTitle">Title:</label>
+					 	<input type="text" name="evTitle" id="evTitle" value="" required="true" />
+				   	</div>
+				   	<div data-role="fieldcontain">
+					 	<label for="evPrice">Price:</label>
+					 	<input type="text" name="evPrice" id="evPrice" value="" />
+				   	</div>
+				   	<div data-role="fieldcontain">
+						<label for="evStartDate">Date:</label>
+					 	<input name="evStartDate" id="evStartDate" type="date" data-role="datebox" data-options='{"mode": "calbox"}'>
+				   	</div>
+				   	<div data-role="fieldcontain">
+					 	<label for="evStartTime">Start Time:</label>
+					 	<input name="evStartTime" id="evStartTime" type="date" data-role="datebox" data-options='{"mode": "timeflipbox", "overrideTimeFormat": 24}'>
+				   	</div>
+				</div>
+				
+				<div id="evColapInfo"  data-role="collapsible" data-collapsed="true">
+					<h2>Event optional Info</h2>
+
+				   	<div data-role="fieldcontain">
+					 	<label for="evDescr">Description:</label>
+					 	<input type="text" name="evDescr" id="evDescr" value=""/>
+				   	</div>	
+				   	<div data-role="fieldcontain">
+					 	<label for="evPrice">Price:</label>
+					 	<input type="text" name="evPrice" id="evPrice" value="" />
+				   	</div>
+				   	<div data-role="fieldcontain">
+					 	<label for="evTags">Tags: (separated with ;)</label>
+					 	<input type="text" name="evTags" id="evTags" value="" />
+				   	</div>
+				   	<div data-role="fieldcontain">
+					 	<label for="evUrl">URL:</label>
+					 	<input type="url" name="evUrl" id="evUrl" value="" />
+				   	</div>
+				</div>
+
+				<div id="vnColapInfo" data-role="collapsible" data-collapsed="true">
+					<h2>Venue Info</h2>
+
 					<div data-role="fieldcontain">
 						<label for="vnName">Name:</label>
 						<input type="text" name="vnName" id="vnName" value="" required="true" />
 					</div>
-		
 					<div data-role="fieldcontain">
 						<label for="vnUrl">URL:</label>
 						<input type="url" name="vnUrl" id="vnUrl" value=""  />
 					</div>
-		
 				   	<div data-role="fieldcontain">
 					 	<label for="vnPhone">Name:</label>
 						<input type="tel" name="vnPhone" id="vnPhone" value=""  />
 				   	</div>
-					   
 					<div data-role="fieldcontain">
 						<label for="vnName">Name:</label>
 						<input type="text" name="vnName" id="vnName" value="" required="true" />
 					</div>
-					
 					<div data-role="controlgroup" data-type="horizontal">
 						<a href="#locationDetailsDPage" data-role="button" data-rel="dialog" data-icon="plus" data-inline="true">Location</a>
 						<a href="" data-role="button" data-rel="dialog" data-icon="search" data-inline="true">Image</a>
 					</div>
-								
-				</div>   		   
+					
+					<div data-role="fieldcontain"> 
+						<a href="#byLocationSearchPage" data-role="button" data-rel="dialog" data-icon="search">Search existent venue</a>
+					</div>   
+				</div>		   
+				
+				<div id="arColapInfo" data-role="collapsible" data-collapsed="true">
+					<h2>Artist Info</h2>
+					<div data-role="fieldcontain">
+						<label for="artName">Name:</label>
+						<input type="text" name="artName" id="artName" value="" required="true" />
+					</div>
+		
+					<div data-role="fieldcontain"> 
+						<a href="#byLocationSearchPage" data-role="button" data-rel="dialog" data-icon="search">Search existent Artist</a>
+					</div>
+				</div>		   
+	 
+		   		<input class="submit" type="submit" value="Submit" data-theme="a"/>
+		   		<a href="#personalPage" data-role="button">Cancel</a>
+	 
 	 
 			 </form>
 			 <div id="consoleLoginPage"></div>
 		</div>
 
-		<div data-role="footer">
-			<h4>@Mobile Applications</h4>
-		</div>
 
 	</div>
 	

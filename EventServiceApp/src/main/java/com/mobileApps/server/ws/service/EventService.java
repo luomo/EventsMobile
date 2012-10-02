@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.mobileApps.server.ws.domain.Artist;
 import com.mobileApps.server.ws.domain.Event;
@@ -20,7 +21,7 @@ public class EventService {
 
 	private static final List<Event> eventList;
 	private static final List<Location> locationList; 
-	 
+	private static final AtomicLong eventId = new AtomicLong(0);
 	
 	static {
 		Location locationBraga = new Location("Braga", "pt", "Avenida Liberdade", "4700", 12f, -34.5f);
@@ -39,17 +40,17 @@ public class EventService {
 		Date tomorowDate = tomorowCal.getTime();
 		
 		eventList = new ArrayList<Event>();
-		eventList.add(new Event(1l, "Music - Event 1", new Date(), "Music event", null, "12", 12F,"tag", 1L, new Date(), "url", artist, venueBraga));
-		eventList.add(new Event(2l, "Festival Event 2", new Date(), "Other Music event",  null, "12", 10F, "tag", 1L, new Date(),"url", artist, venuePorto));
-		eventList.add(new Event(3l, "XX - Event 3", new Date(), "AnOther Music event", null,"12",10F, "tag", 1L, new Date(),"url", artist, venueCoimbra));
-		eventList.add(new Event(4l, "Festival - Event 4", tomorowDate, "AnOther Music event", null, "12", 10F, "tag", 1L, new Date(),"url", artist, venueBraga));
-		eventList.add(new Event(5l, "Clubbing - 5", tomorowDate, "Music event", null, "12", 10F, "tag",1L, new Date(), "url", artist, venueBraga));
+		eventList.add(new Event(eventId.incrementAndGet(), "Music - Event 1", new Date(), "Music event", null, "12", 12F,"tag", 1L, new Date(), "url", artist, venueBraga));
+		eventList.add(new Event(eventId.incrementAndGet(), "Festival Event 2", new Date(), "Other Music event",  null, "12", 10F, "tag", 1L, new Date(),"url", artist, venuePorto));
+		eventList.add(new Event(eventId.incrementAndGet(), "XX - Event 3", new Date(), "AnOther Music event", null,"12",10F, "tag", 1L, new Date(),"url", artist, venueCoimbra));
+		eventList.add(new Event(eventId.incrementAndGet(), "Festival - Event 4", tomorowDate, "AnOther Music event", null, "12", 10F, "tag", 1L, new Date(),"url", artist, venueBraga));
+		eventList.add(new Event(eventId.incrementAndGet(), "Clubbing - 5", tomorowDate, "Music event", null, "12", 10F, "tag",1L, new Date(), "url", artist, venueBraga));
 
-		eventList.add(new Event(1l, "Music - Event 10", new Date(), "Music event", null, "12", 12F,"tag", 1L, new Date(), "url", artist, venueBraga));
-		eventList.add(new Event(2l, "yFestival Event 20", new Date(), "Other Music event",  null, "12", 10F, "tag", 1L, new Date(),"url", artist, venuePorto));
-		eventList.add(new Event(3l, "z XX - Event 3", tomorowDate, "AnOther Music event", null,"12",10F, "tag", 1L, new Date(),"url", artist, venueCoimbra));
-		eventList.add(new Event(4l, "Festival - Event 4", new Date(), "AnOther Music event", null, "12", 10F, "tag", 1L, new Date(),"url", artist, venueBraga));
-		eventList.add(new Event(5l, "AClubbing - 5", new Date(), "Music event", null, "12", 10F, "tag",1L, new Date(), "url", artist, venueBraga));
+		eventList.add(new Event(eventId.incrementAndGet(), "Music - Event 10", new Date(), "Music event", null, "12", 12F,"tag", 1L, new Date(), "url", artist, venueBraga));
+		eventList.add(new Event(eventId.incrementAndGet(), "yFestival Event 20", new Date(), "Other Music event",  null, "12", 10F, "tag", 1L, new Date(),"url", artist, venuePorto));
+		eventList.add(new Event(eventId.incrementAndGet(), "z XX - Event 3", tomorowDate, "AnOther Music event", null,"12",10F, "tag", 1L, new Date(),"url", artist, venueCoimbra));
+		eventList.add(new Event(eventId.incrementAndGet(), "Festival - Event 4", new Date(), "AnOther Music event", null, "12", 10F, "tag", 1L, new Date(),"url", artist, venueBraga));
+		eventList.add(new Event(eventId.incrementAndGet(), "AClubbing - 5", new Date(), "Music event", null, "12", 10F, "tag",1L, new Date(), "url", artist, venueBraga));
 		
 		locationList = new ArrayList<Location>();
 		locationList.add(locationBraga);
@@ -149,6 +150,13 @@ public class EventService {
 		}
 		Collections.sort(values, EventsByCityDto.byCityASC);
 		return values;
+	}
+
+	public static Long registerEvent(Event event) {
+		Long id = eventId.incrementAndGet();
+		event.setId(id);
+		eventList.add(event);
+		return id;
 	}
 
 

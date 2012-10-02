@@ -168,7 +168,7 @@
 	// adding methods to Location Object
 	// create method toString    
 	EventListApp.Location.prototype.toString  = function(){
-		return '[id:' + this.id + ' ,city: '+ this.city + ' ,country: ' + this.country + ' ,street:' + this.street 
+		return '[city: '+ this.city + ' ,country: ' + this.country + ' ,street:' + this.street 
 					+ ' ,postalCode:' + this.postalCode +' ,latitude:' + this.latitude +' ,longitude:' + this.longitude + ']';
 	}
 
@@ -285,8 +285,84 @@
 		    loadEventsByCitiesAjax(city)
 	    });
 
+	    $('#eaVenueBtn').click(function() {
+	    	showVenueTab();	
+	    });
+	    $('#eaEventBtn').click(function() {
+	    	showEventTab();	
+	    });
+		
+	    showEventTab();
+	    
+	    
+	    $('#evSubmitBtn').click(function() {
+	    	var url = AjaxEventHelper.getRootURL() + 'events';
+			AjaxEventHelper.createPOSTRequestAjax(url, 
+												  function(data){
+														$('#consoleLoginPage').append("dfsdfsd").append(data);
+												  }, 
+												  createEventRegisterRequest());
+	    });
+		
+	    //$(":jqmData(role=datebox)").css({"width":"60%"});
+	    //$(":jqmData(role=datebox)").parent("div").css({"display":"inline-block","width":"60%"});
 	});
 	
+	
+	function createEventRegisterRequest(){
+		var evTitle = $('#evTitle').val();
+		var evDescr = $('#evDescr').val();
+		var evStartDate = $('#evStartDate').data('datebox').theDate; //'2012/12/12';//$('#evStartDate').val(); $('#myDateInput').data('datebox').theDate;
+		var evStartTime = $('#evStartTime').val();
+		var evPrice = $('#evPrice').val();
+		var evTags = $('#evTags').val();
+		var evUrl = $('#evUrl').val();
+		
+		var vnName = $('#vnN$(e').val();
+		var vnUrl = $('#vnUrl').val();
+		var vnPhone = $('#vnPhone').val();
+		var veLocCountry = $('#veLocCountry').val();
+		var veLocCity = $('#veLocCity').val();
+		var veLocStreet = $('#veLocStreet').val();
+		var veLocLat = $('#veLocLat').val();
+		var veLocLong = $('#veLocLong').val();
+		
+		var event;
+		event = new EventListApp.Event( null, evTitle, evStartDate, evDescr, null, null,  
+										evPrice, evTags, 0/*'UserId'*/, null, evUrl,
+				  						new EventListApp.Artist(null, 'Artist XPTO'),
+				  						new EventListApp.Venue( null, 
+				  												vnName,
+				  						 						new EventListApp.Location(veLocCity,
+				  						 												  veLocCountry,
+				  						 												  veLocStreet,
+			  						 							   						  null,
+			  						 							   						  veLocLat,
+			  						 							   						  veLocLong ),
+			  						 							 vnUrl,
+			  						 							 vnPhone,
+				  						 						 null));
+		//console.log(event.toString());
+		
+		//Note: maybe we should add the event to a userList events in memory and add this event to the existent singleton list
+		var json = JSON.stringify(event);
+		console.log("json object create: " + json);
+		return json;
+	} 
+	
+	function showEventTab(){
+		$('#eaEventBtn').addClass("ui-btn-active");
+		$('#eaVenueBtn').removeClass("ui-btn-active");
+	   	$('#eventInfoDiv').show();	
+	   	$('#venueInfoDiv').hide();		    
+	}
+
+	function showVenueTab(){
+		$('#eaEventBtn').removeClass("ui-btn-active");
+		$('#eaVenueBtn').addClass("ui-btn-active");
+	   	$('#venueInfoDiv').show();		    
+	   	$('#eventInfoDiv').hide();	
+	}
 
 	// ********************************************************************************
 	// ************************ Start of JavaScript functions *************************
@@ -737,15 +813,13 @@
 			<h1>						
 			<img alt="Events" src="images/eventsLogo_small_.png" class="logo">
 			</h1>
-			<a href="#settings" data-icon="gear" class="ui-btn-right">Settings</a>
+			<a href="#createEventPage" data-rel="dialog" data-icon="plus" class="ui-btn-right">Add</a>
 		</div>
 
 		<div data-role="content" >
 
-			<ul data-role="listview" >
-				<!-- <li data-role="list-divider" data-theme="c">Event application</li> --> 
-				<li > <a href="#loginPage" ><img alt="Log in" src="images/_search.png" class="ui-li-icon">Edit Events</a></li>
-				<li > <a href="#createEventPage" ><img alt="Events" src="images/add_user.png" class="ui-li-icon">Create Event</a></li>
+			<ul data-role="listview" data-filter="true" data-filter-placeholder="Search Personal Events ..." >
+
 			</ul>
 		</div>
 		
@@ -944,7 +1018,7 @@
 
 	</div>
 
-	<div data-role="page" id="createEventPage" data-add-back-btn="true">
+	<div data-role="dialog" id="createEventPage" data-add-back-btn="true">
 
 		<div data-role="header">
 			<h1>Events</h1>
@@ -955,42 +1029,121 @@
 			<form id="createForm" method="post" data-transition="none">
 
 				<ul data-role="controlgroup" data-type="horizontal" class="localnav" data-mini="true">
-					<li><a href="index.html" data-role="button" data-transition="fade" class="ui-btn-active">Basics</a></li>
-					<li><a href="options.html" data-role="button" data-transition="fade">Options</a></li>
-					<li><a href="methods.html" data-role="button" data-transition="fade">Methods</a></li>
-					<li><a href="events.html" data-role="button" data-transition="fade">Events</a></li>
+					<li><a id="eaEventBtn" href="" data-role="button" data-transition="fade" class="ui-btn-active">Event</a></li>
+					<li><a id="eaVenueBtn" href="" data-role="button" data-transition="fade">Venue</a></li>
+					<li><a href="methods.html" data-role="button" data-transition="fade">Artists</a></li>
 				</ul>
 
-			   <div data-role="fieldcontain">
-				 <label for="title">Title:</label>
-				 <input type="text" name="title" id="title" value="" required="true" />
-			   </div>
+				<div id="eventInfoDiv"> 
+				   <div data-role="fieldcontain">
+					 <label for="evTitle">Title:</label>
+					 <input type="text" name="evTitle" id="evTitle" value="" required="true" />
+				   </div>
+				   <div data-role="fieldcontain">
+					 <label for="evStartDate">Date:</label>
+					 <input name="evStartDate" id="evStartDate" type="date" data-role="datebox" data-options='{"mode": "calbox"}'>
+				   </div>
+				   <div data-role="fieldcontain">
+					 <label for="evStartTime">Start Time:</label>
+					 <input name="evStartTime" id="evStartTime" type="date" data-role="datebox" data-options='{"mode": "timeflipbox", "overrideTimeFormat": 24}'>
+				   </div>
+				   <div data-role="fieldcontain">
+					 <label for="evDescr">Description:</label>
+					 <input type="text" name="evDescr" id="evDescr" value=""/>
+				   </div>	
+				   <div data-role="fieldcontain">
+					 <label for="evPrice">Price:</label>
+					 <input type="text" name="evPrice" id="evPrice" value="" />
+				   </div>
+				   <div data-role="fieldcontain">
+					 <label for="evTags">Tags: (separated with ;)</label>
+					 <input type="text" name="evTags" id="evTags" value="" />
+				   </div>
+				   <div data-role="fieldcontain">
+					 <label for="evUrl">URL:</label>
+					 <input type="url" name="evUrl" id="evUrl" value="" />
+				   </div>
+				   
+				    <input id="evSubmitBtn" type="submit" value="Create event" data-theme="a">
+			   		<a href="#home" data-role="button">Cancel</a>
+			   	</div>
 
-			   <div data-role="fieldcontain">
-				 <label for="startDate">Date:</label>
-				 <input name="startDate" id="startDate" type="date" data-role="datebox" data-options='{"mode": "calbox"}'>
-	
-			   </div>
-
-			   <div data-role="fieldcontain">
-				 <label for="startTime">Start Time:</label>
-				 <input name="startTime" id="startTime" type="date" data-role="datebox" data-options='{"mode": "timebox", "overrideTimeFormat": 24}'>
-			   </div>
-			   
-			   <div data-role="fieldcontain">
-				 <label for="title">Artist:</label>
-				 <input type="text" name="artist" id="artist" value="" required="true" />
-			   </div>
-			   
-			   <div data-role="fieldcontain">
-				 <label for="price">Price:</label>
-				 <input type="text" name="price" id="price" value="" required="true" />
-			   </div>
-			   
-			   <input id="loginBtn" type="submit" value="Login" data-theme="a">
-			   <a href="#home" data-role="button">Cancel</a>
-			 
+				<div id="venueInfoDiv">
+				
+					<div data-role="fieldcontain"> 
+						<a href="#byLocationSearchPage" data-role="button" data-rel="dialog" data-icon="search">Search existent venue</a>
+					</div>
+					
+					<div data-role="fieldcontain">
+						<label for="vnName">Name:</label>
+						<input type="text" name="vnName" id="vnName" value="" required="true" />
+					</div>
+		
+					<div data-role="fieldcontain">
+						<label for="vnUrl">URL:</label>
+						<input type="url" name="vnUrl" id="vnUrl" value=""  />
+					</div>
+		
+				   	<div data-role="fieldcontain">
+					 	<label for="vnPhone">Name:</label>
+						<input type="tel" name="vnPhone" id="vnPhone" value=""  />
+				   	</div>
+					   
+					<div data-role="fieldcontain">
+						<label for="vnName">Name:</label>
+						<input type="text" name="vnName" id="vnName" value="" required="true" />
+					</div>
+					
+					<div data-role="controlgroup" data-type="horizontal">
+						<a href="#locationDetailsDPage" data-role="button" data-rel="dialog" data-icon="plus" data-inline="true">Location</a>
+						<a href="" data-role="button" data-rel="dialog" data-icon="search" data-inline="true">Image</a>
+					</div>
+								
+				</div>   		   
+	 
 			 </form>
+			 <div id="consoleLoginPage"></div>
+		</div>
+
+		<div data-role="footer">
+			<h4>@Mobile Applications</h4>
+		</div>
+
+	</div>
+	
+	<div data-role="dialog" id="locationDetailsDPage" data-add-back-btn="true">
+
+		<div data-role="header">
+			<h1>Events</h1>
+		</div>
+
+		<div data-role="content">
+			<h2>Location Details:</h2>
+			   <div data-role="fieldcontain">
+				 <label for="veLocCountry">Country:</label>
+				 <input type="text" name="veLocCountry" id="veLocCountry" value="" required="true" />
+			   </div>
+
+			   <div data-role="fieldcontain">
+				 <label for="veLocCity">City:</label>
+				 <input type="text" name="veLocCity" id="veLocCity" value="" required="true" />
+			   </div>
+			   <div data-role="fieldcontain">
+				 <label for="veLocStreet">Street:</label>
+				 <input type="text" name="veLocStreet" id="veLocStreet" value="" required="true" />
+			   </div>
+			   <div data-role="fieldcontain">
+				 <label for="veLocLat">Latitude:</label>
+				 <input type="number" name="veLocLat" id="veLocLat" value=""  />
+			   </div>
+			   <div data-role="fieldcontain">
+				 <label for="veLocLong">Longitude:</label>
+				 <input type="number" name="veLocLong" id="veLocLong" value=""  />
+			   </div>
+			   
+			   <input id="crLocatDetails" type="submit" value="OK" data-theme="a">
+			   <a href="#createEventPage" data-role="button">Cancel</a>
+			 
 			 <div id="consoleLoginPage"></div>
 		</div>
 

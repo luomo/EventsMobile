@@ -1,16 +1,26 @@
 package com.mobileApps.server.ws.resources;
 
+import java.net.URI;
 import java.util.Date;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.Status;
 
+import com.mobileApps.server.ws.domain.Event;
+import com.mobileApps.server.ws.domain.UserInfo;
 import com.mobileApps.server.ws.service.EventService;
 
 @Path("/events")
@@ -18,6 +28,27 @@ public class EventResource {
 
 
 	private EventService eventService;
+	
+	@POST
+	@Consumes({MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response registerUser(@Context UriInfo ui, 
+		    					 @Context HttpServletResponse response,  
+								 Event event){
+		
+		Long eventId = EventService.registerEvent(event);
+		
+		if(eventId == null)
+			throw new WebApplicationException(
+			        Response
+			          .status(Status.PRECONDITION_FAILED)
+			          .entity("Event alreay exists .. testing!!!")
+			          .build()
+			      );
+
+		return Response.created(URI.create("/" + eventId)).header("Access-Control-Allow-Origin", "*").build();
+	}
+	
 	
 	@GET
 	@Path("/{eventId}")

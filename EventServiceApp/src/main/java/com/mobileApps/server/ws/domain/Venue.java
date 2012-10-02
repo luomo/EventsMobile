@@ -74,7 +74,6 @@ public class Venue implements Serializable {
 	public void setWebsite(String website) {
 		this.website = website;
 	}
-	@XmlElement(name ="phonenumber")
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}

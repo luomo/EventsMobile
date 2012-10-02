@@ -1,6 +1,5 @@
 package com.mobileApps.server.ws.domain;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 
@@ -47,7 +46,7 @@ public class Location {
 	public void setStreet(String street) {
 		this.street = street;
 	}
-	@XmlElement(name ="postalcode")
+
 	public String getPostalCode() {
 		return postalCode;
 	}

@@ -358,7 +358,7 @@
 
 				<div id="vnColapInfo" data-role="collapsible" data-collapsed="true">
 					<h2>Venue Info</h2>
-
+					<input type="hidden" name="vnId" id="vnId" />
 					<div data-role="fieldcontain">
 						<label for="vnName">Name:</label>
 						<input type="text" name="vnName" id="vnName" value="" required="true" />
@@ -401,12 +401,13 @@
 					</div>
 					
 					<div data-role="fieldcontain"> 
-						<a href="#searchVenueDialogPage" data-role="button" data-rel="dialog" data-icon="search">Search existent venue</a>
+						<a id="searchVenueDialogPageBtn" href="#searchVenueDialogPage" data-role="button" data-rel="dialog" data-icon="search">Search existent venue</a>
 					</div>   
 				</div>		   
 				
 				<div id="arColapInfo" data-role="collapsible" data-collapsed="true">
 					<h2>Artist Info</h2>
+					<input type="hidden" name="artId" id="artId" />
 					<div data-role="fieldcontain">
 						<label for="artName">Name:</label>
 						<input type="text" name="artName" id="artName" value="" required="true" />
@@ -431,7 +432,7 @@
 	<div data-role="dialog" id="searchVenueDialogPage" data-add-back-btn="true">
 
 		<div data-role="header">
-			<h1>Events</h1>
+			<h1>Search Venues</h1>
 		</div>
 
 		<div data-role="content">			

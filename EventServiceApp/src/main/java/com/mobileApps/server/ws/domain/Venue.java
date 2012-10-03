@@ -5,8 +5,9 @@ package com.mobileApps.server.ws.domain;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -34,6 +35,29 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "venue")
 public class Venue implements Serializable {
 
+	
+	public static enum Order implements Comparator<Venue>{
+		ByName {
+			@Override
+			public int compare(Venue v_1, Venue v_2) {				
+				return v_1.getName().compareTo(v_2.getName());
+			}
+		};
+	
+		
+		public abstract int compare(Venue lhs, Venue rhs);
+
+		public Comparator<Venue> ascending() {
+			return this;
+		}
+
+		public Comparator<Venue> descending() {
+			return Collections.reverseOrder(this);
+		}
+
+
+	}
+	
 	
 	private Long id;
 	private String name;

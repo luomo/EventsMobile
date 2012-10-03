@@ -16,11 +16,13 @@ import com.mobileApps.server.ws.domain.Location;
 import com.mobileApps.server.ws.domain.Provider;
 import com.mobileApps.server.ws.domain.Venue;
 import com.mobileApps.server.ws.wsDTOs.EventsByCityDto;
+import com.mobileApps.server.ws.wsDTOs.VenueByCityDto;
 
 public class EventService {
 
 	private static final List<Event> eventList;
 	private static final List<Location> locationList; 
+	private static final List<Venue> venueList; 
 	private static final AtomicLong eventId = new AtomicLong(0);
 	
 	static {
@@ -30,7 +32,7 @@ public class EventService {
 
 		Venue venueBraga = new Venue(1l, "Teatro Circo",locationBraga,	"www.teatro-circo.com", "253272000", null);
 		Venue venuePorto = new Venue(2l,  "Trintaeum ", locationPorto, "www.trintaeum.com", "222272000", null);
-		Venue venueCoimbra = new Venue(2l, "Coimbra place", locationCoimbra, "www.xpto.com", "222272000", null);
+		Venue venueCoimbra = new Venue(3l, "Coimbra place", locationCoimbra, "www.xpto.com", "222272000", null);
 		
 		Artist artist = new Artist(1L, "artist");
 		Provider provider = new Provider(1l, "lastFm", "www.lastfm.com", new Date().toString());
@@ -57,6 +59,10 @@ public class EventService {
 		locationList.add(locationPorto);
 		locationList.add(locationCoimbra);
 
+		venueList = new ArrayList<Venue>();
+		venueList.add(venueBraga);
+		venueList.add(venuePorto);
+		venueList.add(venueCoimbra);
 	}
 	
 	public static List<Event> getAllEvents(){
@@ -166,6 +172,40 @@ public class EventService {
 				res.add(event);
 		}
 		return res;
+	}
+
+	
+
+	public static Venue getVenueById(Long venueId) {
+		for (Venue venue : venueList) {
+			if(venue.getId().equals(venueId))
+				return venue;
+		}
+		return null;
+	}
+
+	public static Collection<VenueByCityDto> getVenuesByCountry(String country, String sortBy,
+			String sortMode) {
+		
+		Map<String, VenueByCityDto> map = new HashMap<String, VenueByCityDto>();
+		Location location = null;
+		String city = null;
+		for (Venue venue : venueList) {
+			location = venue.getLocation();
+			city = location.getCity();
+			VenueByCityDto venueByCityDto = map.get(city);
+			if(venueByCityDto == null) {
+				venueByCityDto = new VenueByCityDto(location.getCity());
+				map.put(city, venueByCityDto);
+			}
+			venueByCityDto.addVenue(venue);
+		}
+		List<VenueByCityDto> values = new ArrayList<VenueByCityDto>(map.values());
+		for (VenueByCityDto venueByCityDto : values) {
+			venueByCityDto.orderVenueBySortCondition(sortBy,sortMode);
+		}
+		Collections.sort(values, VenueByCityDto.byCityASC);
+		return values;
 	}
 
 

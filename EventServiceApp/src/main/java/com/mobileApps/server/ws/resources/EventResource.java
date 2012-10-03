@@ -32,7 +32,7 @@ public class EventResource {
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response registerUser(@Context UriInfo ui, 
+	public Response registerEvent(@Context UriInfo ui, 
 		    					 @Context HttpServletResponse response,  
 								 Event event){
 		

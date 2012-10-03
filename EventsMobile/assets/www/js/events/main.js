@@ -175,7 +175,48 @@ $(function(){
     	$("#evBasicColapInfo").trigger('expand');
     	// collapsable other panels
     	$("#evColapInfo, #vnColapInfo, #arColapInfo ").trigger('collapse');
+
     });
+
+    //$('#searchVenueDialogPageBtn').click( function(){
+    $('#searchVenueDialogPage').live("pageshow", function(){
+    	var url = AjaxEventHelper.getRootURL() + 'venue/country/pt';  /* Now we are passing country hardcoded */
+    	
+    	AjaxEventHelper.createGETRequestAjax(url, function(data){
+    		var html = '';
+    		
+    		//if (!data )
+    		// validar se existe events .. se n fazer display ao user
+    		
+    		$.each(data, function(index, _venueDto) {
+
+    			html += '<li data-role="list-divider">' + _venueDto.city + '</li>';
+    			var list = _venueDto.venueList;
+    			for(var i = 0; i < list.length ; i++) {	
+    				var _venue = list[i];
+    				// Create html row for displaying event
+    				//html += createHtmlEventRow(_event);
+    				html += '<li ><a href=""><img alt="coverArt" src="images/mia.png" /><h3>' + _venue.name + '</h3>';
+    			    html += '<p>' + _venue.location.country + '</p>';
+    			    html += '<p>' + _venue.location.city + '</p>';
+    			    html += '</a>';
+    			    html += '<a href="javascript:loadVenueById('+ _venue.id + ')"></a>';
+    			    html += '</li>';
+    				//eventLocal = createEventJSObjectBasedOnJsonAjaxReq(_event);
+    				//EventListApp.addEvent(eventLocal);
+    			}
+    		});
+    		console.log(html);
+      		$("#searchVenueList").html(html);
+      		$("#searchVenueList").listview('refresh');
+      		/*
+      		//$(".console").html("Data refreshed ..");
+    			*/
+    		
+        });
+
+    });
+    
 
     // code to execute when user clicks in submit event button
     // this has to be done so the validation can be fulfilled.
@@ -191,12 +232,42 @@ $(function(){
 });
 
 
+// function invoked when the user selects an existent venue 
+function loadVenueById(venueId) {
+	alert(venueId);
+	var url = AjaxEventHelper.getRootURL() + 'venue/'+venueId; 
+	
+	// invoke ws for obtain venue info for populate  form
+	AjaxEventHelper.createGETRequestAjax(url, function(data){
+		$('#vnId').val(data.id);
+		$('#vnName').val(data.name);
+		$('#vnUrl').val(data.url);
+		$('#vnPhone').val(data.vnPhone);
+		$('#vnLocCountry').val(data.location.country);
+		$('#vnLocCity').val(data.location.city);
+		$('#vnLocStreet').val(data.location.street);
+		$('#vnLocLat').val(data.location.latitude);
+		$('#vnLocLong').val(data.location.longitude);
+
+		// if an existent venue is selected user can't change its details do we have disable all fields 
+		if($('#vnId').val() != null) {
+			$("#vnColapInfo input").prop('disabled', true);
+		}
+		
+		$("#searchVenueDialogPage").dialog('close');
+	});
+	
+}
+
 function resetEventCreationFields(){
 	//var validator = $("#createEventForm").validate();
 	//validator.resetForm();
 	//reset previous values
 	$('#createEventForm')[0].reset();
 	//document.getElementById('createEventForm').reset();
+
+	// Put all fields editable (user might have created a previous event with existent venues ou artist)
+	$("#createEventForm input").prop('disabled', false);
 } 
 
 
@@ -210,7 +281,8 @@ function createEventRegisterRequest(){
 	var evTags = $('#evTags').val();
 	var evUrl = $('#evUrl').val();
 	
-	var vnName = $('#vnName(e').val();
+	var vnId = $('#vnId').val();
+	var vnName = $('#vnName').val();
 	var vnUrl = $('#vnUrl').val();
 	var vnPhone = $('#vnPhone').val();
 	var vnLocCountry = $('#vnLocCountry').val();
@@ -223,7 +295,7 @@ function createEventRegisterRequest(){
 	event = new EventListApp.Event( null, evTitle, evStartDate, evDescr, null, null,  
 									evPrice, evTags, 0/*'UserId'*/, null, evUrl,
 			  						new EventListApp.Artist(null, 'Artist XPTO'),
-			  						new EventListApp.Venue( null, 
+			  						new EventListApp.Venue( vnId, 
 			  												vnName,
 			  						 						new EventListApp.Location(vnLocCity,
 			  						 												  vnLocCountry,
@@ -448,6 +520,7 @@ function loadEventsByCitiesAjax(city) {
 	
 	
 }
+
 
 function createHtmlEventRow(_event) {
 	var html = '';

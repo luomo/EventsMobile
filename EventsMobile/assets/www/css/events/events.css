@@ -1,0 +1,109 @@
+.splash { 
+		align:center;
+		background-color: #fff;
+		padding: 1000px;
+	}
+	
+	
+	/* Navbar text */
+[data-role=navbar] .ui-btn-text {
+	font-size: smaller;
+}
+
+.logo {
+	margin-top: none;
+	display: block;
+   	margin-left: auto;
+   	margin-right: auto;
+}
+
+.smallLogo {
+	margin-bottom: 20px;
+}
+
+[data-role="header"] > h1, .headerMsg {
+	color: rgb(119, 149, 252);
+	text-align: center;
+}
+
+.msg{
+	margin:0px;
+	padding:0px;
+}
+
+#splash {
+	background-image: url("../../images/calendar_128x128.png");
+	background-position: center;
+	background-attachment: fixed;
+	background-repeat: no-repeat;
+	text-align: center;
+}
+
+
+#eventDetails div[data-role=content]  h1, #eventDetails div[data-role=content]  h2 {
+	margin: 0px auto 5px auto;
+	font-size: 18px;
+}
+
+
+
+#eventDetails div[data-role=content]  p {
+	margin: 0px auto 5px auto;
+	padding-left: 5px;
+}
+
+#eventInfo , #venueInfo {
+	font-size:12px;
+}
+
+
+#contact_buttons a{
+	color:rgb(63, 41, 39);
+}
+
+#event_info .header{
+	font-weight: bold;
+}
+#event_info .detail{
+	font-style: italic;
+}
+
+#eventDetails div[data-role=content]  img {
+	width: 80px;
+	height: 80px;
+	--float : left;
+	--padding-right: 50px;
+} 
+
+.localnav {
+	margin:0 0 20px 0;
+}
+.ui-mobile-viewport .localnav li {
+	--float:left;
+}
+.localnav .ui-btn-inner { 
+	padding: .6em 10px; 
+	font-size:80%; 
+}
+
+/*Css style for validation plugin*/
+label.error {
+    color: red;
+    font-size: 16px;
+    font-weight: normal;
+    line-height: 1.4;
+    margin-top: 0.5em;
+    width: 100%;
+    float: none;
+}
+
+@media screen and (orientation: portrait){
+    label.error { margin-left: 0; display: block; }
+}
+
+@media screen and (orientation: landscape){
+    label.error { display: inline-block; margin-left: 22%; }
+}
+/*----------------------------------------*/
+
+em { color: red; font-weight: bold; padding-right: .25em; }

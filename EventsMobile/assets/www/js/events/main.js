@@ -33,7 +33,19 @@ $(function(){
             }, 
             vnName: {
             	required: true
-            }
+            },
+            evPrice: {
+            	number: true,
+            },
+            vnLocCountry: {
+            	required: true
+            },
+            vnLocCity: {
+            	required: true
+	        },
+	        vnLocStreet: {
+	        	required: true
+	        }
         },
         messages : {
         	evTitle: {
@@ -42,7 +54,19 @@ $(function(){
             },
         	vnName: {
             	required: "Venue Title is required"
-            }
+            },
+            evPrice: {
+            	number: "Price has to be a number value"
+            },
+            vnLocCountry: {
+            	required: "Venue Country is required"
+            },
+            vnLocCity: {
+            	required: "Venue city is required"
+	        },
+	        vnLocStreet: {
+	        	required: "Venue street is required"
+	        }
         },
      	/*
 		errorPlacement: function(error, element) {
@@ -158,28 +182,9 @@ $(function(){
     // If the the panel is colapsed the validatiion of the fields wont be fired
     $('#evCreateSubmBtn').click( function(){
     	// expand basic event and venue collapsable panel
-    	$("#evBasicColapInfo").trigger('expand');
-    	$("#vnColapInfo").trigger('expand');
+    	$("#evBasicColapInfo, #vnColapInfo").trigger('expand');
     });
 
-    
-    
-    // code to execute when user clicks in add event button
-    /*
-    $('#evBasicColapInfo').click( function(){
-    	alert("dfgdfg");
-    	$("#evColapInfo, #vnColapInfo, #arColapInfo ").trigger('collapse');
-    });
-    $('#evColapInfo').click( function(){
-    	$("#evBasicColapInfo, #vnColapInfo, #arColapInfo ").trigger('collapse');
-    });
-    $('#vnColapInfo ').click( function(){
-    	$("#evColapInfo, #evBasicColapInfo, #arColapInfo ").trigger('collapse');
-    });
-    $('#arColapInfo').click( function(){
-    	$("#evColapInfo, #vnColapInfo, #evBasicColapInfo ").trigger('collapse');
-    });
-    */
 	 		    
 	    //$(":jqmData(role=datebox)").css({"width":"60%"});
     //$(":jqmData(role=datebox)").parent("div").css({"display":"inline-block","width":"60%"});
@@ -195,7 +200,7 @@ function resetEventCreationFields(){
 } 
 
 
-function createEventRegisterRequest(){
+function createEventRegisterRequest(){	
 	
 	var evTitle = $('#evTitle').val();
 	var evDescr = $('#evDescr').val();
@@ -208,11 +213,11 @@ function createEventRegisterRequest(){
 	var vnName = $('#vnName(e').val();
 	var vnUrl = $('#vnUrl').val();
 	var vnPhone = $('#vnPhone').val();
-	var veLocCountry = $('#veLocCountry').val();
-	var veLocCity = $('#veLocCity').val();
-	var veLocStreet = $('#veLocStreet').val();
-	var veLocLat = $('#veLocLat').val();
-	var veLocLong = $('#veLocLong').val();
+	var vnLocCountry = $('#vnLocCountry').val();
+	var vnLocCity = $('#vnLocCity').val();
+	var vnLocStreet = $('#vnLocStreet').val();
+	var vnLocLat = $('#vnLocLat').val();
+	var vnLocLong = $('#vnLocLong').val();
 	
 	var event;
 	event = new EventListApp.Event( null, evTitle, evStartDate, evDescr, null, null,  
@@ -220,12 +225,12 @@ function createEventRegisterRequest(){
 			  						new EventListApp.Artist(null, 'Artist XPTO'),
 			  						new EventListApp.Venue( null, 
 			  												vnName,
-			  						 						new EventListApp.Location(veLocCity,
-			  						 												  veLocCountry,
-			  						 												  veLocStreet,
+			  						 						new EventListApp.Location(vnLocCity,
+			  						 												  vnLocCountry,
+			  						 												  vnLocStreet,
 		  						 							   						  null,
-		  						 							   						  veLocLat,
-		  						 							   						  veLocLong ),
+		  						 							   						  vnLocLat,
+		  						 							   						  vnLocLong ),
 		  						 							 vnUrl,
 		  						 							 vnPhone,
 			  						 						 null));

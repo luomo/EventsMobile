@@ -317,7 +317,7 @@
 			
 			<form id="createEventForm" method="post" data-transition="none">
 
-				
+				<!-- <div id="evCreateColapSet" data-role="collapsible-set"> -->
 				<div id="evBasicColapInfo"  data-role="collapsible" data-collapsed="false">
 					<h2>Event Info</h2> 
 				   	<div data-role="fieldcontain">
@@ -347,12 +347,12 @@
 				   	</div>	
 
 				   	<div data-role="fieldcontain">
-					 	<label for="evTags">Tags: (separated with ;)</label>
-					 	<input type="text" name="evTags" id="evTags" value="" />
+					 	<label for="evTags">Tags:</label>
+					 	<input type="text" name="evTags" id="evTags" value="" placeholder="separated with ;" />
 				   	</div>
 				   	<div data-role="fieldcontain">
 					 	<label for="evUrl">URL:</label>
-					 	<input type="url" name="evUrl" id="evUrl" value="" />
+					 	<input type="url" name="evUrl" id="evUrl" placeholder="http://" />
 				   	</div>
 				</div>
 
@@ -363,22 +363,45 @@
 						<label for="vnName">Name:</label>
 						<input type="text" name="vnName" id="vnName" value="" required="true" />
 					</div>
+					
+					<div data-role="fieldcontain">
+					 	<label for="vnLocCountry">Country:</label>
+					 	<input type="text" name="vnLocCountry" id="vnLocCountry" value="" required="true" />
+				   	</div>
+	
+				   	<div data-role="fieldcontain">
+					 	<label for="vnLocCity">City:</label>
+					 	<input type="text" name="vnLocCity" id="vnLocCity" value="" required="true" />
+				   	</div>
+				   	<div data-role="fieldcontain">
+					 	<label for="vnLocStreet">Street:</label>
+					 	<input type="text" name="vnLocStreet" id="vnLocStreet" value="" required="true" />
+				   	</div>
+				   	<div data-role="fieldcontain">
+					 	<label for="vnLocLat">Latitude:</label>
+					 	<input type="number" name="vnLocLat" id="vnLocLat" value=""  />
+				   	</div>
+				   	<div data-role="fieldcontain">
+					 	<label for="vnLocLong">Longitude:</label>
+					 	<input type="number" name="vnLocLong" id="vnLocLong" value=""  />
+				   	</div>
+					
 					<div data-role="fieldcontain">
 						<label for="vnUrl">URL:</label>
-						<input type="url" name="vnUrl" id="vnUrl" value=""  />
+						<input type="url" name="vnUrl" id="vnUrl" placeholder="http://"  />
 					</div>
 				   	<div data-role="fieldcontain">
-					 	<label for="vnPhone">Phone Number:</label>
+					 	<label for="vnPhone">Phone:</label>
 						<input type="tel" name="vnPhone" id="vnPhone" value=""  />
 				   	</div>
-
+			
 					<div data-role="controlgroup" data-type="horizontal">
-						<a href="#locationDetailsDPage" data-role="button" data-rel="dialog" data-icon="plus" data-inline="true">Location</a>
-						<a href="" data-role="button" data-rel="dialog" data-icon="search" data-inline="true">Image</a>
+						<a href="" data-role="button" data-rel="dialog" data-icon="plus" data-inline="true">Take photo</a>
+						<a href="" data-role="button" data-rel="dialog" data-icon="search" data-inline="true">Find image</a>
 					</div>
 					
 					<div data-role="fieldcontain"> 
-						<a href="#byLocationSearchPage" data-role="button" data-rel="dialog" data-icon="search">Search existent venue</a>
+						<a href="#searchVenueDialogPage" data-role="button" data-rel="dialog" data-icon="search">Search existent venue</a>
 					</div>   
 				</div>		   
 				
@@ -393,52 +416,30 @@
 						<a href="#byLocationSearchPage" data-role="button" data-rel="dialog" data-icon="search">Search existent Artist</a>
 					</div>
 				</div>		   
+				<!-- </div> -->
 	 
 		   		<input  id="evCreateSubmBtn" class="submit" type="submit" value="Submit" data-theme="a"/>
-		   		<a href="#byUserSearchPage" data-role="button">Cancel</a>
+		   		<a href="#" data-rel="back" data-role="button">Cancel</a>
 	 
 	 
 			 </form>
 			 <div id="consoleLoginPage"></div>
 		</div>
-
-
 	</div>
 	
-	<div data-role="dialog" id="locationDetailsDPage" data-add-back-btn="true">
+	
+	<div data-role="dialog" id="searchVenueDialogPage" data-add-back-btn="true">
 
 		<div data-role="header">
 			<h1>Events</h1>
 		</div>
 
-		<div data-role="content">
-			<h2>Location Details:</h2>
-			   <div data-role="fieldcontain">
-				 <label for="veLocCountry">Country:</label>
-				 <input type="text" name="veLocCountry" id="veLocCountry" value="" required="true" />
-			   </div>
-
-			   <div data-role="fieldcontain">
-				 <label for="veLocCity">City:</label>
-				 <input type="text" name="veLocCity" id="veLocCity" value="" required="true" />
-			   </div>
-			   <div data-role="fieldcontain">
-				 <label for="veLocStreet">Street:</label>
-				 <input type="text" name="veLocStreet" id="veLocStreet" value="" required="true" />
-			   </div>
-			   <div data-role="fieldcontain">
-				 <label for="veLocLat">Latitude:</label>
-				 <input type="number" name="veLocLat" id="veLocLat" value=""  />
-			   </div>
-			   <div data-role="fieldcontain">
-				 <label for="veLocLong">Longitude:</label>
-				 <input type="number" name="veLocLong" id="veLocLong" value=""  />
-			   </div>
-			   
-			   <input id="crLocatDetails" type="submit" value="OK" data-theme="a">
-			   <a id="crLocatCancelBtn" href="#createEventPage" data-role="button">Cancel</a>
-			 
-			 <div id="consoleLoginPage"></div>
+		<div data-role="content">			
+			
+			<ul id="searchVenueList" data-role="listview" data-filter="true" data-filter-placeholder="Search Venue ...">
+			</ul>
+			<input  id="vnSearchSubmBtn" class="submit" type="submit" value="Submit" data-theme="a"/>
+		   	<a href="#" data-rel="back" data-role="button">Cancel</a>
 		</div>
 
 		<div data-role="footer">

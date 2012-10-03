@@ -32,7 +32,7 @@ $(function(){
                	minlength: 2
             }, 
             vnName: {
-            	required: true,
+            	required: true
             }
         },
         messages : {
@@ -50,15 +50,15 @@ $(function(){
 		},*/
 		// specifying a submitHandler prevents the default submit
 		submitHandler: function() {
+
 			console.log("submitted!");
 			var url = AjaxEventHelper.getRootURL() + 'events';
 			AjaxEventHelper.createPOSTRequestAjax(url, 
 												  function(data){
-														$('#consoleLoginPage').append("dfsdfsd").append(data);
-								
 														$("#createEventPage").dialog('close');
+														$('.console').append("Event created").append(data);
 												  }, 
-												  createEventRegisterRequest());
+												  createEventRegisterRequest()); 
 		},
 		// set this class to error-labels to indicate valid fields
 		success: function(label) {
@@ -153,6 +153,17 @@ $(function(){
     	$("#evColapInfo, #vnColapInfo, #arColapInfo ").trigger('collapse');
     });
 
+    // code to execute when user clicks in submit event button
+    // this has to be done so the validation can be fulfilled.
+    // If the the panel is colapsed the validatiion of the fields wont be fired
+    $('#evCreateSubmBtn').click( function(){
+    	// expand basic event and venue collapsable panel
+    	$("#evBasicColapInfo").trigger('expand');
+    	$("#vnColapInfo").trigger('expand');
+    });
+
+    
+    
     // code to execute when user clicks in add event button
     /*
     $('#evBasicColapInfo').click( function(){

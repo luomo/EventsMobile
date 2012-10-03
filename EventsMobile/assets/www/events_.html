@@ -88,7 +88,7 @@
 	</div>
 
 	<!-- personal Page -->
-	<div data-role="page" id="byUserSearchPage" data-theme="c">
+	<div data-role="page" id="byUserSearchPage" data-theme="c" data-add-back-btn="true">
 		<div data-role="header">
 			
 			
@@ -368,13 +368,10 @@
 						<input type="url" name="vnUrl" id="vnUrl" value=""  />
 					</div>
 				   	<div data-role="fieldcontain">
-					 	<label for="vnPhone">Name:</label>
+					 	<label for="vnPhone">Phone Number:</label>
 						<input type="tel" name="vnPhone" id="vnPhone" value=""  />
 				   	</div>
-					<div data-role="fieldcontain">
-						<label for="vnName">Name:</label>
-						<input type="text" name="vnName" id="vnName" value="" required="true" />
-					</div>
+
 					<div data-role="controlgroup" data-type="horizontal">
 						<a href="#locationDetailsDPage" data-role="button" data-rel="dialog" data-icon="plus" data-inline="true">Location</a>
 						<a href="" data-role="button" data-rel="dialog" data-icon="search" data-inline="true">Image</a>
@@ -397,7 +394,7 @@
 					</div>
 				</div>		   
 	 
-		   		<input class="submit" type="submit" value="Submit" data-theme="a"/>
+		   		<input  id="evCreateSubmBtn" class="submit" type="submit" value="Submit" data-theme="a"/>
 		   		<a href="#byUserSearchPage" data-role="button">Cancel</a>
 	 
 	 

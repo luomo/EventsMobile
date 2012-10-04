@@ -1,7 +1,7 @@
 // ************************************************************ 
 // ***************** Javascript Location object *************** 
 // ************************************************************
-EventListApp.Location = function ( city, country, street, postalCode, latitude, longitude){
+var Location = function ( city, country, street, postalCode, latitude, longitude){
 	this.city = city;
 	this.country = country;
 	this.street = street;
@@ -11,7 +11,7 @@ EventListApp.Location = function ( city, country, street, postalCode, latitude, 
 }
 // adding methods to Location Object
 // create method toString    
-EventListApp.Location.prototype.toString  = function(){
+Location.prototype.toString  = function(){
 	return '[city: '+ this.city + ' ,country: ' + this.country + ' ,street:' + this.street 
 				+ ' ,postalCode:' + this.postalCode +' ,latitude:' + this.latitude +' ,longitude:' + this.longitude + ']';
 }

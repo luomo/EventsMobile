@@ -9,4 +9,5 @@ $( document ).bind( "mobileinit", function() {
     	$.mobile.loadingMessageTextVisible = true;
     	$.mobile.loadingMessageTheme = 'a';
     	//$.mobile.phonegapNavigationEnabled = true
+    	//$.mobile.page.prototype.options.addBackBtn = true;
 	});	

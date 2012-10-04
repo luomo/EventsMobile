@@ -15,7 +15,7 @@ $(function(){
 	// ********* Initiaizing Code *********
 	// ************************************
 	// initialize our application singleton
-	EventListApp.init();
+	//EventListApp.init();
 	// ************************************	
 	
 	
@@ -195,15 +195,12 @@ $(function(){
     			for(var i = 0; i < list.length ; i++) {	
     				var _venue = list[i];
     				// Create html row for displaying event
-    				//html += createHtmlEventRow(_event);
     				html += '<li ><a href=""><img alt="coverArt" src="images/mia.png" /><h3>' + _venue.name + '</h3>';
     			    html += '<p>' + _venue.location.country + '</p>';
     			    html += '<p>' + _venue.location.city + '</p>';
     			    html += '</a>';
     			    html += '<a href="javascript:loadVenueById('+ _venue.id + ')"></a>';
     			    html += '</li>';
-    				//eventLocal = createEventJSObjectBasedOnJsonAjaxReq(_event);
-    				//EventListApp.addEvent(eventLocal);
     			}
     		});
     		console.log(html);
@@ -292,20 +289,20 @@ function createEventRegisterRequest(){
 	var vnLocLong = $('#vnLocLong').val();
 	
 	var event;
-	event = new EventListApp.Event( null, evTitle, evStartDate, evDescr, null, null,  
-									evPrice, evTags, 0/*'UserId'*/, null, evUrl,
-			  						new EventListApp.Artist(null, 'Artist XPTO'),
-			  						new EventListApp.Venue( vnId, 
-			  												vnName,
-			  						 						new EventListApp.Location(vnLocCity,
-			  						 												  vnLocCountry,
-			  						 												  vnLocStreet,
-		  						 							   						  null,
-		  						 							   						  vnLocLat,
-		  						 							   						  vnLocLong ),
-		  						 							 vnUrl,
-		  						 							 vnPhone,
-			  						 						 null));
+	event = new Event(  null, evTitle, evStartDate, evDescr, null, null,  
+						evPrice, evTags, 0/*'UserId'*/, null, evUrl,
+  						new Artist(null, 'Artist XPTO'),
+  						new Venue( vnId, 
+								   vnName,
+								   new Location(vnLocCity,
+											    vnLocCountry,
+											    vnLocStreet,
+					   						  	null,
+					   						  	vnLocLat,
+					   						  	vnLocLong ),
+					   		       vnUrl,
+					   		       vnPhone,
+					   		       null));
 	//console.log(event.toString());
 	
 	//Note: maybe we should add the event to a userList events in memory and add this event to the existent singleton list
@@ -320,25 +317,6 @@ function createEventRegisterRequest(){
 // ************************ Start of JavaScript functions *************************
 // ********************************************************************************
 
-// Create a full Event JavaScript Object based on event object returned by restfull ws
-function createEventJSObjectBasedOnJsonAjaxReq(eventJson) {
-	var event;
-	event = new EventListApp.Event( eventJson.id, eventJson.title, eventJson.startDate, eventJson.description, eventJson.image, eventJson.attendance,  
-				  					eventJson.price, eventJson.tag, eventJson.owner, eventJson.processDate, eventJson.url,
-			  						new EventListApp.Artist(eventJson.artist.id, eventJson.artist.artist),
-			  						new EventListApp.Venue( eventJson.venue.id, 
-			  												eventJson.venue.name,
-			  						 						new EventListApp.Location(eventJson.venue.location.city,
-		  						 							   						  eventJson.venue.location.country,
-		  						 							   						  eventJson.venue.location.street,
-		  						 							   						  eventJson.venue.location.postalCode,
-		  						 							   						  eventJson.venue.location.latitude,
-		  						 							   						  eventJson.venue.location.longitude  ),
-			  						 eventJson.venue.website,
-			  						 eventJson.venue.phoneNumber,
-			  						 eventJson.venue.image));
-	return event;
-}
 
 
 // Refresh function called whenever the user clicks on refresh button on searchByDate page
@@ -361,8 +339,7 @@ function loadEventsForUserAjax(){
 
 			// Create html row for displaying event
 			html += createHtmlEventRow(_event);
-			eventLocal = createEventJSObjectBasedOnJsonAjaxReq(_event);
-			EventListApp.addEvent(eventLocal);
+			EventListApp.addEvent(_event);
 
 		});
 		console.log(html);
@@ -394,8 +371,7 @@ function loadEventsForTodayAjax(){
 				var _event = list[i];
 				// Create html row for displaying event
 				html += createHtmlEventRow(_event);
-				eventLocal = createEventJSObjectBasedOnJsonAjaxReq(_event);
-				EventListApp.addEvent(eventLocal);
+				EventListApp.addEvent(_event);
 			}
 		});
 		console.log(html);
@@ -439,8 +415,7 @@ function loadCitiesAjax(){
 			var list = item.eventList;
 			for(var i = 0; i < list.length ; i++) {	
 				var _event = list[i];
-				eventLocal = createEventJSObjectBasedOnJsonAjaxReq(_event);
-				EventListApp.addEvent(eventLocal);
+				EventListApp.addEvent(_event);
 			}
 		});
 		console.log(html);
@@ -475,15 +450,11 @@ function loadEventsByCitiesInMemory(city) {
     	var _event = eventListByCity[i];
     	// Create html row for displaying event
     	html += createHtmlEventRow(_event);
-        // Create a full Event JavaScript Object based on event object returned by restfull ws
-        event = createEventJSObjectBasedOnJsonAjaxReq(_event);
-        console.log(event.toString());
-        EventListApp.addEvent(event);
+        EventListApp.addEvent(_event);
 	};
 	console.log(html);
 	$("#eventsByCitySearchList").html(html);
 	$("#eventsByCitySearchList").listview('refresh');  
-    
 }
 
 // function for creating events by city page	
@@ -508,10 +479,7 @@ function loadEventsByCitiesAjax(city) {
 		$.each(data, function (i, _event) {
 			// Create html row for displaying event
 			html += createHtmlEventRow(_event);
-	        // Create a full Event JavaScript Object based on event object returned by restfull ws
-	        event = createEventJSObjectBasedOnJsonAjaxReq(_event);
-	        console.log(event.toString());
-	        EventListApp.addEvent(event);
+	        EventListApp.addEvent(_event);
 		  });
 		  console.log(html);
 		  $("#eventsByCitySearchList").html(html);

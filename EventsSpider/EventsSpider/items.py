@@ -5,10 +5,13 @@
 
 from scrapy.item import Item, Field
 
-class EventsspiderItem(Item):
+class EventsItem(Item):
     # define the fields for your item here like:
     # name = Field()
-    title = Field()
-    startdate = Field()
-    description = Field()
+    artists = Field()
+    date = Field()
+    location = Field()
+    address = Field()
+    link = Field()
+    cost = Field()
 

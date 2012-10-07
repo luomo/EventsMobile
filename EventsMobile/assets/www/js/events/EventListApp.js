@@ -10,12 +10,19 @@ var EventListApp = function () {
 	
 	var db;
 	var dbCreated = false;
-	
+	var isConnected = true;
 	// Cordova is ready
 	// Initializing Phonegap
 	function onDeviceReady() {
+		if (navigator.network.connection.type != Connection.NONE) {
+			//alert('isConnected');
+			isConnected = true;
+		} else {
+			alert('Not Connected');
+			isConnected = false;
+		}
 		console.log("Phonegap is ready");
-		navigator.notification.alert("Phonegap is ready native");
+		//navigator.notification.alert("Phonegap is ready native");
 		
 	    db = window.openDatabase("EVENT_CACHE_DATA_DB", "1.0", "Cache DB", 2000000);
 	    /*
@@ -60,6 +67,20 @@ var EventListApp = function () {
         	console.log('data inserted');
         }, errorCB);  
     } 
+
+    function deleteEventFromLocalDB(eventId) {
+    	
+    	var eventSql = 'DELETE FROM EVENT_CACHE_DATA WHERE id = ?';
+    	var valuesInArray = [eventId];
+    	
+    	console.log("valuesInArray: cnt: "+ valuesInArray.length + " value: " + valuesInArray.toString());
+    	console.log("DELETE Event Cache Sql: " + eventSql);
+    	
+    	db.transaction( function(tx) {        	
+    		tx.executeSql(eventSql, valuesInArray, queryDB, errorCB);
+    		console.log('data deleted');
+    	}, errorCB);  
+    } 
     
     
 	function populateDB(tx) {
@@ -87,12 +108,30 @@ var EventListApp = function () {
 		return false;
 	}
 	
+	function populateListFromDB() {
+		
+	}
+	
+	function findEventIndex(eventId){
+		var index = -1;
+		for(i=0;i < list.length; i++){
+	  		var event = list[i];
+			if(event.id == eventId) {
+				return i;
+			}
+		}
+		return index;
+	} 
+	
 	return {
 		init : function() {
 			alert('Init()');
 			list = new Array();
 			// Initializing Phonegap
 			onDeviceReady();
+		},
+		isConnected : function(){
+			return isConnected;
 		},
 		clear : function(){
 			list = [];
@@ -112,6 +151,15 @@ var EventListApp = function () {
 			}
 			
 		}, 
+		removeEvent : function(eventId){
+			console.log("removeEvent:id: " + eventId);
+			var eventIdx = findEventIndex(eventId);
+			if (eventIdx !== -1) {
+				list.splice(eventIdx, 1);
+				deleteEventFromLocalDB(eventId);
+			}
+			
+		},
 		findEventsInEventList : function (eventId){
 			console.log("findEventsInEventList: " + eventId);
 			//This should be replaced by cache mechanisms ... until then :)

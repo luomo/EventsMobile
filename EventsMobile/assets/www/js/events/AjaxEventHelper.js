@@ -1,6 +1,7 @@
 var AjaxEventHelper = function(){
 		//var rootURL = 'http://localhost:8081/EventServiceApp/resources/';
 		var rootURL = 'http://localhost/crossDomain/';
+	    //var rootURL = 'http://10.197.100.70:8080/EventServiceApp/resources/';
 		
 		errorFunction = function(xhRequest, ErrorText, thrownError){
 			console.log('xhRequest: ' + xhRequest.responseText);

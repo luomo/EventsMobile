@@ -106,10 +106,10 @@ $(function(){
 	
 
 	// try to create a splashScreen while a app loads
-	setTimeout(hideSplash, 1000);
+	/*setTimeout(hideSplash, 1000);
 	function hideSplash() {
 	  $.mobile.changePage("#home", "fade");
-	}
+	}*/
 	
 	
 	// try to load webService info when byNameSearchPage loads		
@@ -157,7 +157,72 @@ $(function(){
 		    loadEventsByCitiesAjax(city)
 	    });
 
+    // Listen for any attempts to call changePage().
+    $(document).bind( "pagebeforechange", function(e, data) {
+    	// We only want to handle changePage() calls where the caller is
+    	// asking us to load a page by URL.
+    	if (typeof data.toPage === "string") {
+    		// We only want to handle a subset of URLs.
+    		var u = $.mobile.path.parseUrl(data.toPage);
+    		var delurl = /^#deleteEventDialogPage/;
+    		
+    		if (u.hash.search(delurl) !== -1) {
+    			// Display URL delete confirmation dialog box.
+    			openDeleteEventConfirmation(u, data.options);
+    			e.preventDefault();
+    		}
+    	}
+    });
+    
+ // Display Delete URL confirmation dialog for a specific url passed in as a parameter.
+    function openDeleteEventConfirmation(urlObj, options) {
+    	// Get the url parameter
+    	var evId = urlObj.hash.replace(/.*eventId=/, "").replace(/&eventTitle=.*/, "");
+    	var evTitle = urlObj.hash.replace(/.*&eventTitle=/, "");
+
+		
+    	// The pages we use to display our content are already in
+    	// the DOM. The id of the page we are going to write our
+    	// content into is specified in the hash before the '?'.
+    	var	pageSelector = urlObj.hash.replace(/\?.*$/, "");
+
+    	// Get the page we are going to write our content into.
+    	var $page = $(pageSelector);
+
+    	// Get the header for the page.
+		//$header = $page.children( ":jqmData(role=header)" );
+		//$header.find( "h1" ).html( evTitle );
+    	
+    	// Get the content area element for the page.
+    	var $content = $page.children(":jqmData(role=content)");
+
+    	// Set elements in the page.
+    	//$content.find("#evIdToDlt").val(evId);
+    	//$content.find("#eventTitleToDel").html(evId + evTitle);
+    	
+    	$("#evIdToDlt").val(evId);
+    	$("#eventTitleToDel").html(evTitle);
+    	
+
+    	// Pages are lazily enhanced. We call page() on the page
+    	// element to make sure it is always enhanced.
+    	$page.page();
+
+    	// Now call changePage() and tell it to switch to the page we just modified.
+    	$.mobile.changePage($page, options);
+    }
  
+    // When a event is deleted, remove it from the local storage and display the home page.
+    $("#evDeleteBtn").live("click" , function(e, data) {
+    	var evId = $("#evIdToDlt").val();
+    	removeEventById(evId);
+    	$("#deleteEventDialogPage").dialog('close');
+    	$.mobile.changePage("#byUserSearchPage");
+    	// $("#deleteEventDialogPage").dialog('close');
+    	//return false;
+    });
+    
+    
    // Setting the startDate of the event creation form to the current date
    // It MUST exist a better way of doing this 
    $(document).on('pageshow', 'div:jqmData(role="dialog")', function(event){
@@ -229,9 +294,25 @@ $(function(){
 });
 
 
+function removeEventById(eventId) {
+	console.log("removeEventById: " + eventId);
+	$.ajax({
+        type: 'DELETE',
+        url:  AjaxEventHelper.getRootURL() + 'events/'+ eventId,
+        success: function(data, textStatus, jqXHR){
+            console.log('Event deleted successfully');
+            EventListApp.removeEvent(eventId);
+            //loadEventsForUserAjax();
+        },
+        error: function(jqXHR, textStatus, errorThrown){
+        	console.log('error deleting record');
+        }
+    });
+}
+
 // function invoked when the user selects an existent venue 
 function loadVenueById(venueId) {
-	alert(venueId);
+	console.log("loadVenueById: " + venueId);
 	var url = AjaxEventHelper.getRootURL() + 'venue/'+venueId; 
 	
 	// invoke ws for obtain venue info for populate  form
@@ -338,7 +419,14 @@ function loadEventsForUserAjax(){
 		$.each(data, function(index, _event) {
 
 			// Create html row for displaying event
-			html += createHtmlEventRow(_event);
+			//html += createHtmlEventRow(_event);
+			html += '<li ><a href="javascript:loadEventById('+ _event.id +  ')"><img alt="coverArt" src="images/mia.png" /><h3>' + _event.title + '</h3>';
+		    html += '<p>' + _event.startDate + '</p>';
+		    html += '<p>' + _event.venue.location.city + '</p>';
+		    html += '</a>';
+		    //html += '<a href="javascript:removeEventById('+_event.id + ')" data-split-icon="delete"></a>';
+		    html += '<a href="#deleteEventDialogPage?eventId=' +_event.id + '&eventTitle='+ _event.title + '" data-split-icon="delete"  data-rel="dialog"></a>';
+		    html += '</li>';
 			EventListApp.addEvent(_event);
 
 		});
@@ -459,6 +547,8 @@ function loadEventsByCitiesInMemory(city) {
 
 // function for creating events by city page	
 function loadEventsByCitiesAjax(city) {
+	
+	//if (EventListApp.isConnected()) {
 	console.log('city:' + city);
 	// create event var
 	var event;
@@ -485,7 +575,10 @@ function loadEventsByCitiesAjax(city) {
 		  $("#eventsByCitySearchList").html(html);
 		  $("#eventsByCitySearchList").listview('refresh');  
     });
-	
+	/*
+	} else {
+		
+	}*/
 	
 }
 

@@ -106,7 +106,7 @@
 <body>
 	
 	
-	<!-- Splash Screen -->
+	<!-- Splash Screen
 	<div id="splash" data-role="page" data-theme="a" > 
 		<div data-role="content" class="logo" >    	
 			<p>	<h2>Welcome to events application!</h2> </p>
@@ -114,7 +114,7 @@
 					This is a sample application for searching events...
 				</p>
 		</div>
-	</div>
+	</div> -->
 
 
 	<!-- Home Page -->
@@ -518,9 +518,10 @@
 
 		<div data-role="content">			
 			<p>Are you sure you want to delete event <strong id="eventTitleToDel"></strong> ?</p>
-			<form action="" method="POST" name="deleteEventDialogPageForm" id="deleteEventDialogPageForm">
+			<form method="POST" name="deleteEventDialogPageForm" id="deleteEventDialogPageForm">
 				<input type="hidden" name="evIdToDlt" id="evIdToDlt"  />			
-			   	<input type="submit" value="Yes" data-theme="a"/>
+			   	<!-- <input type="submit" value="Yes" data-theme="a"/> -->
+			   	<a id="evDeleteBtn" data-role="button" data-theme="a">Yes</a>
 			   	<a href="#" data-rel="back" data-role="button">No</a>
 		   	</form>
 		</div>

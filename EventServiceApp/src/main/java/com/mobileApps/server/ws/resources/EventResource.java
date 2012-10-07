@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -16,11 +17,10 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import com.mobileApps.server.ws.domain.Event;
-import com.mobileApps.server.ws.domain.UserInfo;
 import com.mobileApps.server.ws.service.EventService;
 
 @Path("/events")
@@ -57,6 +57,16 @@ public class EventResource {
 	public Response getEventsById(@PathParam("eventId") Long id){
 		
 		return Response.ok(eventService.getEventsById(id)).header("Access-Control-Allow-Origin", "*")
+				.build();
+	}
+
+	@DELETE
+	@Path("/{eventId}")
+	@Produces({ MediaType.APPLICATION_JSON })
+	@SuppressWarnings("static-access")
+	public Response removeEventsById(@PathParam("eventId") Long id){
+		EventService.removeEventsById(id);
+		return Response.ok().header("Access-Control-Allow-Origin", "*")
 				.build();
 	}
 

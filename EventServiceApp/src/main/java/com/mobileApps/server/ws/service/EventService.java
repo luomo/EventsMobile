@@ -208,6 +208,19 @@ public class EventService {
 		return values;
 	}
 
+	public static void removeEventsById(Long eventId) {
+		int index = -1;
+		loop:
+		for (int i = 0; i < eventList.size(); i++) {
+			if(eventList.get(i).getId().equals(eventId.longValue())){
+				index = i;
+				break loop;
+			}
+		}
+		if(index != -1)
+			eventList.remove(index);;
+	}
+
 
 	
 }

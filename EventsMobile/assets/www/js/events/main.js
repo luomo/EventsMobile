@@ -144,6 +144,7 @@ $(function(){
     	if (typeof data.toPage === "string") {
     		// We only want to handle a subset of URLs.
     		var u = $.mobile.path.parseUrl(data.toPage);
+    		
     		var byLocUrl = /^#byLocationSearchPage/;
     		var userUrl = /^#byUserSearchPage/;
     		var delUrl = /^#deleteEventDialogPage/;
@@ -189,7 +190,7 @@ $(function(){
     
     // Display Delete URL confirmation dialog for a specific url passed in as a parameter.
     function openDeleteEventConfirmation(urlObj, options) {
-    	// Get the url parameter
+    	// Get the eventId and eventTitle URL parameters
     	var evId = urlObj.hash.replace(/.*eventId=/, "").replace(/&eventTitle=.*/, "");
     	var evTitle = urlObj.hash.replace(/.*&eventTitle=/, "");
 

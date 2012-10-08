@@ -109,29 +109,8 @@ $(function(){
 	/*setTimeout(hideSplash, 1000);
 	function hideSplash() {
 	  $.mobile.changePage("#home", "fade");
-	}*/
-	
-	
-	// try to load webService info when byNameSearchPage loads		
-	$('#byNameSearchPage').live("pageshow", function(){
-		// callback funtion invocation
-	   init(AjaxEventHelper.getRootURL() + 'events/city');
-	});
-		
-	// load webService info when byLocationSearchPage loads
-	$('#byLocationSearchPage').live("pageshow", function(){
-		loadCitiesAjax();
-	});
-
-	// load webService info when #byDateSearchPage loads
-	$('#byDateSearchPage').live("pageshow", function(){
-		loadEventsForTodayAjax();
-	});
-	
-	// load webService info when #byDateSearchPage loads
-	$('#byUserSearchPage').live("pageshow", function(){
-		loadEventsForUserAjax();
-	});
+	}
+	 */
 
 	
 	$('#loginBtn').click(function() {
@@ -157,6 +136,7 @@ $(function(){
 		    loadEventsByCitiesAjax(city)
 	    });
 
+    
     // Listen for any attempts to call changePage().
     $(document).bind( "pagebeforechange", function(e, data) {
     	// We only want to handle changePage() calls where the caller is
@@ -164,17 +144,50 @@ $(function(){
     	if (typeof data.toPage === "string") {
     		// We only want to handle a subset of URLs.
     		var u = $.mobile.path.parseUrl(data.toPage);
-    		var delurl = /^#deleteEventDialogPage/;
+    		var byLocUrl = /^#byLocationSearchPage/;
+    		var userUrl = /^#byUserSearchPage/;
+    		var delUrl = /^#deleteEventDialogPage/;
+    		var byNameUrl = /^#byNameSearchPage/;
+    		var byDateUrl = /^#byDateSearchPage/;
+    		var searchVenueUrl = /^#searchVenueDialogPage/;
     		
-    		if (u.hash.search(delurl) !== -1) {
+    		if (u.hash.search(delUrl) !== -1) {
     			// Display URL delete confirmation dialog box.
     			openDeleteEventConfirmation(u, data.options);
     			e.preventDefault();
-    		}
+    		} else if (u.hash.search(byLocUrl) !== -1) {
+    			// Display URL delete confirmation dialog box.
+    			loadCitiesAjax();
+    			//e.preventDefault();
+    		} else if (u.hash.search(byNameUrl) !== -1) {
+    			// callback funtion invocation
+     		   init(AjaxEventHelper.getRootURL() + 'events/city');
+    		} 
+    		else if (u.hash.search(byDateUrl) !== -1) {
+    			// callback funtion invocation
+    			loadEventsForTodayAjax();
+    		} 
+    		else if (u.hash.search(searchVenueUrl) !== -1) {
+    			// callback funtion invocation
+    			loadVenuesAjax();
+    		} 
+    		else if (u.hash.search(userUrl) !== -1) {
+	    		var isLogged = true;
+	    		if(isLogged) {
+	    			// Display URL delete confirmation dialog box.
+	    			loadEventsForUserAjax();
+	    			//e.preventDefault();
+	    		} else {
+	    			e.preventDefault();
+	    			$("#prefMsg").html("Please enter your login details");
+	    			// Now call changePage() and tell it to switch to the page we just modified.
+	    			$.mobile.changePage("#settings", "pop");
+	    		}
+	    	}
     	}
     });
     
- // Display Delete URL confirmation dialog for a specific url passed in as a parameter.
+    // Display Delete URL confirmation dialog for a specific url passed in as a parameter.
     function openDeleteEventConfirmation(urlObj, options) {
     	// Get the url parameter
     	var evId = urlObj.hash.replace(/.*eventId=/, "").replace(/&eventTitle=.*/, "");
@@ -212,39 +225,7 @@ $(function(){
     	$.mobile.changePage($page, options);
     }
  
-    // When a event is deleted, remove it from the local storage and display the home page.
-    $("#evDeleteBtn").live("click" , function(e, data) {
-    	var evId = $("#evIdToDlt").val();
-    	removeEventById(evId);
-    	$("#deleteEventDialogPage").dialog('close');
-    	$.mobile.changePage("#byUserSearchPage");
-    	// $("#deleteEventDialogPage").dialog('close');
-    	//return false;
-    });
-    
-    
-   // Setting the startDate of the event creation form to the current date
-   // It MUST exist a better way of doing this 
-   $(document).on('pageshow', 'div:jqmData(role="dialog")', function(event){
-	   var today = new Date();
-	   var todayStr = today.getDate() +"/"+(today.getMonth()+1)+"/"+ today.getFullYear();
-       $('#evStartDate').trigger('datebox', {'method':'set', 'value':todayStr});
-   });
-        
-   
-    // code to execute when user clicks in add event button
-    $('#addEventBtn').click( function(){
-    	//reset form values
-   		resetEventCreationFields();
-    	// expand basic collapsable panel
-    	$("#evBasicColapInfo").trigger('expand');
-    	// collapsable other panels
-    	$("#evColapInfo, #vnColapInfo, #arColapInfo ").trigger('collapse');
-
-    });
-
-    //$('#searchVenueDialogPageBtn').click( function(){
-    $('#searchVenueDialogPage').live("pageshow", function(){
+    function loadVenuesAjax(){
     	var url = AjaxEventHelper.getRootURL() + 'venue/country/pt';  /* Now we are passing country hardcoded */
     	
     	AjaxEventHelper.createGETRequestAjax(url, function(data){
@@ -276,10 +257,39 @@ $(function(){
     			*/
     		
         });
+    };
+    
+    // When a event is deleted, remove it from the local storage and display the home page.
+    $("#evDeleteBtn").live("click" , function(e, data) {
+    	var evId = $("#evIdToDlt").val();
+    	removeEventById(evId);
+    	$("#deleteEventDialogPage").dialog('close');
+    	$.mobile.changePage("#byUserSearchPage");
+    	// $("#deleteEventDialogPage").dialog('close');
+    	//return false;
+    });
+    
+    
+   // Setting the startDate of the event creation form to the current date
+   // It MUST exist a better way of doing this 
+   $(document).on('pageshow', 'div:jqmData(role="dialog")', function(event){
+	   var today = new Date();
+	   var todayStr = today.getDate() +"/"+(today.getMonth()+1)+"/"+ today.getFullYear();
+       $('#evStartDate').trigger('datebox', {'method':'set', 'value':todayStr});
+   });
+        
+   
+    // code to execute when user clicks in add event button
+    $('#addEventBtn').click( function(){
+    	//reset form values
+   		resetEventCreationFields();
+    	// expand basic collapsable panel
+    	$("#evBasicColapInfo").trigger('expand');
+    	// collapsable other panels
+    	$("#evColapInfo, #vnColapInfo, #arColapInfo ").trigger('collapse');
 
     });
     
-
     // code to execute when user clicks in submit event button
     // this has to be done so the validation can be fulfilled.
     // If the the panel is colapsed the validatiion of the fields wont be fired

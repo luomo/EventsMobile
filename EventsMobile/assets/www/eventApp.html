@@ -324,12 +324,24 @@
 		</div>
 
 		<div data-role="content">
-			<p>Settings</p>
-			<label for="updated">Receive updates</label> <select id="updated"
-				name="updated" data-role="slider">
-				<option value="no">No</option>
-				<option value="yes">Yes</option>
-			</select>
+			<p id="prefMsg"></p>
+			<div data-role="fieldcontain">
+				 <label for="userLogin">User:</label>
+				 <input type="text" name="user" id="userLogin" value="" required="true" />
+		   </div>
+
+		   <div data-role="fieldcontain">
+			 <label for="passLogin">Password:</label>
+			 <input type="password" name="password" id="passLogin" value="" required="true" />
+		   </div>
+			<div data-role="fieldcontain">
+				<label for="updated">Receive updates</label> <select id="updated"
+					name="updated" data-role="slider">
+					<option value="no">No</option>
+					<option value="yes">Yes</option>
+				</select>
+			</div>
+
 		</div>
 
 	</div>

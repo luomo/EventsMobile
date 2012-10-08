@@ -51,6 +51,14 @@ public class EventResource {
 	
 	
 	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getAllEvents(){
+		
+		return Response.ok(EventService.getAllEvents()).header("Access-Control-Allow-Origin", "*")
+				.build();
+	}
+
+	@GET
 	@Path("/{eventId}")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@SuppressWarnings("static-access")

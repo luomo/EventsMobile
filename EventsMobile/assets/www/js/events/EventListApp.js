@@ -8,96 +8,14 @@ var EventListApp = function () {
 	var list;
 	
 	
-	var db;
-	var dbCreated = false;
-	var isConnected = true;
-	// Cordova is ready
-	// Initializing Phonegap
-	function onDeviceReady() {
-		if (navigator.network.connection.type != Connection.NONE) {
-			//alert('isConnected');
-			isConnected = true;
-		} else {
-			alert('Not Connected');
-			isConnected = false;
-		}
-		console.log("Phonegap is ready");
-		//navigator.notification.alert("Phonegap is ready native");
-		
-	    db = window.openDatabase("EVENT_CACHE_DATA_DB", "1.0", "Cache DB", 2000000);
-	    /*
-	    if (dbCreated)
-	    	db.transaction(getEmployees, transaction_error);
-	    else*/
-	    	db.transaction(populateDB, errorCB, successCB);
-	    console.log(db);
+	function findEventById(eventId) {
+		for(i=0;i < list.length; i++){
+	  		var event = list[i];
+	  		if(event && event.id === eventId) 
+	  			return event;
+		};
+		return null;
 	}
-	
-	function queryDB(tx) {
-        tx.executeSql('SELECT * FROM EVENT_CACHE_DATA', [], querySuccess, errorCB);
-    }
-
- // Query the success callback
-    //
-    function querySuccess(tx, results) {
-    	var len = results.rows.length;
-	  	console.log("Returned rows = " + len);
-	  	// this will be true since it was a select statement and so rowsAffected was 0
-	 	if (!results.rowsAffected) {
-	    	console.log('No rows affected!');
-	    	return false;
-	  	}
-	 	console.log("EVENT_CACHE_DATA table: " + len + " rows found.");
-	    for (var i=0; i<len; i++){
-	    	var eventJson = results.rows.item(i);
-	    	console.log("Row = " + i + " ID = " + eventJson.id + " Data =  " + eventJson.evJsonDate);
-	    }
- 	}
-	
-    function addEventToLocalDB(eventId, eventJson) {
-
-    	var eventSql = 'INSERT INTO EVENT_CACHE_DATA ( id , evJsonDate) VALUES ( ? , ? )';
-    	var valuesInArray = [eventId, eventJson];
-    	
-    	console.log("valuesInArray: cnt: "+ valuesInArray.length + " value: " + valuesInArray.toString());
-        console.log("Insert Event Cache Sql: " + eventSql);
-        
-        db.transaction( function(tx) {        	
-        	tx.executeSql(eventSql, valuesInArray, queryDB, errorCB);
-        	console.log('data inserted');
-        }, errorCB);  
-    } 
-
-    function deleteEventFromLocalDB(eventId) {
-    	
-    	var eventSql = 'DELETE FROM EVENT_CACHE_DATA WHERE id = ?';
-    	var valuesInArray = [eventId];
-    	
-    	console.log("valuesInArray: cnt: "+ valuesInArray.length + " value: " + valuesInArray.toString());
-    	console.log("DELETE Event Cache Sql: " + eventSql);
-    	
-    	db.transaction( function(tx) {        	
-    		tx.executeSql(eventSql, valuesInArray, queryDB, errorCB);
-    		console.log('data deleted');
-    	}, errorCB);  
-    } 
-    
-    
-	function populateDB(tx) {
-        tx.executeSql('DROP TABLE IF EXISTS EVENT_CACHE_DATA');
-        tx.executeSql('CREATE TABLE IF NOT EXISTS EVENT_CACHE_DATA ( id INTEGER PRIMARY KEY, evJsonDate VARCHAR)');
-        console.log("Database create and populated");
-   }
-	
-	function successCB() {
-		dbCreated = true;
-		console.log("successCB");
-		db.transaction(queryDB, errorCB);
-	}
-	function errorCB(tx, err) {
-	    console.log("Error processing SQL: "+err);
-	}
-	
 	
 	function contains(eventId) {
 		for(i=0;i < list.length; i++){
@@ -127,14 +45,11 @@ var EventListApp = function () {
 		init : function() {
 			alert('Init()');
 			list = new Array();
-			// Initializing Phonegap
-			onDeviceReady();
-		},
-		isConnected : function(){
-			return isConnected;
+			EventDbDao.init();
 		},
 		clear : function(){
 			list = [];
+			EventDbDao.clear();
 		},
 		size : function(){
 			return list.length;
@@ -145,9 +60,21 @@ var EventListApp = function () {
 			console.log("addEvent:jsonObject: " + eventJson);
 			var event = Event.createEventJSObjectBasedOnJsonAjaxReq(eventJson);
 			console.log("addEvent:jsObject: " + event);
-			if(!contains(event.id)) {
-				addEventToLocalDB(event.id, JSON.stringify(event));
+			// find Event on memory List
+			var eventMemory = findEventById(event.id);
+			// if not defined we can added to our list and persist in our local database
+			if(eventMemory == undefined ) {
+				EventDbDao.addEvent(event);
 				list.push(event);
+			} else {
+				// if exists we have to validate if process date are different. If so we have to update in memory list and in local database
+				var processDateDB = eventMemory.processDate;
+				var processDateWS = event.processDate;
+				if(processDateWS > processDateDB) {
+					eventMemory = event;
+					// update in local database
+					EventDbDao.updateEvent(event.id);
+				}
 			}
 			
 		}, 
@@ -156,7 +83,7 @@ var EventListApp = function () {
 			var eventIdx = findEventIndex(eventId);
 			if (eventIdx !== -1) {
 				list.splice(eventIdx, 1);
-				deleteEventFromLocalDB(eventId);
+				EventDbDao.removeEvent(eventId);
 			}
 			
 		},
@@ -180,6 +107,19 @@ var EventListApp = function () {
 		  			eventsByCity.push(event);
 			}
 			return eventsByCity;
+		}, 
+		findAllEventsGroupedByCity : function() {
+			var map = new Object();
+			for(i=0;i < list.length; i++){
+				event = list[i];
+				var city = event.venue.location.city;
+				if(map[city] == undefined ) {
+					map[city] = new Array(); 
+				} 
+				map[city].push(event);
+			}
+			
+			return map;
 		}
 	}
 }(); // for what I read what makes it singleton are these last '()' !?!?? strange .. ah

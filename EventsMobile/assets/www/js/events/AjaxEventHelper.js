@@ -37,7 +37,7 @@ var AjaxEventHelper = function(){
 			    	$.mobile.hidePageLoadingMsg();
 			    });
 			},
-			createPOSTRequestAjax : function(url, callbackfuntion, dataToBePosted){
+			createPOSTRequestAjax : function(url, callbackfuntion, afterCallback, dataToBePosted){
 				console.log(url);
 				$.ajax({
 			        type: 'POST',
@@ -52,7 +52,7 @@ var AjaxEventHelper = function(){
 					      alert("page not found");
 					    }
 					 }
-			    });
+			    }).then( afterCallback(dataToBePosted) );
 			} 
 			
 		}

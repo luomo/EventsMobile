@@ -40,12 +40,21 @@ public class EventService {
 		Calendar tomorowCal = Calendar.getInstance();
 		tomorowCal.add(Calendar.DAY_OF_YEAR, 1);
 		Date tomorowDate = tomorowCal.getTime();
+
+		Calendar processDateCal = Calendar.getInstance();
+		processDateCal.set(Calendar.HOUR, 23);
+		processDateCal.set(Calendar.MINUTE, 12);
+		processDateCal.set(Calendar.SECOND, 30);
+		processDateCal.set(Calendar.MILLISECOND, 30);
+		Date processDate = processDateCal.getTime();
+		
+		
 		
 		eventList = new ArrayList<Event>();
-		eventList.add(new Event(eventId.incrementAndGet(), "Music - Event 1", new Date(), "Music event", null, "12", 12F,"tag", 1L, new Date(), "url", artist, venueBraga));
-		eventList.add(new Event(eventId.incrementAndGet(), "Festival Event 2", new Date(), "Other Music event",  null, "12", 10F, "tag", 1L, new Date(),"url", artist, venuePorto));
-		eventList.add(new Event(eventId.incrementAndGet(), "XX - Event 3", new Date(), "AnOther Music event", null,"12",10F, "tag", 1L, new Date(),"url", artist, venueCoimbra));
-		eventList.add(new Event(eventId.incrementAndGet(), "Festival - Event 4", tomorowDate, "AnOther Music event", null, "12", 10F, "tag", 1L, new Date(),"url", artist, venueBraga));
+		eventList.add(new Event(eventId.incrementAndGet(), "Music - Event 1", new Date(), "Music event", null, "12", 12F,"tag", 1L, processDate, "url", artist, venueBraga));
+		eventList.add(new Event(eventId.incrementAndGet(), "Festival Event 2", new Date(), "Other Music event",  null, "12", 10F, "tag", 1L,processDate,"url", artist, venuePorto));
+		eventList.add(new Event(eventId.incrementAndGet(), "XX - Event 3", new Date(), "AnOther Music event", null,"12",10F, "tag", 1L, processDate,"url", artist, venueCoimbra));
+		eventList.add(new Event(eventId.incrementAndGet(), "Festival - Event 4", tomorowDate, "AnOther Music event", null, "12", 10F, "tag", 1L,processDate,"url", artist, venueBraga));
 		eventList.add(new Event(eventId.incrementAndGet(), "Clubbing - 5", tomorowDate, "Music event", null, "12", 10F, "tag",1L, new Date(), "url", artist, venueBraga));
 
 		eventList.add(new Event(eventId.incrementAndGet(), "Music - Event 10", new Date(), "Music event", null, "12", 12F,"tag", 1L, new Date(), "url", artist, venueBraga));

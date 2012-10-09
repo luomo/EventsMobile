@@ -18,7 +18,7 @@ public class JsonDateAdapter extends XmlAdapter<String, Date> {
     public String marshal(Date v) throws Exception {
     	Calendar cal = new GregorianCalendar();
 		cal.setTime(v);
-		return DatatypeConverter.printDate(cal);
+		return DatatypeConverter.printDateTime(cal);
     }
 
 }

@@ -19,8 +19,10 @@
 <script type="text/javascript" charset="utf-8" src="cordova-2.0.0.js"></script>
 
 <script type="text/javascript" src="js/events/main.js"></script>
+<script type="text/javascript" src="js/events/EventDbDao.js"></script>
 <script type="text/javascript" src="js/events/AjaxEventHelper.js"></script>
-<script type="text/javascript" src="js/events/EventListApp.js"></script>
+<!--  <script type="text/javascript" src="js/events/EventListApp.js"></script> -->
+<script type="text/javascript" src="js/events/EventService.js"></script>
 <script type="text/javascript" src="js/events/Event.js"></script>
 <script type="text/javascript" src="js/events/Venue.js"></script>
 <script type="text/javascript" src="js/events/Location.js"></script>
@@ -41,7 +43,7 @@
 <script type="text/javascript">
 	//Wait for Cordova to load
 	//
-	document.addEventListener("deviceready", EventListApp.init, false);
+	document.addEventListener("deviceready", EventService.init, false);
 	/*
 	var db;
 	var dbCreated = false;
@@ -162,9 +164,7 @@
 
 		<div data-role="content" >
 			<h6><p class="console"></p></h6>
-			<ul id="eventsForUserSearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search Personal Events ..." data-split-icon="delete">
 
-			</ul>
 		</div>
 		
 		<div data-role="footer" data-position="fixed">
@@ -190,9 +190,7 @@
 
 		<div data-role="content">
 			<h6><p class="console"></p></h6>
-			<ul id="locationSearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search locations ..." >
 
-			</ul>
 		</div>
 
 		<div data-role="footer" data-position="fixed">
@@ -218,9 +216,6 @@
 		</div>
 
 		<div data-role="content">
-			<ul id="eventsByCitySearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search events ...">
-
-			</ul>
 		</div>
 
 		<div data-role="footer" data-position="fixed">
@@ -245,10 +240,8 @@
 		</div>
 
 		<div data-role="content">
-			<h6><p class="console"></p></h6>
-			<ul id="eventsForTodaySearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search events ...">
 
-			</ul>
+
 		</div>
 
 		<div data-role="footer" data-position="fixed">

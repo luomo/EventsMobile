@@ -24,7 +24,7 @@ var Event = function (id, title, startDate, description, image, attendance,  pri
 //Create a full Event JavaScript Object based on event object returned by restfull ws
 Event.createEventJSObjectBasedOnJsonAjaxReq = function(eventJson) {
 	var event;
-	console.log("jsonObject: " + eventJson);
+	//console.log("jsonObject: " + eventJson);
 	event = new Event( eventJson.id, eventJson.title, eventJson.startDate, eventJson.description, eventJson.image, eventJson.attendance,  
 	  					eventJson.price, eventJson.tag, eventJson.owner, eventJson.processDate, eventJson.url,
   						new Artist(eventJson.artist.id, eventJson.artist.artist),
@@ -39,8 +39,8 @@ Event.createEventJSObjectBasedOnJsonAjaxReq = function(eventJson) {
   						 eventJson.venue.website,
   						 eventJson.venue.phoneNumber,
   						 eventJson.venue.image));
-	console.log("jsObject: " + event);
-	console.log("Stringify: " + JSON.stringify(event));
+	//console.log("jsObject: " + event);
+	//console.log("Stringify: " + JSON.stringify(event));
 	return event;
 }
 

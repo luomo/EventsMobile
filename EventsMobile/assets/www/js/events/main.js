@@ -76,14 +76,22 @@ $(function(){
 		submitHandler: function() {
 
 			console.log("submitted!");
+			EventService.createEvent(
+					function(data){
+						$("#createEventPage").dialog('close');
+						$.mobile.changePage("#byUserSearchPage");
+					}, 
+					createEventRegisterRequest())
+		},
+			/*
 			var url = AjaxEventHelper.getRootURL() + 'events';
 			AjaxEventHelper.createPOSTRequestAjax(url, 
 												  function(data){
 														$("#createEventPage").dialog('close');
 														$('.console').append("Event created").append(data);
 												  }, 
-												  createEventRegisterRequest()); 
-		},
+												  createEventRegisterRequest()); */ 
+		
 		// set this class to error-labels to indicate valid fields
 		success: function(label) {
 			label.html("&nbsp;").addClass("checked");
@@ -126,8 +134,12 @@ $(function(){
 
 	// create a event listener for click events  on (#locationSearchList > li ... every li inside locationSearchList)
 	// the idea is to try to associate a click event in a way that we create dinamically the next page (events by city page)
-    $("#locationSearchList").on("click", "li", function() {
+    //$("#locationSearchList").on("click", "li", function() {
+	//$("#locationSearchList").click(function() {
+	/*
+	 $('#locationSearchList li').click(function(e) {
     	// fetch the id of li (it was fulfilled with item.city )
+		alert("clicked");
 	    var city = $(this).attr('id');
 	    // fetch the text of li --> to display in the header of next page
 	    //var city = $(this).text();
@@ -135,7 +147,7 @@ $(function(){
 	    //loadEventsByCitiesInMemory( city );
 		    loadEventsByCitiesAjax(city)
 	    });
-
+	 */
     
     // Listen for any attempts to call changePage().
     $(document).bind( "pagebeforechange", function(e, data) {
@@ -151,33 +163,50 @@ $(function(){
     		var byNameUrl = /^#byNameSearchPage/;
     		var byDateUrl = /^#byDateSearchPage/;
     		var searchVenueUrl = /^#searchVenueDialogPage/;
+    		var eventByCityUrl = /^#eventsByCityPage/;
+    		var eventDetailsUrl = /^#eventDetails/;
+    		
     		
     		if (u.hash.search(delUrl) !== -1) {
     			// Display URL delete confirmation dialog box.
     			openDeleteEventConfirmation(u, data.options);
     			e.preventDefault();
-    		} else if (u.hash.search(byLocUrl) !== -1) {
+    		} else if (u.hash.search(eventDetailsUrl) !== -1) {
+    			
+    			openEventDetailPage(u, data.options);
+    			e.preventDefault();
+    		}  
+    		else if (u.hash.search(eventByCityUrl) !== -1) {
+    			
+    			openEventByCityPage(u, data.options);
+    			e.preventDefault();
+    		}  else if (u.hash.search(byLocUrl) !== -1) {
     			// Display URL delete confirmation dialog box.
-    			loadCitiesAjax();
+    			openByLocationPage(u, data.options);
+    			e.preventDefault();
+    			//loadCitiesAjax();
     			//e.preventDefault();
-    		} else if (u.hash.search(byNameUrl) !== -1) {
+    		}else if (u.hash.search(byNameUrl) !== -1) {
     			// callback funtion invocation
      		   init(AjaxEventHelper.getRootURL() + 'events/city');
     		} 
     		else if (u.hash.search(byDateUrl) !== -1) {
     			// callback funtion invocation
-    			loadEventsForTodayAjax();
+    			//loadEventsForTodayAjax();
+    			openEventsForTodayPage(u, data.options);
+    			e.preventDefault();
     		} 
     		else if (u.hash.search(searchVenueUrl) !== -1) {
     			// callback funtion invocation
     			loadVenuesAjax();
     		} 
     		else if (u.hash.search(userUrl) !== -1) {
-	    		var isLogged = true;
+
+   	    		var isLogged = true;
 	    		if(isLogged) {
-	    			// Display URL delete confirmation dialog box.
-	    			loadEventsForUserAjax();
-	    			//e.preventDefault();
+	    			// Display user events URL 
+	    			openEventByUserPage(u, data.options);
+	    			e.preventDefault();
 	    		} else {
 	    			e.preventDefault();
 	    			$("#prefMsg").html("Please enter your login details");
@@ -187,6 +216,136 @@ $(function(){
 	    	}
     	}
     });
+    
+    // Display openEventDetailPage URL page
+    function openEventDetailPage(urlObj, options) {
+
+    	
+    	// Get the cityId URL parameters
+    	var eventId = urlObj.hash.replace(/.*eventId=/, "");
+    	
+    	// The pages we use to display our content are already in
+    	// the DOM. The id of the page we are going to write our
+    	// content into is specified in the hash before the '?'.
+    	var	pageSelector = urlObj.hash.replace(/\?.*$/, "");
+    	
+    	// Get the page we are going to write our content into.
+    	var $page = $(pageSelector);
+    	
+    	
+    	// because all this is ajax related he have to send our gui generation as a ajax callback.
+    	// If we didn't do it we would have data when we created the page
+    	EventService.findEventById( eventId, function (event) {
+    		
+	    		// Get the header for the page.
+	    		$header = $page.children( ":jqmData(role=header)" );
+	        	$header.find( "h1" ).html( event.title );
+	        	
+	        	// Get the content area element for the page.
+	        	var $content = $page.children(":jqmData(role=content)");
+	    		
+	    		// The markup we are going to inject into the content
+	        	// Create event info
+	        	var html = '';
+	        	html += '<p><h1><strong> ' + event.description + '</strong></h1></p>'
+	        	html += '<p><strong> ' + event.artist.artist + '</strong></p>'
+	        	html += '<p>' + event.startDate + '</p>'
+	        	html += '<p><a href="'+ event.url+ '">'+  event.url +'</a></p>'
+	        	
+	        	
+	        	console.log(html);	
+	        	// we reset the eventInfo from previous chosen events
+	        	$content.find( "#eventInfo" ).empty();
+	        	// append the info from the last event	
+	        	$content.find( "#eventInfo" ).append( html );
+	        	
+	        	
+	        	// create venue info
+	        	
+	        	html += '<p><h1><strong> ' + event.venue.venueName + '</strong></h1></p>'
+	        	html += '<p>' + event.venue.location.street + ' - ' + event.venue.location.country +'</p>'
+	        	html += '<p>' + event.venue.location.postalCode + ' - ' + event.venue.location.city +'</p>'
+	        	html += '<p> lat: ' + event.venue.location.latitude + 'º</p>'
+	        	html += '<p> long:' + event.venue.location.longitude +'º</p>'
+	        	html += '<p><a href="'+ event.venue.website + '">'+  event.venue.website +'</a></p>'
+	        	
+	        	// we reset the venueInfo from previous chosen events
+	        	$content.find( "#venueInfo" ).empty();
+	        	// append the info from the last event venue
+	        	$content.find( "#venueInfo" ).append( html );
+	
+	        	var tel = 'tel:' + event.venue.phoneNumber; 
+	        	$( "#phoneCallButton" ).attr('href', tel);
+	    			
+	    		// Inject the category items markup into the content element.
+	    		//$content.html( html );
+    			
+    			// Pages are lazily enhanced. We call page() on the page
+    			// element to make sure it is always enhanced.
+    			$page.page();
+
+	    		// Make sure the url displayed in the the browser's location field includes parameters
+	    		options.dataUrl = urlObj.href;
+
+    			
+    			// Now call changePage() and tell it to switch to the page we just modified.
+    			$.mobile.changePage($page, options);
+    	});
+    	
+    	
+    }
+    
+    
+    // Display openByLocationPage URL page
+    function openByLocationPage(urlObj, options) {
+
+    	
+    	
+    	// The pages we use to display our content are already in
+    	// the DOM. The id of the page we are going to write our
+    	// content into is specified in the hash before the '?'.
+    	var	pageSelector = urlObj.hash.replace(/\?.*$/, "");
+    	
+    	// Get the page we are going to write our content into.
+    	var $page = $(pageSelector);
+    	
+    	// Get the header for the page.
+    	//$header = $page.children( ":jqmData(role=header)" );
+    	//$header.find( "h1" ).html( evTitle );
+    	
+    	// Get the content area element for the page.
+    	var $content = $page.children(":jqmData(role=content)");
+    	
+    	// because all this is ajax related he have to send our gui generation as a ajax callback.
+    	// If we didn't do it we would have data when we created the page
+    	EventService.findAllEventsGroupedByCity( function (map) {
+    		// The markup we are going to inject into the content
+        	var html = '<ul id="locationSearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search locations ..." >'
+
+        	// Set elements in the page.
+        	for(var key in map){
+    			html += '<li><a href="#eventsByCityPage?cityId=' + key +'">' + key + '<span class=ui-li-count>' + map[key].length + '</span> </a> </li>';
+    		};
+    		
+    		html += '</ul>';
+    		
+    		// Inject the category items markup into the content element.
+    		$content.html( html );
+
+    		
+        	// Pages are lazily enhanced. We call page() on the page
+        	// element to make sure it is always enhanced.
+        	$page.page();
+        	
+        	// Enhance the listview we just injected.
+        	$content.find( ":jqmData(role=listview)" ).listview();
+
+        	// Now call changePage() and tell it to switch to the page we just modified.
+        	$.mobile.changePage($page, options);
+    	});
+    	
+    	
+    }
     
     // Display Delete URL confirmation dialog for a specific url passed in as a parameter.
     function openDeleteEventConfirmation(urlObj, options) {
@@ -224,6 +383,229 @@ $(function(){
 
     	// Now call changePage() and tell it to switch to the page we just modified.
     	$.mobile.changePage($page, options);
+    }
+
+    function openEventByCityPage(urlObj, options) {
+    	// Get the cityId URL parameters
+    	var cityId = urlObj.hash.replace(/.*cityId=/, "");
+    	
+
+    	// The pages we use to display our content are already in
+    	// the DOM. The id of the page we are going to write our
+    	// content into is specified in the hash before the '?'.
+    	var	pageSelector = urlObj.hash.replace(/\?.*$/, "");
+    	
+    	// Get the page we are going to write our content into.
+    	var $page = $(pageSelector);
+    	
+    	// Get the header for the page.
+    	$header = $page.children( ":jqmData(role=header)" );
+    	$header.find( "h1" ).html( cityId );
+    	
+    	// Get the content area element for the page.
+    	var $content = $page.children(":jqmData(role=content)");
+    	
+    	
+
+    	// The markup we are going to inject into the content
+    	var html = '<ul id="eventsByCitySearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search events ...">';
+
+    	// Set elements in the page.
+        var url = AjaxEventHelper.getRootURL() + 'events/location/country/pt/city/' + cityId;
+        
+    	AjaxEventHelper.createGETRequestAjax(url, function(data){
+    		
+    		
+        	$.each(data, function (i, _event) {
+    			// Create html row for displaying event
+    			html += createHtmlEventRow(_event);
+    	        //EventListApp.addEvent(_event);
+    		  });
+        	
+        	console.log(html);
+        	html += '</ul>';
+    		
+    		
+    		// Inject the category items markup into the content element.
+    		$content.html( html );
+
+    		
+        	// Pages are lazily enhanced. We call page() on the page
+        	// element to make sure it is always enhanced.
+        	$page.page();
+        	
+        	// Enhance the listview we just injected.
+        	$content.find( ":jqmData(role=listview)" ).listview();
+
+        	// Now call changePage() and tell it to switch to the page we just modified.
+        	$.mobile.changePage($page, options);
+        });
+		
+    	
+    }
+
+    function openEventByUserPage(urlObj, options) {
+
+    	    	
+    	// The pages we use to display our content are already in
+    	// the DOM. The id of the page we are going to write our
+    	// content into is specified in the hash before the '?'.
+    	var	pageSelector = urlObj.hash.replace(/\?.*$/, "");
+    	
+    	// Get the page we are going to write our content into.
+    	var $page = $(pageSelector);
+    	
+    	// Get the header for the page.
+    	$header = $page.children( ":jqmData(role=header)" );
+    	//$header.find( "h1" ).html( 'User events' );
+    	
+    	// Get the content area element for the page.
+    	var $content = $page.children(":jqmData(role=content)");
+    	
+
+    	    	
+    	// because all this is ajax related he have to send our gui generation as a ajax callback.
+    	// If we didn't do it we would have data when we created the page
+    	EventService.findEventsByuserId( 0, function (list) {
+        	// The markup we are going to inject into the content
+        	var html = '<ul id="eventsForUserSearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search Personal Events ..." data-split-icon="delete">';
+        	var _event;
+        	// Set elements in the page.
+        	for( var i = 0; i < list.length ; i++) {
+        		_event = list[i];
+        		//html += '<li ><a href="javascript:loadEventById('+ _event.id +  ')"><img alt="coverArt" src="images/mia.png" /><h3>' + _event.title + '</h3>';
+        		html += '<li ><a href="#eventDetails?eventId='+ _event.id + '"><img alt="coverArt" src="images/mia.png" /><h3>' + _event.title + '</h3>';
+    		    html += '<p>' + _event.startDate + '</p>';
+    		    html += '<p>' + _event.venue.location.city + '</p>';
+    		    html += '</a>';
+    		    html += '<a href="#deleteEventDialogPage?eventId=' +_event.id + '&eventTitle='+ _event.title + '" data-split-icon="delete"  data-rel="dialog"></a>';
+    		    html += '</li>';
+    		};
+    		
+    		html += '</ul>';
+    		
+    		// Inject the category items markup into the content element.
+    		$content.html( html );
+
+        	// Pages are lazily enhanced. We call page() on the page
+        	// element to make sure it is always enhanced.
+        	$page.page();
+        	
+        	// Enhance the listview we just injected.
+        	$content.find( ":jqmData(role=listview)" ).listview();
+
+        	// Now call changePage() and tell it to switch to the page we just modified.
+        	$.mobile.changePage($page, options);
+    	});
+    	
+    }
+
+    function openEventsForTodayPage(urlObj, options) {
+    	
+    	
+    	// The pages we use to display our content are already in
+    	// the DOM. The id of the page we are going to write our
+    	// content into is specified in the hash before the '?'.
+    	var	pageSelector = urlObj.hash.replace(/\?.*$/, "");
+    	
+    	// Get the page we are going to write our content into.
+    	var $page = $(pageSelector);
+    	
+    	// Get the header for the page.
+    	$header = $page.children( ":jqmData(role=header)" );
+    	//$header.find( "h1" ).html( 'User events' );
+    	
+    	// Get the content area element for the page.
+    	var $content = $page.children(":jqmData(role=content)");
+    	
+    
+    	var date = new Date();
+    	EventService.findEventforToday( date, function ( map) {
+    		
+    		
+    		// The markup we are going to inject into the content
+        	var html = '<ul id="eventsForTodaySearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search events ...">';
+        	var _event;
+        	
+        	for(var key in map){
+    			//html += '<li><a href="#eventsByCityPage?cityId=' + key +'">' + key + '<span class=ui-li-count>' + map[key].length + '</span> </a> </li>';
+            	// Set elements in the page.
+            	html += '<li data-role="list-divider">' + key + '</li>';
+    			var list = map[key];
+    			for(var i = 0; i < list.length ; i++) {	
+    				var _event = list[i];
+    				// Create html row for displaying event
+    				html += createHtmlEventRow(_event);
+    			}
+    		};
+
+    		
+    		html += '</ul>';
+    		
+    		// Inject the category items markup into the content element.
+    		$content.html( html );
+
+        	// Pages are lazily enhanced. We call page() on the page
+        	// element to make sure it is always enhanced.
+        	$page.page();
+        	
+        	// Enhance the listview we just injected.
+        	$content.find( ":jqmData(role=listview)" ).listview();
+
+        	// Now call changePage() and tell it to switch to the page we just modified.
+        	$.mobile.changePage($page, options);
+    	});
+
+    	
+    	
+    	// Set elements in the page.
+    	/*
+    	var d = new Date();
+    	var curr_date = d.getDate();
+    	var curr_month = d.getMonth() +1 ; // 0 based
+    	var curr_year = d.getFullYear(); 
+    	var date = curr_year  + "/" + curr_month + "/" + curr_date; 
+    	var url = AjaxEventHelper.getRootURL() + 'events/date?searchDate=' + date;
+    	
+    	AjaxEventHelper.createGETRequestAjax(url, function(data){
+    		var html = '';
+    		
+    		//if (!data )
+    		// validar se existe events .. se n fazer display ao user
+    		
+    		$.each(data, function(index, _eventDto) {
+    			html += '<li data-role="list-divider">' + _eventDto.city + '</li>';
+    			var list = _eventDto.eventList;
+    			for(var i = 0; i < list.length ; i++) {	
+    				var _event = list[i];
+    				// Create html row for displaying event
+    				html += createHtmlEventRow(_event);
+    				EventListApp.addEvent(_event);
+    			}
+    		});
+    		console.log(html);
+      		$("#eventsForTodaySearchList").html(html);
+      		$("#eventsForTodaySearchList").listview('refresh');
+      		$(".console").html("Data refreshed ..");
+        });
+    	
+    	html += '</ul>';
+    	
+    	// Inject the category items markup into the content element.
+    	$content.html( html );
+    	
+    	
+    	// Pages are lazily enhanced. We call page() on the page
+    	// element to make sure it is always enhanced.
+    	$page.page();
+    	
+    	// Enhance the listview we just injected.
+    	$content.find( ":jqmData(role=listview)" ).listview();
+    	
+    	// Now call changePage() and tell it to switch to the page we just modified.
+    	$.mobile.changePage($page, options);
+    	
+    	*/
     }
  
     function loadVenuesAjax(){
@@ -307,6 +689,7 @@ $(function(){
 
 function removeEventById(eventId) {
 	console.log("removeEventById: " + eventId);
+	/*
 	$.ajax({
         type: 'DELETE',
         url:  AjaxEventHelper.getRootURL() + 'events/'+ eventId,
@@ -318,7 +701,7 @@ function removeEventById(eventId) {
         error: function(jqXHR, textStatus, errorThrown){
         	console.log('error deleting record');
         }
-    });
+    }); */
 }
 
 // function invoked when the user selects an existent venue 
@@ -382,7 +765,7 @@ function createEventRegisterRequest(){
 	
 	var event;
 	event = new Event(  null, evTitle, evStartDate, evDescr, null, null,  
-						evPrice, evTags, 0/*'UserId'*/, null, evUrl,
+						evPrice, evTags, 0/*'UserId'*/, new Date(), evUrl,
   						new Artist(null, 'Artist XPTO'),
   						new Venue( vnId, 
 								   vnName,
@@ -418,6 +801,7 @@ function refreshByDate(){
 	loadEventsForTodayAjax();
 }
 
+/*
 function loadEventsForUserAjax(){
 	
 	var url = AjaxEventHelper.getRootURL() + 'events/user/' + 0 ; // it should be the user id already logged in. We are creating events with owner == 0
@@ -448,6 +832,7 @@ function loadEventsForUserAjax(){
     });
 	
 }
+*/
 
 function loadEventsForTodayAjax(){
 	var d = new Date();
@@ -494,7 +879,8 @@ function refreshByLocation(){
 
 
 // utility function that loads cities with events and the number of events per city updating the GUI layer then
-// It is called by refresh function() and when the user opens the search part of the application (search by location) 
+// It is called by refresh function() and when the user opens the search part of the application (search by location)
+
 function loadCitiesAjax(){
 
     // callback function invocation
@@ -596,7 +982,8 @@ function loadEventsByCitiesAjax(city) {
 
 function createHtmlEventRow(_event) {
 	var html = '';
-	html += '<li ><a href="javascript:loadEventById('+ _event.id +  ')"><img alt="coverArt" src="images/mia.png" /><h3>' + _event.title + '</h3>';
+	//html += '<li ><a href="javascript:loadEventById('+ _event.id +  ')"><img alt="coverArt" src="images/mia.png" /><h3>' + _event.title + '</h3>';
+	html += '<li ><a href="#eventDetails?eventId='+ _event.id + '"><img alt="coverArt" src="images/mia.png" /><h3>' + _event.title + '</h3>';
     html += '<p>' + _event.startDate + '</p>';
     html += '<p>' + _event.venue.location.city + '</p>';
     html += '</a></li>';

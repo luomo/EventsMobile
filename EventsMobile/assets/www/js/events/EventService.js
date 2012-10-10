@@ -17,25 +17,24 @@ var EventService = function () {
 	// Public API
 	return {
 		init : function() {
-			alert('Init()');
+			alert("EventService: init ");
+			console.log("EventService: init ");
 			EventDbDao.init();
 			EventService.sync(function(){
 				console.log("nothing to update");
 			})
 		},
 		clear : function(){
-			
+			console.log("EventService: clear ");
 			EventDbDao.clear();
 		},
-		size : function(){
-			return EventDbDao.size();
-		},
 		addEventToDB : function(eventJson){
-			console.log("addEventToDB:jsObject: " + eventJson);
+			console.log("EventService: addEventToDB ");
 			var event = Event.createEventJSObjectBasedOnJsonAjaxReq(eventJson);
 			EventDbDao.addOrUpdateEvent(event);			
 		}, 
 		createEvent : function (callback, jsonDataToBePosted) {
+			console.log("EventService: createEvent ");
 			var url = AjaxEventHelper.getRootURL() + 'events';
 			AjaxEventHelper.createPOSTRequestAjax( url, 
 												   function( data ){
@@ -45,16 +44,13 @@ var EventService = function () {
 													jsonDataToBePosted); 
 		},
 		deleteEventById : function(eventId, callback) {
+			console.log("EventService: deleteEventById: " + eventId);
 			var url = AjaxEventHelper.getRootURL() + 'events/'+ eventId;
 			AjaxEventHelper.createDELETERequestAjax(url,
 													function ( data ){
 														EventDbDao.removeEvent(eventId);
 														callback(data)
 													})
-		},
-		removeEventById : function(eventId){
-			console.log("removeEvent:id: " + eventId);
-			EventDbDao.removeEvent(eventId);
 		},
 		getLastSync: function(callback) {
 			EventDbDao.getLastSyncDate(callback);
@@ -85,20 +81,20 @@ var EventService = function () {
 	        		
 	    },
 	    findEventsByuserId : function (userId, callback){
-	    	console.log("findEventsById: " + userId);
+	    	console.log("EventService:findEventsById: " + userId);
 			EventDbDao.findEventsByuserId(userId, function(_eventJS) {
 														callback(_eventJS);
 													 });
 	    },
 		findEventById : function (eventId, callback){
-			console.log("findEventById: " + eventId);
+			console.log("EventService:findEventById: " + eventId);
 			EventDbDao.findEventById(eventId, function(_eventJS) {
 														callback(_eventJS);
 													 });
 			
 		}, 
-		findEventforToday : function (date, callback){
-			console.log("findEventforToday: " + date);
+		findEventsforToday : function (date, callback){
+			console.log("EventService:findEventsforToday: " + date);
 			EventDbDao.findEventforToday(date, 
 					function(list) {
 						var map = new Object();
@@ -119,6 +115,7 @@ var EventService = function () {
 		}, 
 	    // utility methods for displaying info in the gui
 	    findAllEventsGroupedByCity : function(callback) {
+	    	console.log("EventService:findAllEventsGroupedByCity");
 			EventDbDao.findAll( new Date(),  
 							    function(list){
 									var map = new Object();
@@ -137,4 +134,9 @@ var EventService = function () {
 			);
 		}
 	}
+	/*, 
+	findEventsByCity : function(cityId, callback){
+		console.log("EventService:findEventsByCity: " + cityId);
+		EventDbDao.findEventsByCity(cityId, callback);
+	}*/
 }(); 

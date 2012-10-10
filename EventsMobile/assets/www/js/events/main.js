@@ -252,16 +252,15 @@ $(function(){
 	        	html += '<p>' + event.startDate + '</p>'
 	        	html += '<p><a href="'+ event.url+ '">'+  event.url +'</a></p>'
 	        	
-	        	
-	        	console.log(html);	
+	        		
 	        	// we reset the eventInfo from previous chosen events
 	        	$content.find( "#eventInfo" ).empty();
 	        	// append the info from the last event	
-	        	$content.find( "#eventInfo" ).append( html );
+	        	$content.find( "#eventInfo" ).html( html );
 	        	
 	        	
 	        	// create venue info
-	        	
+	        	html = '';
 	        	html += '<p><h1><strong> ' + event.venue.venueName + '</strong></h1></p>'
 	        	html += '<p>' + event.venue.location.street + ' - ' + event.venue.location.country +'</p>'
 	        	html += '<p>' + event.venue.location.postalCode + ' - ' + event.venue.location.city +'</p>'
@@ -272,7 +271,7 @@ $(function(){
 	        	// we reset the venueInfo from previous chosen events
 	        	$content.find( "#venueInfo" ).empty();
 	        	// append the info from the last event venue
-	        	$content.find( "#venueInfo" ).append( html );
+	        	$content.find( "#venueInfo" ).html( html );
 	
 	        	var tel = 'tel:' + event.venue.phoneNumber; 
 	        	$( "#phoneCallButton" ).attr('href', tel);
@@ -422,7 +421,7 @@ $(function(){
     	        //EventListApp.addEvent(_event);
     		  });
         	
-        	console.log(html);
+        	//console.log(html);
         	html += '</ul>';
     		
     		
@@ -520,7 +519,7 @@ $(function(){
     	
     
     	var date = new Date();
-    	EventService.findEventforToday( date, function ( map) {
+    	EventService.findEventsforToday( date, function ( map) {
     		
     		
     		// The markup we are going to inject into the content
@@ -631,7 +630,7 @@ $(function(){
     			    html += '</li>';
     			}
     		});
-    		console.log(html);
+    		//console.log(html);
       		$("#searchVenueList").html(html);
       		$("#searchVenueList").listview('refresh');
       		/*
@@ -843,7 +842,7 @@ function loadEventsForTodayAjax(){
 				EventListApp.addEvent(_event);
 			}
 		});
-		console.log(html);
+		//console.log(html);
   		$("#eventsForTodaySearchList").html(html);
   		$("#eventsForTodaySearchList").listview('refresh');
   		$(".console").html("Data refreshed ..");
@@ -926,7 +925,7 @@ function loadEventsByCitiesInMemory(city) {
     	html += createHtmlEventRow(_event);
         EventListApp.addEvent(_event);
 	};
-	console.log(html);
+	//console.log(html);
 	$("#eventsByCitySearchList").html(html);
 	$("#eventsByCitySearchList").listview('refresh');  
 }
@@ -957,7 +956,7 @@ function loadEventsByCitiesAjax(city) {
 			html += createHtmlEventRow(_event);
 	        EventListApp.addEvent(_event);
 		  });
-		  console.log(html);
+		  //console.log(html);
 		  $("#eventsByCitySearchList").html(html);
 		  $("#eventsByCitySearchList").listview('refresh');  
     });
@@ -1011,7 +1010,7 @@ function populateEventPage(event) {
 	html += '<p><a href="'+ event.url+ '">'+  event.url +'</a></p>'
 	
 	
-	console.log(html);	
+	//console.log(html);	
 	// we reset the eventInfo from previous chosen events
 	$content.find( "#eventInfo" ).empty();
 	// append the info from the last event	

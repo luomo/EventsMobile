@@ -39,8 +39,8 @@ var EventDbDao = function () {
 		db.transaction(queryDB, txErrorHandler);
 	}
 	function txErrorHandler(tx, err) {
-		console.log(err);
 	    console.log("Error processing SQL: "+err + " txMessage: " + tx.message);
+	    console.log(err);
 	}
 	
 	function queryDB(tx) {
@@ -66,26 +66,27 @@ var EventDbDao = function () {
 	
     function addOrUpdateEventToLocalDB(eventId, event) {
 
-    	var eventSql = 'INSERT OR REPLACE INTO EVENT_CACHE_DATA ( id , startDate, evJsonData, lastModified, owner) VALUES ( ? , ? ,?, ?, ? )';
     	var queryParameters = [eventId, event.startDate, JSON.stringify(event), event.processDate, event.owner];
-    	
-    	console.log('Inserting or Updating Event in local database:');
-    	console.log("queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
-        console.log("Insert Event Cache Sql: " + eventSql);
+    	var sql = 'INSERT OR REPLACE INTO EVENT_CACHE_DATA ( id , startDate, evJsonData, lastModified, owner) VALUES ( ? , ? ,?, ?, ? )';
+    	console.log("EventDao:addOrUpdateEventToLocalDB - Sql: " + sql + "queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
         
-        db.transaction( function(tx) {        	
-				        	tx.executeSql(eventSql, queryParameters, queryDB, txErrorHandler);
-				        	console.log('data inserted');
-				        }, 
-				        txErrorHandler);  
+        db.transaction( 
+        		function(tx) {
+			        	tx.executeSql( sql, 
+			        				   queryParameters, 
+			        				   queryDB, 
+			        				   txErrorHandler);
+			        	console.log('Event inserted');
+			        }, 
+			        txErrorHandler);  
     } 
 
     
     function syncEventsToLocalDB(eventList, callback) {
+    	var sql = 'INSERT OR REPLACE INTO EVENT_CACHE_DATA ( id , startDate, evJsonData, lastModified, owner) VALUES ( ? , ? ,?, ?, ? )';
+    	console.log('EventDao:syncEventsToLocalDB');
     	db.transaction(
                 function(tx) {
-                    var sql = 'INSERT OR REPLACE INTO EVENT_CACHE_DATA ( id , startDate, evJsonData, lastModified, owner) VALUES ( ? , ? ,?, ?, ? )';
-                    console.log('syncEventsToLocalDB');
                     var event, queryParameters;
                     for (var i = 0; i < eventList.length; i++) {
                         event = eventList[i];
@@ -104,33 +105,38 @@ var EventDbDao = function () {
     
     function deleteAllEvents() {
     	
+    	var queryParameters = [];
+    	console.log("EventDao:deleteAllEvents - Sql: " + sql + "queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
     	
-    	console.log('deleteAllEvents');
-    	console.log("DELETE Event Cache Sql: " + deleteSql);
-    	
-    	db.transaction( function(tx) {        	
-				    		tx.executeSql(eventSql, [], queryDB, txErrorHandler);
-				    		console.log('data deleted');
-			    		}, 
-			    		txErrorHandler);  
+    	db.transaction( 
+    			function(tx) {        	
+		    		tx.executeSql(eventSql, 
+		    					  queryParameters, 
+		    					  queryDB, 
+		    					  txErrorHandler);
+		    		console.log('Events deleted');
+	    		}, 
+	    		txErrorHandler
+	    );  
     }
 
 
     function findEventByIdInDatabase(eventId, callback){
     	
-    	var sql = "SELECT * FROM EVENT_CACHE_DATA WHERE id = ?";
     	var queryParameters = [eventId];
+    	var sql = "SELECT * FROM EVENT_CACHE_DATA WHERE id = ?";
+    	console.log("EventDao:findEventByIdInDatabase - Sql: " + sql + "queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
     	
-    	console.log("findEventByIdInDatabase: Sql: " + sql);
-    	console.log("findEventByIdInDatabase: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
     	db.transaction(
     			function (tx) {
-    				tx.executeSql( sql , queryParameters,  function (tx, results) {
-    					var events = [];    					
-    					console.log("Returned rows = " + results.rows.length);
-    					var _eventJson = results.rows.item(0).evJsonData; 
-    					var _eventJS = Event.createEventJSObjectBasedOnJsonAjaxReq(jQuery.parseJSON(_eventJson));
-    					callback(_eventJS);
+    				tx.executeSql( sql , 
+    							   queryParameters,  
+    							   function (tx, results) {
+				    					var events = [];    					
+				    					console.log("Returned rows = " + results.rows.length);
+				    					var _eventJson = results.rows.item(0).evJsonData; 
+				    					var _eventJS = Event.createEventJSObjectBasedOnJsonAjaxReq(jQuery.parseJSON(_eventJson));
+				    					callback(_eventJS);
     					
     				}, 
     				this.txErrorHandler);
@@ -140,114 +146,97 @@ var EventDbDao = function () {
 
     
     function findAllEventsInDatabase(date, callback){
-    	
+
+    	var queryParameters = [];
     	var sql = "SELECT * FROM EVENT_CACHE_DATA";
-    	console.log("findAllEvents: Sql: " + sql);
+    	console.log("EventDao:findAllEvents - Sql: " + sql + "queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
+    	
     	db.transaction(
     		function (tx) {
-    			tx.executeSql( sql , [],  function (tx, results) {
-							    		    	var events = [];
-							    		 		var len = results.rows.length;
-							    		 		console.log("Returned rows = " + len);
-							    		 		var i = 0;
-							    		 		for( i=0 ; i < len ; i++) {
-							    		 			var eventJsonData = results.rows.item(i).evJsonData; 
-							    		 			events[i] = eventJsonData;
-							    		 		}
-							    		 		console.log(len + ' rows found');
-							    		 		callback(events);
-							    		 		
-						    			}, 
-						    			this.txErrorHandler);
+    			tx.executeSql( sql ,
+    						   queryParameters,  
+    						   function (tx, results) {
+					    		    	var events = [];
+					    		 		var len = results.rows.length;
+					    		 		console.log("Returned rows = " + len);
+					    		 		var i = 0;
+					    		 		for( i=0 ; i < len ; i++) {
+					    		 			var eventJsonData = results.rows.item(i).evJsonData; 
+					    		 			events[i] = eventJsonData;
+					    		 		}
+					    		 		console.log(len + ' rows found');
+					    		 		callback(events);
+					    		 		
+				    			}, 
+				    			this.txErrorHandler);
     		}
     	)
     }
 
     function findEventforTodayInDatabase(date, callback){
     	
-    	var sql = 'SELECT * FROM EVENT_CACHE_DATA WHERE startDate BETWEEN DATE("now") AND DATE("now", "+1 day")';
     	var queryParameters = [];
-    	
-    	console.log("findEventByIdInDatabase: Sql: " + sql);
-    	console.log("findEventByIdInDatabase: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
+    	var sql = 'SELECT * FROM EVENT_CACHE_DATA WHERE startDate BETWEEN DATE("now") AND DATE("now", "+1 day")';
+    	console.log("EventDao:findEventforTodayInDatabase - Sql: " + sql + "queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
+
     	db.transaction(
     			function (tx) {
-    				tx.executeSql( sql , queryParameters,  function (tx, results) {
-							    					var events = [];    					
-							    					var len = results.rows.length;
-							    					var _eventJson ;
-							    					console.log("Returned rows = " + len);
-								    		 		for(var i=0 ; i < len ; i++) {
-								    		 			_eventJson = results.rows.item(i).evJsonData; 
-								    		 			events.push(_eventJson);
-								    		 		} 
-							    					callback(events);
-							    					
-							    				}, 
-							    				this.txErrorHandler);
+    				tx.executeSql( sql , 
+    							   queryParameters,  
+    							   function (tx, results) {
+					    					var events = [];    					
+					    					var len = results.rows.length;
+					    					var _eventJson ;
+					    					console.log("Returned rows = " + len);
+						    		 		for(var i=0 ; i < len ; i++) {
+						    		 			_eventJson = results.rows.item(i).evJsonData; 
+						    		 			events.push(_eventJson);
+						    		 		} 
+					    					callback(events);
+					    					
+					    			}, 
+					    			this.txErrorHandler);
     			}
     	)
     }
    
     function findEventsByuserId(userId, callback){
-    	
-    	var sql = "SELECT * FROM EVENT_CACHE_DATA WHERE owner = ?";
     	var queryParameters = [userId];
+    	var sql = "SELECT * FROM EVENT_CACHE_DATA WHERE owner = ?";
+    	console.log("EventDao:findEventsByuserId - Sql: " + sql + "queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
     	
-    	console.log("findEventsByuserId: Sql: " + sql);
-    	console.log("findEventsByuserId: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
     	db.transaction(
     			function (tx) {
-    				tx.executeSql( sql , queryParameters,  function (tx, results) {
-    					var events = [];    					
-    					var len = results.rows.length;
-    					console.log("Returned rows = " + len);
-	    		 		for(var i=0 ; i < len ; i++) {
-	    		 			var _eventJson = results.rows.item(i).evJsonData; 
-	    		 			events.push(Event.createEventJSObjectBasedOnJsonAjaxReq(jQuery.parseJSON(_eventJson)));
-	    		 		} 
-    					callback(events);
-    				}, 
-    				this.txErrorHandler);
+    				tx.executeSql( sql , 
+    							   queryParameters,  
+    							   function (tx, results) {
+										var events = [];    					
+										var len = results.rows.length;
+										console.log("Returned rows = " + len);
+								 		for(var i=0 ; i < len ; i++) {
+								 			var _eventJson = results.rows.item(i).evJsonData; 
+								 			events.push(Event.createEventJSObjectBasedOnJsonAjaxReq(jQuery.parseJSON(_eventJson)));
+								 		} 
+										callback(events);
+									}, 
+									this.txErrorHandler);
     			}
     	)
     }
-    
-    
-
-    function countAllEvents() {
-    	
-    	
-    	console.log('countAllEvents');
-		console.log("countA Event Cache Sql: " + countEventsSql);
-		
-		db.transaction( function(tx) {        	
-			tx.executeSql(eventSql, [], function (tx, results) {
-													 console.log("Returned rows = " + results.rows.length);
-													  // this will be true since it was a select statement and so rowsAffected was 0
-													  if (!results.rowsAffected) {
-													    console.log('No rows affected!');
-													    return 0;
-													  } else
-														  return results;
-						  						  }, txErrorHandler);
-						  console.log('data selected');
-						}, 
-						txErrorHandler);  
-    }
-    
+        
     function deleteEventFromLocalDB(eventId) {
-    	
-    	var eventSql = 'DELETE FROM EVENT_CACHE_DATA WHERE id = ?';
     	var queryParameters = [eventId];
+    	var sql = 'DELETE FROM EVENT_CACHE_DATA WHERE id = ?';
+    	console.log("EventDao:deleteEventFromLocalDB - Sql: " + sql + "queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
     	
-    	console.log("queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
-    	console.log("DELETE Event Cache Sql: " + eventSql);
-    	
-    	db.transaction( function(tx) {        	
-    		tx.executeSql(eventSql, queryParameters, queryDB, txErrorHandler);
-    		console.log('data deleted');
-    	}, txErrorHandler);  
+    	db.transaction( 
+    			function(tx) {        	
+		    		tx.executeSql( eventSql, 
+		    					   queryParameters, 
+		    					   queryDB, 
+		    					   txErrorHandler);
+		    		console.log('event deleted');
+		    	}, txErrorHandler);  
     } 
 
 	
@@ -259,10 +248,6 @@ var EventDbDao = function () {
 		},
 		clear : function(){
 			deleteAllEvents();
-			
-		},
-		size : function(){
-			return countAllEvents();
 		},
 		addOrUpdateEvent : function(event){
 			addOrUpdateEventToLocalDB(event.id, event)
@@ -285,6 +270,9 @@ var EventDbDao = function () {
 		findAll : function(date, callback){
 			// I think the date should be passed for only retrieving events after date
 			findAllEventsInDatabase(date, callback);
+		},
+		findEventsByCity : function(cityId, callback){
+			findEventsByCityInDatabase(cityId, callback);
 		},
 		getLastSyncDate : function (callback) {
 			db.transaction(

@@ -284,7 +284,7 @@ $(function(){
     			$page.page();
 
 	    		// Make sure the url displayed in the the browser's location field includes parameters
-	    		options.dataUrl = urlObj.href;
+	    		//options.dataUrl = urlObj.href;
 
     			
     			// Now call changePage() and tell it to switch to the page we just modified.
@@ -385,8 +385,14 @@ $(function(){
     }
 
     function openEventByCityPage(urlObj, options) {
+    	var hiddenFieldCityId = "cityIdHidden";
+    	
     	// Get the cityId URL parameters
-    	var cityId = urlObj.hash.replace(/.*cityId=/, "");
+    	var cityId;
+    	if(urlObj.hash.match('cityId') != null)
+    		cityId = urlObj.hash.replace(/.*cityId=/, "");
+    	else
+    		cityId = $("#"+hiddenFieldCityId).val();
     	
 
     	// The pages we use to display our content are already in
@@ -406,12 +412,44 @@ $(function(){
     	
     	
 
-    	// The markup we are going to inject into the content
-    	var html = '<ul id="eventsByCitySearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search events ...">';
 
-    	// Set elements in the page.
-        var url = AjaxEventHelper.getRootURL() + 'events/location/country/pt/city/' + cityId;
+    	EventService.findEventsByCity(
+    			cityId, 
+    			function(eventList) {
+    				var _event;
+    				// The markup we are going to inject into the content
+    				var html = '<ul id="eventsByCitySearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search events ...">';
+    			
+    				for(var i = 0 ; i < eventList.length ; i++){  
+    					_event = eventList[i];
+    					html += createHtmlEventRow(_event);
+    				}
+    				
+    				//console.log(html);
+    	        	html += '</ul>';
+    	    		
+    	    		html += '<input type="hidden"  id="' + hiddenFieldCityId + '" value="' + cityId + '" />';
+    	        	
+    	    		// Inject the category items markup into the content element.
+    	    		$content.html( html );
+
+    	    		
+    	        	// Pages are lazily enhanced. We call page() on the page
+    	        	// element to make sure it is always enhanced.
+    	        	$page.page();
+    	        	
+    	        	// Enhance the listview we just injected.
+    	        	$content.find( ":jqmData(role=listview)" ).listview();
+
+    	        	// Now call changePage() and tell it to switch to the page we just modified.
+    	        	$.mobile.changePage($page, options);
+    			}
+    	);
         
+        
+        /*
+    	// Set elements in the page.
+    	var url = AjaxEventHelper.getRootURL() + 'events/location/country/pt/city/' + cityId;
     	AjaxEventHelper.createGETRequestAjax(url, function(data){
     		
     		
@@ -439,7 +477,7 @@ $(function(){
         	// Now call changePage() and tell it to switch to the page we just modified.
         	$.mobile.changePage($page, options);
         });
-		
+		*/
     	
     }
 
@@ -851,7 +889,12 @@ function loadEventsForTodayAjax(){
 }
 
 
-
+function refresh(url) {
+	var urlTobeRefreshed = "#".concat(url);
+	EventService.sync(function(){
+		$.mobile.changePage(urlTobeRefreshed);
+	});
+}
 
 // Refresh function called whenever the user clicks on refresh button on searchByLocation page
 // It should be refactored to be more generic (other pages call it too) or we should create other methods for the other pages  

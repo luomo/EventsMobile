@@ -30,7 +30,7 @@ var EventDbDao = function () {
 	
 	function populateDB(tx) {
         tx.executeSql('DROP TABLE IF EXISTS EVENT_CACHE_DATA');
-        tx.executeSql('CREATE TABLE IF NOT EXISTS EVENT_CACHE_DATA ( id INTEGER PRIMARY KEY, startDate VARCHAR(50), evJsonData VARCHAR, lastModified VARCHAR(50), owner LONG)');
+        tx.executeSql('CREATE TABLE IF NOT EXISTS EVENT_CACHE_DATA ( id INTEGER PRIMARY KEY, startDate VARCHAR(50), city VARCHAR(50), evJsonData VARCHAR, lastModified VARCHAR(50), owner LONG)');
         console.log("Database create and populated");
    }
 	
@@ -47,6 +47,10 @@ var EventDbDao = function () {
         tx.executeSql('SELECT * FROM EVENT_CACHE_DATA', [], querySuccess, txErrorHandler);
     }
 
+	function logEvent(event){
+		return  "id: " + event.id + " ,startDate: " + event.startDat + " ,city: " + event.venue.location.city + " ,processDate: " +  event.processDate  + " ,owner: " +  event.owner
+	}
+	
 	// Query the success callback
     //
     function querySuccess(tx, results) {
@@ -66,8 +70,8 @@ var EventDbDao = function () {
 	
     function addOrUpdateEventToLocalDB(eventId, event) {
 
-    	var queryParameters = [eventId, event.startDate, JSON.stringify(event), event.processDate, event.owner];
-    	var sql = 'INSERT OR REPLACE INTO EVENT_CACHE_DATA ( id , startDate, evJsonData, lastModified, owner) VALUES ( ? , ? ,?, ?, ? )';
+    	var queryParameters = [eventId, event.startDate, event.venue.location.city, JSON.stringify(event), event.processDate, event.owner];
+    	var sql = 'INSERT OR REPLACE INTO EVENT_CACHE_DATA ( id , startDate, city,  evJsonData, lastModified, owner) VALUES ( ? , ? , ?, ?, ?, ? )';
     	console.log("EventDao:addOrUpdateEventToLocalDB - Sql: " + sql + "queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
         
         db.transaction( 
@@ -83,15 +87,17 @@ var EventDbDao = function () {
 
     
     function syncEventsToLocalDB(eventList, callback) {
-    	var sql = 'INSERT OR REPLACE INTO EVENT_CACHE_DATA ( id , startDate, evJsonData, lastModified, owner) VALUES ( ? , ? ,?, ?, ? )';
+    	var sql = 'INSERT OR REPLACE INTO EVENT_CACHE_DATA ( id , startDate, city, evJsonData, lastModified, owner) VALUES ( ? , ? , ? , ?, ?, ? )';
     	console.log('EventDao:syncEventsToLocalDB');
+    	
     	db.transaction(
                 function(tx) {
                     var event, queryParameters;
                     for (var i = 0; i < eventList.length; i++) {
                         event = eventList[i];
-                        queryParameters = [event.id, event.startDate, JSON.stringify(event), event.processDate, event.owner];
+                        queryParameters = [event.id, event.startDate, event.venue.location.city , JSON.stringify(event), event.processDate, event.owner];
                         tx.executeSql(sql, queryParameters);
+                        console.log("EventDao:syncEventsToLocalDB - Sql: " + sql + " Event: " + logEvent(event));
                     }
                     console.log('Synchronization complete (' +  eventList.length + ' items synchronized)');
                 },
@@ -196,6 +202,33 @@ var EventDbDao = function () {
 					    					
 					    			}, 
 					    			this.txErrorHandler);
+    			}
+    	)
+    }
+
+    function findEventsByCityInDatabase(cityId, callback){
+    	
+    	var queryParameters = [cityId];
+    	var sql = 'SELECT * FROM EVENT_CACHE_DATA WHERE city = ?';
+    	console.log("EventDao:findEventsByCityInDatabase - Sql: " + sql + "queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
+    	
+    	db.transaction(
+    			function (tx) {
+    				tx.executeSql( sql , 
+		    					   queryParameters,  
+		    					   function (tx, results) {
+				    					var events = [];    					
+				    					var len = results.rows.length;
+				    					var _eventJson ;
+				    					console.log("Returned rows = " + len);
+				    					for(var i=0 ; i < len ; i++) {
+				    						_eventJson = results.rows.item(i).evJsonData; 
+				    						events.push(_eventJson);
+				    					} 
+				    					callback(events);
+				    					
+				    				}, 
+				    				this.txErrorHandler);
     			}
     	)
     }

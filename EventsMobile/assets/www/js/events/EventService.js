@@ -132,11 +132,22 @@ var EventService = function () {
 									callback(map);
 								}
 			);
+		}, 
+		findEventsByCity : function(cityId, callback){
+			console.log("EventService:findEventsByCity: " + cityId);
+			EventDbDao.findEventsByCity( 
+					cityId, 
+					function(jsonEventList) {
+						var jsEventList = new Array();
+						var _eventJson, _eventJS;
+						for(i=0;i < jsonEventList.length; i++){
+							_eventJson = jsonEventList[i];
+							_eventJS = Event.createEventJSObjectBasedOnJsonAjaxReq(jQuery.parseJSON(_eventJson));
+							jsEventList.push(_eventJS);
+						}
+						callback(jsEventList);
+					}); 
+					
 		}
 	}
-	/*, 
-	findEventsByCity : function(cityId, callback){
-		console.log("EventService:findEventsByCity: " + cityId);
-		EventDbDao.findEventsByCity(cityId, callback);
-	}*/
 }(); 

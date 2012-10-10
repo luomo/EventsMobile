@@ -1,10 +1,3 @@
-// **********************************************************
-// ****************** Main Javascript code ******************
-// **********************************************************
-
-
-
-
 // *************************************************************************
 // ************************ Start of jQuery code ***************************
 // *************************************************************************
@@ -99,8 +92,6 @@ $(function(){
  
 	    });
 	
-
-	// ************************************
     
     // ****************************************
 	// ****** Event configuration  Code *******	
@@ -132,23 +123,10 @@ $(function(){
 				
 	});
 
-	// create a event listener for click events  on (#locationSearchList > li ... every li inside locationSearchList)
-	// the idea is to try to associate a click event in a way that we create dinamically the next page (events by city page)
-    //$("#locationSearchList").on("click", "li", function() {
-	//$("#locationSearchList").click(function() {
-	/*
-	 $('#locationSearchList li').click(function(e) {
-    	// fetch the id of li (it was fulfilled with item.city )
-		alert("clicked");
-	    var city = $(this).attr('id');
-	    // fetch the text of li --> to display in the header of next page
-	    //var city = $(this).text();
-	    // invoke function to create/fulfill new page results
-	    //loadEventsByCitiesInMemory( city );
-		    loadEventsByCitiesAjax(city)
-	    });
-	 */
     
+	// ****************************************
+	// ********** Main function  Code *********	
+	// ****************************************
     // Listen for any attempts to call changePage().
     $(document).bind( "pagebeforechange", function(e, data) {
     	// We only want to handle changePage() calls where the caller is
@@ -172,36 +150,34 @@ $(function(){
     			openDeleteEventConfirmation(u, data.options);
     			e.preventDefault();
     		} else if (u.hash.search(eventDetailsUrl) !== -1) {
-    			
+    			// Display event details page - #eventDetails   			
     			openEventDetailPage(u, data.options);
     			e.preventDefault();
     		}  
     		else if (u.hash.search(eventByCityUrl) !== -1) {
-    			
+    			// Display event by city page - #eventsByCityPage    			
     			openEventByCityPage(u, data.options);
     			e.preventDefault();
     		}  else if (u.hash.search(byLocUrl) !== -1) {
-    			// Display URL delete confirmation dialog box.
+    			// Display main search page .. by city - #byLocationSearchPage
     			openByLocationPage(u, data.options);
     			e.preventDefault();
-    			//loadCitiesAjax();
-    			//e.preventDefault();
     		}else if (u.hash.search(byNameUrl) !== -1) {
-    			// callback funtion invocation
+    			// NOTE: this will be refactored
+    			// callback function invocation
      		   init(AjaxEventHelper.getRootURL() + 'events/city');
     		} 
     		else if (u.hash.search(byDateUrl) !== -1) {
-    			// callback funtion invocation
-    			//loadEventsForTodayAjax();
+    			// Display event for today page - #byDateSearchPage
     			openEventsForTodayPage(u, data.options);
     			e.preventDefault();
     		} 
     		else if (u.hash.search(searchVenueUrl) !== -1) {
-    			// callback funtion invocation
+    			// Display URL venues dialog page - #searchVenueDialogPage
     			loadVenuesAjax();
     		} 
     		else if (u.hash.search(userUrl) !== -1) {
-
+    			// Display event by user page - #byUserSearchPage    			
    	    		var isLogged = true;
 	    		if(isLogged) {
 	    			// Display user events URL 
@@ -220,7 +196,6 @@ $(function(){
     // Display openEventDetailPage URL page
     function openEventDetailPage(urlObj, options) {
 
-    	
     	// Get the cityId URL parameters
     	var eventId = urlObj.hash.replace(/.*eventId=/, "");
     	
@@ -444,41 +419,7 @@ $(function(){
     	        	// Now call changePage() and tell it to switch to the page we just modified.
     	        	$.mobile.changePage($page, options);
     			}
-    	);
-        
-        
-        /*
-    	// Set elements in the page.
-    	var url = AjaxEventHelper.getRootURL() + 'events/location/country/pt/city/' + cityId;
-    	AjaxEventHelper.createGETRequestAjax(url, function(data){
-    		
-    		
-        	$.each(data, function (i, _event) {
-    			// Create html row for displaying event
-    			html += createHtmlEventRow(_event);
-    	        //EventListApp.addEvent(_event);
-    		  });
-        	
-        	//console.log(html);
-        	html += '</ul>';
-    		
-    		
-    		// Inject the category items markup into the content element.
-    		$content.html( html );
-
-    		
-        	// Pages are lazily enhanced. We call page() on the page
-        	// element to make sure it is always enhanced.
-        	$page.page();
-        	
-        	// Enhance the listview we just injected.
-        	$content.find( ":jqmData(role=listview)" ).listview();
-
-        	// Now call changePage() and tell it to switch to the page we just modified.
-        	$.mobile.changePage($page, options);
-        });
-		*/
-    	
+    	);      
     }
 
     function openEventByUserPage(urlObj, options) {
@@ -510,7 +451,6 @@ $(function(){
         	// Set elements in the page.
         	for( var i = 0; i < list.length ; i++) {
         		_event = list[i];
-        		//html += '<li ><a href="javascript:loadEventById('+ _event.id +  ')"><img alt="coverArt" src="images/mia.png" /><h3>' + _event.title + '</h3>';
         		html += '<li ><a href="#eventDetails?eventId='+ _event.id + '"><img alt="coverArt" src="images/mia.png" /><h3>' + _event.title + '</h3>';
     		    html += '<p>' + _event.startDate + '</p>';
     		    html += '<p>' + _event.venue.location.city + '</p>';
@@ -592,57 +532,6 @@ $(function(){
         	// Now call changePage() and tell it to switch to the page we just modified.
         	$.mobile.changePage($page, options);
     	});
-
-    	
-    	
-    	// Set elements in the page.
-    	/*
-    	var d = new Date();
-    	var curr_date = d.getDate();
-    	var curr_month = d.getMonth() +1 ; // 0 based
-    	var curr_year = d.getFullYear(); 
-    	var date = curr_year  + "/" + curr_month + "/" + curr_date; 
-    	var url = AjaxEventHelper.getRootURL() + 'events/date?searchDate=' + date;
-    	
-    	AjaxEventHelper.createGETRequestAjax(url, function(data){
-    		var html = '';
-    		
-    		//if (!data )
-    		// validar se existe events .. se n fazer display ao user
-    		
-    		$.each(data, function(index, _eventDto) {
-    			html += '<li data-role="list-divider">' + _eventDto.city + '</li>';
-    			var list = _eventDto.eventList;
-    			for(var i = 0; i < list.length ; i++) {	
-    				var _event = list[i];
-    				// Create html row for displaying event
-    				html += createHtmlEventRow(_event);
-    				EventListApp.addEvent(_event);
-    			}
-    		});
-    		console.log(html);
-      		$("#eventsForTodaySearchList").html(html);
-      		$("#eventsForTodaySearchList").listview('refresh');
-      		$(".console").html("Data refreshed ..");
-        });
-    	
-    	html += '</ul>';
-    	
-    	// Inject the category items markup into the content element.
-    	$content.html( html );
-    	
-    	
-    	// Pages are lazily enhanced. We call page() on the page
-    	// element to make sure it is always enhanced.
-    	$page.page();
-    	
-    	// Enhance the listview we just injected.
-    	$content.find( ":jqmData(role=listview)" ).listview();
-    	
-    	// Now call changePage() and tell it to switch to the page we just modified.
-    	$.mobile.changePage($page, options);
-    	
-    	*/
     }
  
     function loadVenuesAjax(){
@@ -677,6 +566,11 @@ $(function(){
     		
         });
     };
+
+    
+	// ***********************************************************
+	// ******************* jQuery event listeners ****************
+	// ***********************************************************
     
     // When a event is deleted, remove it from the local storage and display the home page.
     $("#deleteEventDialogPageForm").submit(function( ) {
@@ -724,6 +618,15 @@ $(function(){
     //$(":jqmData(role=datebox)").parent("div").css({"display":"inline-block","width":"60%"});
 });
 
+
+
+
+
+
+
+//********************************************************************************
+//************************ Start of JavaScript functions *************************
+//********************************************************************************
 
 
 // function invoked when the user selects an existent venue 
@@ -809,86 +712,9 @@ function createEventRegisterRequest(){
 } 
 
 
-
-// ********************************************************************************
-// ************************ Start of JavaScript functions *************************
-// ********************************************************************************
-
-
-
-// Refresh function called whenever the user clicks on refresh button on searchByDate page
-// It should be refactored to be more generic (other pages call it too) or we should create other methods for the other pages  
-function refreshByDate(){
-	$(".console").html("Verifying...");
-	loadEventsForTodayAjax();
-}
-
-/*
-function loadEventsForUserAjax(){
-	
-	var url = AjaxEventHelper.getRootURL() + 'events/user/' + 0 ; // it should be the user id already logged in. We are creating events with owner == 0
-	AjaxEventHelper.createGETRequestAjax(url, function(data){
-		var html = '';
-		
-		//if (!data )
-		// validar se existe events .. se n fazer display ao user
-		
-		$.each(data, function(index, _event) {
-
-			// Create html row for displaying event
-			//html += createHtmlEventRow(_event);
-			html += '<li ><a href="javascript:loadEventById('+ _event.id +  ')"><img alt="coverArt" src="images/mia.png" /><h3>' + _event.title + '</h3>';
-		    html += '<p>' + _event.startDate + '</p>';
-		    html += '<p>' + _event.venue.location.city + '</p>';
-		    html += '</a>';
-		    //html += '<a href="javascript:removeEventById('+_event.id + ')" data-split-icon="delete"></a>';
-		    html += '<a href="#deleteEventDialogPage?eventId=' +_event.id + '&eventTitle='+ _event.title + '" data-split-icon="delete"  data-rel="dialog"></a>';
-		    html += '</li>';
-			EventListApp.addEvent(_event);
-
-		});
-		console.log(html);
-  		$("#eventsForUserSearchList").html(html);
-  		$("#eventsForUserSearchList").listview('refresh');
-  		$(".console").html("Data refreshed ..");
-    });
-	
-}
-*/
-
-function loadEventsForTodayAjax(){
-	var d = new Date();
-	var curr_date = d.getDate();
-	var curr_month = d.getMonth() +1 ; // 0 based
-	var curr_year = d.getFullYear(); 
-	var date = curr_year  + "/" + curr_month + "/" + curr_date; 
-	var url = AjaxEventHelper.getRootURL() + 'events/date?searchDate=' + date;
-	
-	AjaxEventHelper.createGETRequestAjax(url, function(data){
-		var html = '';
-		
-		//if (!data )
-		// validar se existe events .. se n fazer display ao user
-		
-		$.each(data, function(index, _eventDto) {
-			html += '<li data-role="list-divider">' + _eventDto.city + '</li>';
-			var list = _eventDto.eventList;
-			for(var i = 0; i < list.length ; i++) {	
-				var _event = list[i];
-				// Create html row for displaying event
-				html += createHtmlEventRow(_event);
-				EventListApp.addEvent(_event);
-			}
-		});
-		//console.log(html);
-  		$("#eventsForTodaySearchList").html(html);
-  		$("#eventsForTodaySearchList").listview('refresh');
-  		$(".console").html("Data refreshed ..");
-    });
-	
-}
-
-
+// Generic Refresh/sync function 
+// Its called whenever the user clicks on refresh button on every page
+// Receives the url and sync events with server and enters on the generic routing function  (see pagebeforechange event listener)
 function refresh(url) {
 	var urlTobeRefreshed = "#".concat(url);
 	EventService.sync(function(){
@@ -896,189 +722,14 @@ function refresh(url) {
 	});
 }
 
-// Refresh function called whenever the user clicks on refresh button on searchByLocation page
-// It should be refactored to be more generic (other pages call it too) or we should create other methods for the other pages  
-function refreshByLocation(){
-	$(".console").html("Verifying...");
-	loadCitiesAjax();
-}
-
-
-
-// utility function that loads cities with events and the number of events per city updating the GUI layer then
-// It is called by refresh function() and when the user opens the search part of the application (search by location)
-
-function loadCitiesAjax(){
-
-	EventService.sync(function(){
-		$.mobile.changePage("#byLocationSearchPage");
-	})
-    // callback function invocation
-	/*
-    $(".console").html("Downloading ws data...");
-
-    var eventLocal;
-    var event;
-    // Create WS url
-   
-    // create ws url based on the city id clicked
-    var urlByCity = AjaxEventHelper.getRootURL() + 'events/location/country/pt';
-    // invoke web service
-    AjaxEventHelper.createGETRequestAjax(urlByCity, function(data){
-		var html = '';
-		$.each(data, function(index, item) {
-			html += '<li id="' + item.city+'"><a href="#eventsByCityPage">' + item.city + '<span class=ui-li-count>' + item.nbrEvents + '</span> </a> </li>';
-			var list = item.eventList;
-			for(var i = 0; i < list.length ; i++) {	
-				var _event = list[i];
-				EventListApp.addEvent(_event);
-			}
-		});
-		console.log(html);
-  		$("#locationSearchList").html(html);
-  		$("#locationSearchList").listview('refresh');
-  		$(".console").html("Data refreshed ..");
-    });
-	*/
-
-}
-
-
-// function for creating events by city page	
-function loadEventsByCitiesInMemory(city) {
-	console.log('city:' + city);
-	// create event var
-	var event;
-	// obtain page reference
-	var $page = $("#eventsByCityPage");
-
-	// get header 
-	$header = $page.children( ":jqmData(role=header)" );
-	// populate header with the name of the city we are selecting
-	$header.find( "h1" ).html( city );
-	
-	// create ws url based on the city id clicked
-    var url = AjaxEventHelper.getRootURL() + 'events/location/' + city;
-    var html = '';
-    var eventListByCity = EventListApp.findEventsInEventListByCity(city);
-    
-    for(var i = 0; i < eventListByCity.length ; i++) {		
-    	var _event = eventListByCity[i];
-    	// Create html row for displaying event
-    	html += createHtmlEventRow(_event);
-        EventListApp.addEvent(_event);
-	};
-	//console.log(html);
-	$("#eventsByCitySearchList").html(html);
-	$("#eventsByCitySearchList").listview('refresh');  
-}
-
-// function for creating events by city page	
-function loadEventsByCitiesAjax(city) {
-	
-	//if (EventListApp.isConnected()) {
-	console.log('city:' + city);
-	// create event var
-	var event;
-	// obtain page reference
-	var $page = $("#eventsByCityPage");
-
-	// get header 
-	$header = $page.children( ":jqmData(role=header)" );
-	// populate header with the name of the city we are selecting
-	$header.find( "h1" ).html( city );
-	
-	// create ws url based on the city id clicked
-    var url = AjaxEventHelper.getRootURL() + 'events/location/country/pt/city/' + city;
-    
-	AjaxEventHelper.createGETRequestAjax(url, function(data){
-		
-		var html = '';
-		$.each(data, function (i, _event) {
-			// Create html row for displaying event
-			html += createHtmlEventRow(_event);
-	        EventListApp.addEvent(_event);
-		  });
-		  //console.log(html);
-		  $("#eventsByCitySearchList").html(html);
-		  $("#eventsByCitySearchList").listview('refresh');  
-    });
-	/*
-	} else {
-		
-	}*/
-	
-}
-
 
 function createHtmlEventRow(_event) {
 	var html = '';
-	//html += '<li ><a href="javascript:loadEventById('+ _event.id +  ')"><img alt="coverArt" src="images/mia.png" /><h3>' + _event.title + '</h3>';
 	html += '<li ><a href="#eventDetails?eventId='+ _event.id + '"><img alt="coverArt" src="images/mia.png" /><h3>' + _event.title + '</h3>';
     html += '<p>' + _event.startDate + '</p>';
     html += '<p>' + _event.venue.location.city + '</p>';
     html += '</a></li>';
     return html;
-}
-
-// utility function that loads event information whenever the user chooses and event - updates the GUI layer then
-function loadEventById(eventId){
-	// looks in the singleton object for the event clicked/choosed
-	var event = EventListApp.findEventsInEventList(eventId);
-	// call function to update GUI with event details
-	populateEventPage(event);
-} 
-
-
-// Main funtion for display event function
-// This function is used to populate eventDetails page with event information
-// It is called by loadEventById function()
-function populateEventPage(event) {
-	// fetch eventDetails page
-	var $page = $("#eventDetails");
-	
-	// fetch page header
-	$header = $page.children( ":jqmData(role=header)" );
-	// find h1 header and fulfill it with event title 
-	$header.find( "h1" ).html( event.title );
-	
-	// fetch page content
-	$content = $page.children( ":jqmData(role=content)" );
-	
-	// Create event info
-	var html = '';
-	html += '<p><h1><strong> ' + event.description + '</strong></h1></p>'
-	html += '<p><strong> ' + event.artist.artist + '</strong></p>'
-	html += '<p>' + event.startDate + '</p>'
-	html += '<p><a href="'+ event.url+ '">'+  event.url +'</a></p>'
-	
-	
-	//console.log(html);	
-	// we reset the eventInfo from previous chosen events
-	$content.find( "#eventInfo" ).empty();
-	// append the info from the last event	
-	$content.find( "#eventInfo" ).append( html );
-	
-	
-	// create venue info
-	html = '';
-	html += '<p><h1><strong> ' + event.venue.venueName + '</strong></h1></p>'
-	html += '<p>' + event.venue.location.street + ' - ' + event.venue.location.country +'</p>'
-	html += '<p>' + event.venue.location.postalCode + ' - ' + event.venue.location.city +'</p>'
-	html += '<p> lat: ' + event.venue.location.latitude + 'º</p>'
-	html += '<p> long:' + event.venue.location.longitude +'º</p>'
-	html += '<p><a href="'+ event.venue.website + '">'+  event.venue.website +'</a></p>'
-	
-	// we reset the venueInfo from previous chosen events
-	$content.find( "#venueInfo" ).empty();
-	// append the info from the last event venue
-	$content.find( "#venueInfo" ).append( html );
-
-	var tel = 'tel:' + event.venue.phoneNumber; 
-	$( "#phoneCallButton" ).attr('href', tel);
-	
-	// We change to the details page
-	$.mobile.changePage($("#eventDetails"));
 }
 
 
@@ -1096,6 +747,9 @@ function createUserInfoRequest(){
 	
 }
 
+// ************************************************************************
+// ********************** JavaScript Deprecated Code **********************
+// ************************************************************************
 	
 // callback function (populates one <li> with the info returned by the webService) 
 // this function will be refactored in some other best way 
@@ -1128,5 +782,6 @@ function init(ws){
 }
 
 
-// ********************************************************************************
-// ********************************************************************************
+// *******************************************************************************
+// *******************************************************************************
+// *******************************************************************************

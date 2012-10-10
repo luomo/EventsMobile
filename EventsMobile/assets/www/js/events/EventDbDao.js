@@ -112,11 +112,12 @@ var EventDbDao = function () {
     function deleteAllEvents() {
     	
     	var queryParameters = [];
+    	var sql = "DELETE FROM EVENT_CACHE_DATA";
     	console.log("EventDao:deleteAllEvents - Sql: " + sql + "queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
     	
     	db.transaction( 
     			function(tx) {        	
-		    		tx.executeSql(eventSql, 
+		    		tx.executeSql(sql, 
 		    					  queryParameters, 
 		    					  queryDB, 
 		    					  txErrorHandler);
@@ -264,7 +265,7 @@ var EventDbDao = function () {
     	
     	db.transaction( 
     			function(tx) {        	
-		    		tx.executeSql( eventSql, 
+		    		tx.executeSql( sql, 
 		    					   queryParameters, 
 		    					   queryDB, 
 		    					   txErrorHandler);

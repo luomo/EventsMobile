@@ -28,17 +28,13 @@ var EventService = function () {
 			console.log("EventService: clear ");
 			EventDbDao.clear();
 		},
-		addEventToDB : function(eventJson){
-			console.log("EventService: addEventToDB ");
-			var event = Event.createEventJSObjectBasedOnJsonAjaxReq(eventJson);
-			EventDbDao.addOrUpdateEvent(event);			
-		}, 
 		createEvent : function (callback, jsonDataToBePosted) {
 			console.log("EventService: createEvent ");
 			var url = AjaxEventHelper.getRootURL() + 'events';
 			AjaxEventHelper.createPOSTRequestAjax( url, 
-												   function( data ){
-														EventService.addEventToDB(data);
+												   function( eventJson ){
+														var event = Event.createEventJSObjectBasedOnJsonAjaxReq(eventJson);
+														EventDbDao.addOrUpdateEvent(event);			
 														callback(data);
 													},
 													jsonDataToBePosted); 

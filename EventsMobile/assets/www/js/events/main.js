@@ -75,16 +75,7 @@ $(function(){
 						$.mobile.changePage("#byUserSearchPage");
 					}, 
 					createEventRegisterRequest())
-		},
-			/*
-			var url = AjaxEventHelper.getRootURL() + 'events';
-			AjaxEventHelper.createPOSTRequestAjax(url, 
-												  function(data){
-														$("#createEventPage").dialog('close');
-														$('.console').append("Event created").append(data);
-												  }, 
-												  createEventRegisterRequest()); */ 
-		
+		}, 
 		// set this class to error-labels to indicate valid fields
 		success: function(label) {
 			label.html("&nbsp;").addClass("checked");
@@ -113,13 +104,13 @@ $(function(){
 
 	
 	$('#loginBtn').click(function() {
-		//event.preventDefault();
 		var url = AjaxEventHelper.getRootURL() + 'users';
-		AjaxEventHelper.createPOSTRequestAjax(url, 
-											  function(data){
-													$('#consoleLoginPage').append("dfsdfsd").append(data);
-											  }, 
-											  createUserInfoRequest());
+		AjaxEventHelper.createPOSTRequestAjax(
+				url, 
+				function(data){
+					$('#consoleLoginPage').append("dfsdfsd").append(data);
+				}, 
+				createUserInfoRequest());
 				
 	});
 

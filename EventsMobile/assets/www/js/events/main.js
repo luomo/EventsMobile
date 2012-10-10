@@ -868,7 +868,11 @@ function refreshByLocation(){
 
 function loadCitiesAjax(){
 
+	EventService.sync(function(){
+		$.mobile.changePage("#byLocationSearchPage");
+	})
     // callback function invocation
+	/*
     $(".console").html("Downloading ws data...");
 
     var eventLocal;
@@ -893,7 +897,7 @@ function loadCitiesAjax(){
   		$("#locationSearchList").listview('refresh');
   		$(".console").html("Data refreshed ..");
     });
-	
+	*/
 
 }
 

@@ -80,6 +80,28 @@ var EventDbDao = function () {
 				        txErrorHandler);  
     } 
 
+    
+    function syncEventsToLocalDB(eventList, callback) {
+    	db.transaction(
+                function(tx) {
+                    var sql = 'INSERT OR REPLACE INTO EVENT_CACHE_DATA ( id , startDate, evJsonData, lastModified, owner) VALUES ( ? , ? ,?, ?, ? )';
+                    console.log('syncEventsToLocalDB');
+                    var event, queryParameters;
+                    for (var i = 0; i < eventList.length; i++) {
+                        event = eventList[i];
+                        queryParameters = [event.id, event.startDate, JSON.stringify(event), event.processDate, event.owner];
+                        tx.executeSql(sql, queryParameters);
+                    }
+                    console.log('Synchronization complete (' +  eventList.length + ' items synchronized)');
+                },
+                this.txErrorHandler,
+                function(tx) {
+                    callback();
+                }
+            );
+    }
+    
+    
     function deleteAllEvents() {
     	
     	
@@ -246,15 +268,10 @@ var EventDbDao = function () {
 			addOrUpdateEventToLocalDB(event.id, event)
 		}, 
 		removeEvent : function(eventId){
-			console.log("removeEvent:id: " + eventId);
 			deleteEventFromLocalDB(eventId);
 		},
-		addOrUpdateEventList : function(eventList){
-		
-			for(var i = 0; i< eventList.length ; i++) {
-				var _event = eventList[i];
-				this.addOrUpdateEvent(_event);
-			}
+		syncEventList : function(eventList, callback){
+			syncEventsToLocalDB(eventList, callback);
 		},
 		findEventById : function(eventId, callback) {
 			findEventByIdInDatabase(eventId, callback);
@@ -273,10 +290,11 @@ var EventDbDao = function () {
 			db.transaction(
 	            function(tx) {
 	            	var sql = "SELECT MAX(lastModified) as lastSync FROM EVENT_CACHE_DATA";
+	            	console.log("getLastSyncDate: Sql: " + sql);
 	                tx.executeSql(sql, this.txErrorHandler, function(tx, results) {
                         var lastSync = results.rows.item(0).lastSync;
                         console.log('Last local timestamp is ' + lastSync);
-                        return lastSync;
+                        callback(lastSync);
                     }
 	            )}, txErrorHandler );
 		}

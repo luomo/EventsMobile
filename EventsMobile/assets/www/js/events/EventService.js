@@ -10,23 +10,7 @@ var EventService = function () {
 	function getChanges(syncURL, lastSyncDate, callback){
 		// lastSyncDate will be used to pass the last date to the server
 		// at this point is not beeing used
-    	AjaxEventHelper.createGETRequestAjax(syncURL, function(data){
-    		// if exists new data 
-    		if(data.length > 0) {
-    			// we have to update localDB
-    			var events = [];
-    			for(var i = 0; i< data.length ; i++) {
-    			//for(var _eventJson in data) {
-    				var _eventJson = data[i];
-    				var _event = Event.createEventJSObjectBasedOnJsonAjaxReq(_eventJson);
-    				events.push(_event);
-    			}
-    			EventDbDao.addOrUpdateEventList(events);
-    		} else {
-    			// if there are no changes we can apply the callback method 
-    			callback(data);
-    		}
-        });
+    	AjaxEventHelper.createGETRequestAjax(syncURL,callback);
 	}
 	
 	
@@ -73,30 +57,32 @@ var EventService = function () {
 			EventDbDao.removeEvent(eventId);
 		},
 		getLastSync: function(callback) {
-			var url = AjaxEventHelper.getRootURL() + 'events';
-			var lastSync = EventDbDao.getLastSyncDate();
-            getChanges(url , lastSync, callback);
-
+			EventDbDao.getLastSyncDate(callback);
 	    },
-		sync: function(callback) {
-			console.log('Starting synchronization...');
-	        this.getLastSync(callback);
-			
-	        /*
-			console.log('Starting synchronization...');
-	        this.getLastSync(function(lastSync){
-	            this.getChanges(this.syncURL, lastSync,
-	                function (changes) {
-	                    if (changes.length > 0) {
-	                        this.applyChanges(changes, callback);
-	                    } else {
-	                        log('Nothing to synchronize');
-	                        callback();
-	                    }
-	                }
-	            );
+	    sync: function(callback) {
+	    	var syncURL = AjaxEventHelper.getRootURL() + 'events';
+	        console.log('Starting synchronization...');
+	        this.getLastSync(
+	        		function(lastSync){
+			            getChanges(syncURL, lastSync, function (data) {
+			            	// if exists new data 
+			        		if(data.length > 0) {
+			        			// we have to update localDB
+			        			var events = [];
+			        			for(var i = 0; i< data.length ; i++) {
+			        			//for(var _eventJson in data) {
+			        				var _eventJson = data[i];
+			        				var _event = Event.createEventJSObjectBasedOnJsonAjaxReq(_eventJson);
+			        				events.push(_event);
+			        			}
+			        			EventDbDao.syncEventList(events, callback);
+			        		} else {
+			        			// if there are no changes we can apply the callback method 
+			        			callback();
+			        		}
+			            });
 	        });
-			*/
+	        		
 	    },
 	    findEventsByuserId : function (userId, callback){
 	    	console.log("findEventsById: " + userId);

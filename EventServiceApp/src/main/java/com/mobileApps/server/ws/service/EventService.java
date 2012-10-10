@@ -24,17 +24,19 @@ public class EventService {
 	private static final List<Location> locationList; 
 	private static final List<Venue> venueList; 
 	private static final AtomicLong eventId = new AtomicLong(0);
+	private static final AtomicLong venueId = new AtomicLong(0);
+	private static final AtomicLong artistId = new AtomicLong(0);
 	
 	static {
 		Location locationBraga = new Location("Braga", "pt", "Avenida Liberdade", "4700", 12f, -34.5f);
 		Location locationPorto = new Location("Porto", "pt", "Avenida Liberdade", "4000", 12f, -34.5f);
 		Location locationCoimbra = new Location("Coimbra", "co", "Avenida xpto", "2000", 12f, -34.5f);
 
-		Venue venueBraga = new Venue(1l, "Teatro Circo",locationBraga,	"www.teatro-circo.com", "253272000", null);
-		Venue venuePorto = new Venue(2l,  "Trintaeum ", locationPorto, "www.trintaeum.com", "222272000", null);
-		Venue venueCoimbra = new Venue(3l, "Coimbra place", locationCoimbra, "www.xpto.com", "222272000", null);
+		Venue venueBraga = new Venue(venueId.incrementAndGet(), "Teatro Circo",locationBraga,	"www.teatro-circo.com", "253272000", null);
+		Venue venuePorto = new Venue(venueId.incrementAndGet(),  "Trintaeum ", locationPorto, "www.trintaeum.com", "222272000", null);
+		Venue venueCoimbra = new Venue(venueId.incrementAndGet(), "Coimbra place", locationCoimbra, "www.xpto.com", "222272000", null);
 		
-		Artist artist = new Artist(1L, "artist");
+		Artist artist = new Artist(artistId.incrementAndGet(), "artist");
 		Provider provider = new Provider(1l, "lastFm", "www.lastfm.com", new Date().toString());
 		
 		Calendar tomorowCal = Calendar.getInstance();
@@ -72,6 +74,17 @@ public class EventService {
 		venueList.add(venueBraga);
 		venueList.add(venuePorto);
 		venueList.add(venueCoimbra);
+	}
+	
+	// utility methods for hardcoding tests
+	public static Long getNextEventId(){
+		return eventId.incrementAndGet();
+	}
+	public static Long getNextVenueId(){
+		return venueId.incrementAndGet();
+	}
+	public static Long getNextArtistId(){
+		return artistId.incrementAndGet();
 	}
 	
 	public static List<Event> getAllEvents(){

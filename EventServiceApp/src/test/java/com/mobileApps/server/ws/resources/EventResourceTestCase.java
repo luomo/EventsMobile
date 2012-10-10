@@ -1,6 +1,7 @@
 package com.mobileApps.server.ws.resources;
 
 import java.net.URI;
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.core.MediaType;
@@ -11,7 +12,10 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+import com.mobileApps.server.ws.domain.Artist;
 import com.mobileApps.server.ws.domain.Event;
+import com.mobileApps.server.ws.domain.Location;
+import com.mobileApps.server.ws.domain.Venue;
 import com.mobileApps.server.ws.service.EventService;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.GenericType;
@@ -57,5 +61,25 @@ public class EventResourceTestCase {//extends JerseyTest {
 		
 		
 		Assert.assertEquals(res.getId(), EventService.getEventsById(eventId).getId());
+	}
+	@Test
+	public void testPostEventById() throws JAXBException {
+		ClientConfig config = new DefaultClientConfig();
+		Client client = Client.create(config);
+		
+		Location locationLisboa = new Location("Lisboa", "co", "Avenida lx", "2000", 12f, -34.5f);
+		Venue venueLisboa = new Venue(EventService.getNextVenueId(), "Lx place", locationLisboa, "www.xpto.com", "212272000", null);
+		Artist artist = new Artist(EventService.getNextArtistId(), "new artist");
+		Event event = new Event(EventService.getNextEventId(), "Music - Event 1", new Date(), "Music event", null, "12", 12F,"tag", 1L, new Date(), "url", artist, venueLisboa);
+		
+		
+		WebResource service = client.resource(getBaseURI());
+		
+		Event resp =  service.path("events")
+		 			.type(MediaType.APPLICATION_JSON)
+					.post(Event.class, event);
+		
+		
+		Assert.assertNotNull(resp.getId());
 	}
 }

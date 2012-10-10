@@ -11,7 +11,7 @@ public class EventMainActivity extends DroidGap {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		super.setIntegerProperty("splashscreen", R.drawable.ic_launcher);
-		super.loadUrl("file:///android_asset/www/eventApp.html");
+		super.loadUrl("file:///android_asset/www/index.html");
 	}
 
 }

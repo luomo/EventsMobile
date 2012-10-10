@@ -3,6 +3,12 @@
 // *************************************************************************
 
 $(function(){
+	
+	var $byUserSearchPage = "#byUserSearchPage";
+	
+	var $loginBtn = "#loginBtn";
+	
+	var $createEventForm = "#createEventForm";
 
 	// ************************************
 	// ********* Initiaizing Code *********
@@ -17,7 +23,7 @@ $(function(){
 	// ************************************
 	
 	// Validation configuration for createEventForm
-    $("#createEventForm").validate({
+    $($createEventForm).validate({
 	    // 1. prepare the validation rules and messages.
         rules : {
     		evTitle: {  
@@ -72,7 +78,7 @@ $(function(){
 			EventService.createEvent(
 					function(data){
 						//$("#createEventPage").dialog('close');
-						$.mobile.changePage("#byUserSearchPage");
+						$.mobile.changePage($byUserSearchPage);
 					}, 
 					createEventRegisterRequest())
 		}, 
@@ -90,10 +96,11 @@ $(function(){
 	
 	
 	// try to sinalize in the console some events that are fired --- see 181 pro jquery mobile
+    /*
 	$( "#home" ).live( " pagebeforechange pagebeforeload pagebeforecreate pagecreate", function(e, data){
 		console.log("Page events are being fired..." + e +  " "+data);
 	});
-	
+	*/
 
 	// try to create a splashScreen while a app loads
 	/*setTimeout(hideSplash, 1000);
@@ -103,12 +110,12 @@ $(function(){
 	 */
 
 	
-	$('#loginBtn').click(function() {
+	$( $loginBtn, $.mobile.activePage).click(function() {
 		var url = AjaxEventHelper.getRootURL() + 'users';
 		AjaxEventHelper.createPOSTRequestAjax(
 				url, 
 				function(data){
-					$('#consoleLoginPage').append("dfsdfsd").append(data);
+					$('#consoleLoginPage', $.mobile.activePage).append("dfsdfsd").append(data);
 				}, 
 				createUserInfoRequest());
 				
@@ -176,7 +183,7 @@ $(function(){
 	    			e.preventDefault();
 	    		} else {
 	    			e.preventDefault();
-	    			$("#prefMsg").html("Please enter your login details");
+	    			$("#prefMsg", $.mobile.activePage).html("Please enter your login details");
 	    			// Now call changePage() and tell it to switch to the page we just modified.
 	    			$.mobile.changePage("#settings", "pop");
 	    		}
@@ -549,8 +556,8 @@ $(function(){
     			}
     		});
     		//console.log(html);
-      		$("#searchVenueList").html(html);
-      		$("#searchVenueList").listview('refresh');
+      		$("#searchVenueList", $.mobile.activePage).html(html);
+      		$("#searchVenueList", $.mobile.activePage).listview('refresh');
       		/*
       		//$(".console").html("Data refreshed ..");
     			*/
@@ -564,15 +571,16 @@ $(function(){
 	// ***********************************************************
     
     // When a event is deleted, remove it from the local storage and display the home page.
-    $("#deleteEventDialogPageForm").submit(function( ) {
-    	var evId = $("#evIdToDlt").val();
+    $("#deleteEventDialogPageForm", $.mobile.activePage).submit(function(event) {
+    	var evId = $("#evIdToDlt", $.mobile.activePage).val();
     	
     	EventService.deleteEventById(evId, 
     								 function () {    		
 							    		//$("#deleteEventDialogPage").dialog('close');
-							    		$.mobile.changePage("#byUserSearchPage");
+							    		$.mobile.changePage($byUserSearchPage);
 							    	});
-
+    	event.preventDefault();
+        return false;
     });
     
     
@@ -581,27 +589,32 @@ $(function(){
    $(document).on('pageshow', 'div:jqmData(role="dialog")', function(event){
 	   var today = new Date();
 	   var todayStr = today.getDate() +"/"+(today.getMonth()+1)+"/"+ today.getFullYear();
-       $('#evStartDate').trigger('datebox', {'method':'set', 'value':todayStr});
+       $('#evStartDate', $.mobile.activePage).trigger('datebox', {'method':'set', 'value':todayStr});
+       event.preventDefault();
+       return false;
    });
         
    
     // code to execute when user clicks in add event button
-    $('#addEventBtn').click( function(){
+    $('#addEventBtn', $.mobile.activePage).click( function(event){
     	//reset form values
    		resetEventCreationFields();
     	// expand basic collapsable panel
-    	$("#evBasicColapInfo").trigger('expand');
+    	$("#evBasicColapInfo", $.mobile.activePage).trigger('expand');
     	// collapsable other panels
-    	$("#evColapInfo, #vnColapInfo, #arColapInfo ").trigger('collapse');
-
+    	$("#evColapInfo, #vnColapInfo, #arColapInfo ", $.mobile.activePage).trigger('collapse');
+    	event.preventDefault();
+        return false;
     });
     
     // code to execute when user clicks in submit event button
     // this has to be done so the validation can be fulfilled.
     // If the the panel is colapsed the validatiion of the fields wont be fired
-    $('#evCreateSubmBtn').click( function(){
+    $('#evCreateSubmBtn', $.mobile.activePage).click( function(event){
     	// expand basic event and venue collapsable panel
-    	$("#evBasicColapInfo, #vnColapInfo").trigger('expand');
+    	$("#evBasicColapInfo, #vnColapInfo", $.mobile.activePage).trigger('expand');
+    	event.preventDefault();
+        return false;
     });
 
 	 		    
@@ -648,8 +661,6 @@ function loadVenueById(venueId) {
 }
 
 function resetEventCreationFields(){
-	//var validator = $("#createEventForm").validate();
-	//validator.resetForm();
 	//reset previous values
 	$('#createEventForm')[0].reset();
 	//document.getElementById('createEventForm').reset();

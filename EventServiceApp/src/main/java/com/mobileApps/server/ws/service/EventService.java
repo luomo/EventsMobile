@@ -167,11 +167,11 @@ public class EventService {
 		return values;
 	}
 
-	public static Long registerEvent(Event event) {
+	public static Event registerEvent(Event event) {
 		Long id = eventId.incrementAndGet();
 		event.setId(id);
 		eventList.add(event);
-		return id;
+		return event;
 	}
 
 	public static List<Event> getEventsByUserId(Long userId) {

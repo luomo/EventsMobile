@@ -54,11 +54,19 @@ var EventService = function () {
 		createEvent : function (callback, jsonDataToBePosted) {
 			var url = AjaxEventHelper.getRootURL() + 'events';
 			AjaxEventHelper.createPOSTRequestAjax( url, 
-												   callback,
 												   function( data ){
-														EventService.addEventToDB(jQuery.parseJSON(jsonDataToBePosted));
+														EventService.addEventToDB(data);
+														callback(data);
 													},
 													jsonDataToBePosted); 
+		},
+		deleteEventById : function(eventId, callback) {
+			var url = AjaxEventHelper.getRootURL() + 'events/'+ eventId;
+			AjaxEventHelper.createDELETERequestAjax(url,
+													function ( data ){
+														EventDbDao.removeEvent(eventId);
+														callback(data)
+													})
 		},
 		removeEventById : function(eventId){
 			console.log("removeEvent:id: " + eventId);

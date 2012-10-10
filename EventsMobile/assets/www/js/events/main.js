@@ -78,7 +78,7 @@ $(function(){
 			console.log("submitted!");
 			EventService.createEvent(
 					function(data){
-						$("#createEventPage").dialog('close');
+						//$("#createEventPage").dialog('close');
 						$.mobile.changePage("#byUserSearchPage");
 					}, 
 					createEventRegisterRequest())
@@ -645,10 +645,16 @@ $(function(){
     // When a event is deleted, remove it from the local storage and display the home page.
     $("#evDeleteBtn").live("click" , function(e, data) {
     	var evId = $("#evIdToDlt").val();
-    	removeEventById(evId);
+    	/*
+    	EventService.deleteEventById(evId, function () {    		
+    		$("#deleteEventDialogPage").dialog('close');
+    		$.mobile.changePage("#byUserSearchPage");
+    	});
+    	*/
+    	//e.preventDefault();
+    	removeEventById(evId)
     	$("#deleteEventDialogPage").dialog('close');
     	$.mobile.changePage("#byUserSearchPage");
-    	// $("#deleteEventDialogPage").dialog('close');
     	//return false;
     });
     
@@ -686,10 +692,9 @@ $(function(){
     //$(":jqmData(role=datebox)").parent("div").css({"display":"inline-block","width":"60%"});
 });
 
-
 function removeEventById(eventId) {
 	console.log("removeEventById: " + eventId);
-	/*
+	
 	$.ajax({
         type: 'DELETE',
         url:  AjaxEventHelper.getRootURL() + 'events/'+ eventId,
@@ -701,7 +706,7 @@ function removeEventById(eventId) {
         error: function(jqXHR, textStatus, errorThrown){
         	console.log('error deleting record');
         }
-    }); */
+    }); 
 }
 
 // function invoked when the user selects an existent venue 

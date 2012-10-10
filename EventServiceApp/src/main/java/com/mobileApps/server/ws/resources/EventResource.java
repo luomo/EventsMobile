@@ -36,9 +36,9 @@ public class EventResource {
 		    					 @Context HttpServletResponse response,  
 								 Event event){
 		
-		Long eventId = EventService.registerEvent(event);
+		event = EventService.registerEvent(event);
 		
-		if(eventId == null)
+		if(event.getId() == null)
 			throw new WebApplicationException(
 			        Response
 			          .status(Status.PRECONDITION_FAILED)
@@ -46,7 +46,7 @@ public class EventResource {
 			          .build()
 			      );
 
-		return Response.created(URI.create("/" + eventId)).header("Access-Control-Allow-Origin", "*").build();
+		return Response.created(URI.create("/" + event.getId())).entity(event).header("Access-Control-Allow-Origin", "*").build();
 	}
 	
 	

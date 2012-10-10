@@ -16,8 +16,8 @@ var AjaxEventHelper = function(){
 			getRootURL : function(event){
 				return rootURL;
 			}, 
-			createGETRequestAjax : function(url, callbackfuntion){
-				console.log(url);
+			createGETRequestAjax : function(url, callback){
+				console.log("createGETRequestAjax: " + url);
 				//Starting loading animation        
 				$.mobile.showPageLoadingMsg();
 					
@@ -25,7 +25,7 @@ var AjaxEventHelper = function(){
 			        type: 'GET',
 			        url: url,
 			        dataType: 'json', // data type of response
-			        success: callbackfuntion,
+			        success: callback,
 			        error: errorFunction,
 					statusCode: {
 					    404: function() {
@@ -37,23 +37,44 @@ var AjaxEventHelper = function(){
 			    	$.mobile.hidePageLoadingMsg();
 			    });
 			},
-			createPOSTRequestAjax : function(url, callbackfuntion, afterCallback, dataToBePosted){
-				console.log(url);
+			createPOSTRequestAjax : function(url, callback, dataToBePosted){
+				console.log("createPOSTRequestAjax: " + url);
+				//Starting loading animation        
+				$.mobile.showPageLoadingMsg();
+				
 				$.ajax({
 			        type: 'POST',
 			        url: url,
 			        contentType: "application/json; charset=utf-8",
 			        dataType: 'json', // data type of response  try jsonp
 			        data:dataToBePosted,// JSON.stringify({username:"test", password:"data"}),//{ username: "John", password: "2pm" } , //dataToBePosted,// jsonData:   dsfsdkfsld
-			        success: callbackfuntion,
+			        success: callback,
 			        error: errorFunction,
 					statusCode: {
 					    404: function() {
 					      alert("page not found");
 					    }
 					 }
-			    }).then( afterCallback(dataToBePosted) );
-			} 
+			    }).then(function(){
+					//cue the page loader   
+			    	$.mobile.hidePageLoadingMsg();
+			    });
+			},
+			createDELETERequestAjax : function(url, callback) {
+				console.log("createDELETERequestAjax: " + url);
+				//Starting loading animation        
+				$.mobile.showPageLoadingMsg();
+				
+				$.ajax({
+			        type: 'DELETE',
+			        url:  url,
+			        success: callback,
+			        error: errorFunction
+			    }).then(function(){
+					//cue the page loader   
+			    	$.mobile.hidePageLoadingMsg();
+			    }); 
+			}
 			
 		}
 	}(); 

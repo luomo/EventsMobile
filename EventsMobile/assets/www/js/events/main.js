@@ -624,11 +624,10 @@ $(function(){
     			for(var i = 0; i < list.length ; i++) {	
     				var _venue = list[i];
     				// Create html row for displaying event
-    				html += '<li ><a href=""><img alt="coverArt" src="images/mia.png" /><h3>' + _venue.name + '</h3>';
+    				html += '<li ><a href="javascript:loadVenueById('+ _venue.id + ')"><img alt="coverArt" src="images/mia.png" /><h3>' + _venue.name + '</h3>';
     			    html += '<p>' + _venue.location.country + '</p>';
     			    html += '<p>' + _venue.location.city + '</p>';
     			    html += '</a>';
-    			    html += '<a href="javascript:loadVenueById('+ _venue.id + ')"></a>';
     			    html += '</li>';
     			}
     		});
@@ -643,19 +642,15 @@ $(function(){
     };
     
     // When a event is deleted, remove it from the local storage and display the home page.
-    $("#evDeleteBtn").live("click" , function(e, data) {
+    $("#deleteEventDialogPageForm").submit(function( ) {
     	var evId = $("#evIdToDlt").val();
-    	/*
-    	EventService.deleteEventById(evId, function () {    		
-    		$("#deleteEventDialogPage").dialog('close');
-    		$.mobile.changePage("#byUserSearchPage");
-    	});
-    	*/
-    	//e.preventDefault();
-    	removeEventById(evId)
-    	$("#deleteEventDialogPage").dialog('close');
-    	$.mobile.changePage("#byUserSearchPage");
-    	//return false;
+    	
+    	EventService.deleteEventById(evId, 
+    								 function () {    		
+							    		//$("#deleteEventDialogPage").dialog('close');
+							    		$.mobile.changePage("#byUserSearchPage");
+							    	});
+
     });
     
     
@@ -692,22 +687,7 @@ $(function(){
     //$(":jqmData(role=datebox)").parent("div").css({"display":"inline-block","width":"60%"});
 });
 
-function removeEventById(eventId) {
-	console.log("removeEventById: " + eventId);
-	
-	$.ajax({
-        type: 'DELETE',
-        url:  AjaxEventHelper.getRootURL() + 'events/'+ eventId,
-        success: function(data, textStatus, jqXHR){
-            console.log('Event deleted successfully');
-            EventListApp.removeEvent(eventId);
-            //loadEventsForUserAjax();
-        },
-        error: function(jqXHR, textStatus, errorThrown){
-        	console.log('error deleting record');
-        }
-    }); 
-}
+
 
 // function invoked when the user selects an existent venue 
 function loadVenueById(venueId) {

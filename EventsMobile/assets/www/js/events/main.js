@@ -571,7 +571,7 @@ $(function(){
 	// ***********************************************************
     
     // When a event is deleted, remove it from the local storage and display the home page.
-    $("#deleteEventDialogPageForm", $.mobile.activePage).submit(function(event) {
+    $("#deleteEventDialogPageForm").submit(function(event) {
     	var evId = $("#evIdToDlt", $.mobile.activePage).val();
     	
     	EventService.deleteEventById(evId, 

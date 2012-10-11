@@ -44,63 +44,7 @@
 	//Wait for Cordova to load
 	//
 	document.addEventListener("deviceready", EventService.init, false);
-	/*
-	var db;
-	var dbCreated = false;
-	
-	// Cordova is ready
-	//
-	function onDeviceReady() {
-		console.log("Phonegap is ready");
-		alert("Phonegap is ready");
-		
-	    db = window.openDatabase("EventDB", "1.0", "Test DB", 2000000);
-	    if (dbCreated)
-	    	db.transaction(getEmployees, transaction_error);
-	    else
-	    	db.transaction(populateDB, errorCB, successCB);
-	    console.log(db);
-	}
 
-	// Query the database
-    //
-    function queryDB(tx) {
-        tx.executeSql('SELECT * FROM EVENT', [], querySuccess, errorCB);
-    }
-
- // Query the success callback
-    //
-    function querySuccess(tx, results) {
-    	var len = results.rows.length;
-	  	console.log("Returned rows = " + len);
-	  	// this will be true since it was a select statement and so rowsAffected was 0
-	 	if (!results.rowsAffected) {
-	    	console.log('No rows affected!');
-	    	return false;
-	  	}
-	 	console.log("EVENT table: " + len + " rows found.");
-	    for (var i=0; i<len; i++){
-	        console.log("Row = " + i + " ID = " + results.rows.item(i).id + " Data =  " + results.rows.item(i).title);
-	    }
- 	}
-	
-	function populateDB(tx) {
-        tx.executeSql('DROP TABLE IF EXISTS EVENT');
-        tx.executeSql('CREATE TABLE IF NOT EXISTS EVENT ( id INTEGER PRIMARY KEY, title VARCHAR(250), start_date date, description VARCHAR(5000), image BLOB, attendance VARCHAR(250), price FLOAT(7,2), tag VARCHAR(250),  artist_fk INTEGER null, provider_fk INTEGER null, venue_fk INTEGER null, owner INTEGER not null, process_date date, url VARCHAR(500))');
-        tx.executeSql('INSERT INTO EVENT ( id , title , start_date , description , image , attendance , price , tag ,  artist_fk , provider_fk , venue_fk , owner , process_date , url) '
-        		+ 'VALUES ( 0, "New Event", null, "new Event", null, 123, 10, "Test",  null, null, null, 0, null, "http://www.url.pt" )');
-		alert("populateDB");
-   }
-	
-	function successCB() {
-		dbCreated = true;
-		alert("successCB");
-		db.transaction(queryDB, errorCB);
-	}
-	function errorCB(tx, err) {
-	    alert("Error processing SQL: "+err);
-	    console.log(err);
-	} */
 </script>
 
 </head>

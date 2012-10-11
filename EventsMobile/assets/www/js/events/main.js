@@ -9,6 +9,9 @@ $(function(){
 	var $loginBtn = "#loginBtn";
 	
 	var $createEventForm = "#createEventForm";
+	
+	var $userLogin = "#userLogin";
+    var $passLogin = "#passLogin";
 
 	// ************************************
 	// ********* Initiaizing Code *********
@@ -141,6 +144,7 @@ $(function(){
     		var searchVenueUrl = /^#searchVenueDialogPage/;
     		var eventByCityUrl = /^#eventsByCityPage/;
     		var eventDetailsUrl = /^#eventDetails/;
+    		var prefUrl = /^#settings/;
     		
     		
     		if (u.hash.search(delUrl) !== -1) {
@@ -175,21 +179,26 @@ $(function(){
     			loadVenuesAjax();
     		} 
     		else if (u.hash.search(userUrl) !== -1) {
-    			// Display event by user page - #byUserSearchPage    			
-   	    		var isLogged = true;
+    			// Display event by user page - #byUserSearchPage
+    			
+   	    		var isLogged = validateIfUserIsLogged();
 	    		if(isLogged) {
 	    			// Display user events URL 
 	    			openEventByUserPage(u, data.options);
-	    			e.preventDefault();
 	    		} else {
-	    			e.preventDefault();
-	    			$("#prefMsg", $.mobile.activePage).html("Please enter your login details");
 	    			// Now call changePage() and tell it to switch to the page we just modified.
-	    			$.mobile.changePage("#settings", "pop");
+	    			$.mobile.changePage("#settings");
 	    		}
+	    		e.preventDefault();
 	    	}
+    		else if (u.hash.search(prefUrl) !== -1) {
+    			// Display preferences user page - #byUserSearchPage
+				openPreferencesPage(u, data.options);
+				e.preventDefault();
+    		}
     	}
     });
+    
     
     // Display openEventDetailPage URL page
     function openEventDetailPage(urlObj, options) {
@@ -531,6 +540,30 @@ $(function(){
         	$.mobile.changePage($page, options);
     	});
     }
+
+    function openPreferencesPage(urlObj, options) {
+    	
+    	// The pages we use to display our content are already in
+    	// the DOM. The id of the page we are going to write our
+    	// content into is specified in the hash before the '?'.
+    	var	pageSelector = urlObj.hash.replace(/\?.*$/, "");
+    	
+    	// Get the page we are going to write our content into.
+    	var $page = $(pageSelector);
+    	
+    	if(!validateIfUserIsLogged())
+    		$("#prefMsg").html("<strong>Please enter your login details</strong>");
+    	else
+    		$("#prefMsg").html("");
+		
+		// Pages are lazily enhanced. We call page() on the page
+		// element to make sure it is always enhanced.
+    	$page.page();
+		
+    	// Now call changePage() and tell it to switch to the page we just modified.
+		$.mobile.changePage($page, options);
+   
+    }
  
     function loadVenuesAjax(){
     	var url = AjaxEventHelper.getRootURL() + 'venue/country/pt';  /* Now we are passing country hardcoded */
@@ -747,6 +780,13 @@ function createUserInfoRequest(){
 	console.log("json object create: " + json);
 	return json;
 	
+}
+
+// dummy function to emulate logged in functionality
+function validateIfUserIsLogged(){
+	if($($userLogin).val().length != 0 && $($passLogin).val().length != 0)
+		return true;
+	else return false;
 }
 
 // ************************************************************************

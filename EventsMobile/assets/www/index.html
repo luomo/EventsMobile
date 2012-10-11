@@ -44,6 +44,9 @@
 	//
 	document.addEventListener("deviceready", EventService.init, false);
 
+	if (!window.openDatabase) 		
+	    alert("localDB not available");
+	
 </script>
 
 </head>
@@ -101,7 +104,8 @@
 			<h1>						
 			<img alt="Events" src="images/eventsLogo_small_.png" class="logo">
 			</h1>
-			<a id="addEventBtn" href="#createEventPage"  data-icon="plus" class="ui-btn-right">Add</a>
+
+			<a href="#createEventPage" data-icon="plus" class="ui-btn-right">Add</a>
 		</div>
 
 		<div data-role="content" >
@@ -429,7 +433,7 @@
 	 
 	 
 			 </form>
-			 <div id="consoleLoginPage"></div>
+
 		</div>
 	</div>
 	

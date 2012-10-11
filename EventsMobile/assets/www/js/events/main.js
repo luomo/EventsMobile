@@ -191,11 +191,13 @@ $(function(){
 				openPreferencesPage(u, data.options);
 				e.preventDefault();
     		}
+    		
     		else if (u.hash.search(createEventPag) !== -1) {
     			// Display create event page
     			openCreateEventPage(u, data.options);
     			e.preventDefault();
     		}
+    		
     	}
     });
     
@@ -575,16 +577,6 @@ $(function(){
     	// Get the page we are going to write our content into.
     	var $page = $(pageSelector);
 
-    	//reset form values
-   		resetEventCreationFields();
-    	// expand basic collapsable panel
-    	$("#evBasicColapInfo").trigger('expand');
-    	// collapsable other panels
-    	$("#evColapInfo, #vnColapInfo, #arColapInfo ").trigger('collapse');
-    	
-    	var today = new Date();
-  	   	var todayStr = today.getDate() +"/"+(today.getMonth()+1)+"/"+ today.getFullYear();
-        $('#evStartDate').trigger('datebox', {'method':'set', 'value':todayStr});
     	
     	// Pages are lazily enhanced. We call page() on the page
     	// element to make sure it is always enhanced.
@@ -645,6 +637,22 @@ $(function(){
     	event.preventDefault();
         return false;
     });
+
+    $("#crEventBtn").click(function(event) {
+    	//reset form values
+   		resetEventCreationFields();
+    	// expand basic collapsable panel
+    	$("#evBasicColapInfo").trigger('expand');
+    	// collapsable other panels
+    	$("#evColapInfo, #vnColapInfo, #arColapInfo ").trigger('collapse');
+    	
+    	var today = new Date();
+    	var todayStr = today.getDate() +"/"+(today.getMonth()+1)+"/"+ today.getFullYear();
+    	if($('#evStartDate').val() == "")
+    		$('#evStartDate').trigger('datebox', {'method':'set', 'value':todayStr});
+    });
+    
+    
     
     
     // code to execute when user clicks in submit event button
@@ -785,6 +793,7 @@ function createUserInfoRequest(){
 	return json;
 	
 }
+
 
 // dummy function to emulate logged in functionality
 function validateIfUserIsLogged(){

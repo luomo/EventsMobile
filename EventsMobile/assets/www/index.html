@@ -6,6 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
 
+<meta name="apple-mobile-web-app-capable" content="yes" />
  
 <!-- **** Libs CSS ****** --> 
 <link href="libs/jquery.mobile/jquery.mobile-1.2.0.css" rel="stylesheet" type="text/css" />
@@ -28,6 +29,7 @@
 <script type="text/javascript" src="js/events/main.js"></script>
 <!-- **** Dao objects ****** -->
 <script type="text/javascript" src="js/events/dao/EventDbDao.js"></script>
+<script type="text/javascript" src="js/events/dao/EventStorageDao.js"></script>
 <!-- **** Utils objects ****** -->
 <script type="text/javascript" src="js/events/utils/AjaxEventHelper.js"></script>
 <!-- **** Service objects ****** -->
@@ -42,10 +44,18 @@
 <script type="text/javascript">
 	//Wait for Cordova to load
 	//
+	/*
 	document.addEventListener("deviceready", EventService.init, false);
 
 	if (!window.openDatabase) 		
 	    alert("localDB not available");
+	else {
+		alert("it's on");
+		EventService.init();
+	}
+	*/
+	EventService.init();
+	
 	
 </script>
 
@@ -105,7 +115,7 @@
 			<img alt="Events" src="images/eventsLogo_small_.png" class="logo">
 			</h1>
 
-			<a href="#createEventPage" data-icon="plus" class="ui-btn-right">Add</a>
+			<a id="crEventBtn" href="#createEventPage" data-icon="plus" class="ui-btn-right" >Add</a>
 		</div>
 
 		<div data-role="content" >

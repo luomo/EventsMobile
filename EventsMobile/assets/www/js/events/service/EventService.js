@@ -123,7 +123,7 @@ var EventService = function () {
 										if(map[city] == undefined ) {
 											map[city] = new Array(); 
 										} 
-										map[city].push(event);
+										map[city].push(_eventJS);
 									}
 									callback(map);
 								}

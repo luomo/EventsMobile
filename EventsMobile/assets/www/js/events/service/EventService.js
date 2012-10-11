@@ -35,7 +35,7 @@ var EventService = function () {
 												   function( eventJson ){
 														var event = Event.createEventJSObjectBasedOnJsonAjaxReq(eventJson);
 														EventDbDao.addOrUpdateEvent(event);			
-														callback(data);
+														callback(eventJson);
 													},
 													jsonDataToBePosted); 
 		},

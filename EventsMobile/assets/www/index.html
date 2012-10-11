@@ -54,7 +54,19 @@
 		EventService.init();
 	}
 	*/
-	EventService.init();
+	
+	if (!window.openDatabase){ 		
+	    alert("localDB not available");
+		if(localStorage)  {
+			alert("Local Storage: Supported");  
+			EventService.init(EventStorageDao);
+		} else  
+	    	alert("Local Storage: Not Supported ... Please upgrade");
+	}else {
+		alert("localDB available");
+		EventService.init(EventDbDao);
+	}
+	
 	
 	
 </script>

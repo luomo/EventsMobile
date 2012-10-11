@@ -7,6 +7,8 @@
 var EventService = function () { 
 	
 	
+	var eventDao;
+	
 	function getChanges(syncURL, lastSyncDate, callback){
 		// lastSyncDate will be used to pass the last date to the server
 		// at this point is not beeing used
@@ -16,17 +18,18 @@ var EventService = function () {
 	
 	// Public API
 	return {
-		init : function() {
+		init : function( dao ) {
 			alert("EventService: init ");
 			console.log("EventService: init ");
-			EventDbDao.init();
+			eventDao = dao;
+			eventDao.init();
 			EventService.sync(function(){
 				console.log("nothing to update");
 			})
 		},
 		clear : function(){
 			console.log("EventService: clear ");
-			EventDbDao.clear();
+			eventDao.clear();
 		},
 		createEvent : function (callback, jsonDataToBePosted) {
 			console.log("EventService: createEvent ");
@@ -34,7 +37,7 @@ var EventService = function () {
 			AjaxEventHelper.createPOSTRequestAjax( url, 
 												   function( eventJson ){
 														var event = Event.createEventJSObjectBasedOnJsonAjaxReq(eventJson);
-														EventDbDao.addOrUpdateEvent(event);			
+														eventDao.addOrUpdateEvent(event);			
 														callback(eventJson);
 													},
 													jsonDataToBePosted); 
@@ -44,12 +47,12 @@ var EventService = function () {
 			var url = AjaxEventHelper.getRootURL() + 'events/'+ eventId;
 			AjaxEventHelper.createDELETERequestAjax(url,
 													function ( data ){
-														EventDbDao.removeEvent(eventId);
+														eventDao.removeEvent(eventId);
 														callback(data)
 													})
 		},
 		getLastSync: function(callback) {
-			EventDbDao.getLastSyncDate(callback);
+			eventDao.getLastSyncDate(callback);
 	    },
 	    sync: function(callback) {
 	    	var syncURL = AjaxEventHelper.getRootURL() + 'events';
@@ -67,7 +70,7 @@ var EventService = function () {
 			        				var _event = Event.createEventJSObjectBasedOnJsonAjaxReq(_eventJson);
 			        				events.push(_event);
 			        			}
-			        			EventDbDao.syncEventList(events, callback);
+			        			eventDao.syncEventList(events, callback);
 			        		} else {
 			        			// if there are no changes we can apply the callback method 
 			        			callback();
@@ -78,20 +81,20 @@ var EventService = function () {
 	    },
 	    findEventsByuserId : function (userId, callback){
 	    	console.log("EventService:findEventsById: " + userId);
-			EventDbDao.findEventsByuserId(userId, function(_eventJS) {
+			eventDao.findEventsByuserId(userId, function(_eventJS) {
 														callback(_eventJS);
 													 });
 	    },
 		findEventById : function (eventId, callback){
 			console.log("EventService:findEventById: " + eventId);
-			EventDbDao.findEventById(eventId, function(_eventJS) {
+			eventDao.findEventById(eventId, function(_eventJS) {
 														callback(_eventJS);
 													 });
 			
 		}, 
 		findEventsforToday : function (date, callback){
 			console.log("EventService:findEventsforToday: " + date);
-			EventDbDao.findEventforToday(date, 
+			eventDao.findEventforToday(date, 
 					function(list) {
 						var map = new Object();
 						var _eventJson, _eventJS, city ;
@@ -112,7 +115,7 @@ var EventService = function () {
 	    // utility methods for displaying info in the gui
 	    findAllEventsGroupedByCity : function(callback) {
 	    	console.log("EventService:findAllEventsGroupedByCity");
-			EventDbDao.findAll( new Date(),  
+			eventDao.findAll( new Date(),  
 							    function(list){
 									var map = new Object();
 									var _eventJson, _eventJS, city ;
@@ -131,7 +134,7 @@ var EventService = function () {
 		}, 
 		findEventsByCity : function(cityId, callback){
 			console.log("EventService:findEventsByCity: " + cityId);
-			EventDbDao.findEventsByCity( 
+			eventDao.findEventsByCity( 
 					cityId, 
 					function(jsonEventList) {
 						var jsEventList = new Array();

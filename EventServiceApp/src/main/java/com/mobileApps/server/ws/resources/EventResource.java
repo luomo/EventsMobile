@@ -9,6 +9,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -49,6 +50,34 @@ public class EventResource {
 		return Response.created(URI.create("/" + event.getId())).entity(event).header("Access-Control-Allow-Origin", "*").build();
 	}
 	
+	@PUT
+	@Consumes({MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response updateEvent(@Context UriInfo ui, 
+		    					 @Context HttpServletResponse response,  
+								 Event event){
+		
+		event = EventService.updateEvent(event);
+		
+	
+		return Response.created(URI.create("/" + event.getId())).entity(event).header("Access-Control-Allow-Origin", "*").build();
+	}
+
+	@PUT
+	@Path("/{eventId}")
+	@Consumes({MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response updateEvent(@Context UriInfo ui, 
+								@Context HttpServletResponse response,  
+								@PathParam("eventId") Long eventId){
+		
+		EventService.logicalRemoveById(eventId);
+		
+		
+		return Response.ok().header("Access-Control-Allow-Origin", "*").build();
+	}
+
+	
 	
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -68,6 +97,7 @@ public class EventResource {
 				.build();
 	}
 
+	
 	@DELETE
 	@Path("/{eventId}")
 	@Produces({ MediaType.APPLICATION_JSON })

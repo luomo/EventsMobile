@@ -103,7 +103,7 @@ $(function(){
 	*/
 
 	// try to create a splashScreen while a app loads
-	setTimeout(hideSplash, 1000);
+	setTimeout(hideSplash, 500);
 	function hideSplash() {
 	  $.mobile.changePage("#home", "fade");
 	}
@@ -741,7 +741,7 @@ function createEventRegisterRequest(){
 	
 	var event;
 	event = new Event(  null, evTitle, evStartDate, evDescr, null, null,  
-						evPrice, evTags, 0/*'UserId'*/, new Date(), evUrl,
+						evPrice, evTags, 1, 0/*'UserId'*/, new Date(), evUrl,
   						new Artist(null, 'Artist XPTO'),
   						new Venue( vnId, 
 								   vnName,

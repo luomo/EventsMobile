@@ -54,7 +54,6 @@
 		EventService.init();
 	}
 	*/
-	
 	if (!window.openDatabase){ 		
 	    alert("localDB not available");
 		if(localStorage)  {
@@ -67,6 +66,7 @@
 		EventService.init(EventDbDao);
 	}
 	
+//	EventService.init(EventStorageDao);
 	
 </script>
 
@@ -75,7 +75,7 @@
 <body>
 	
 	
-	<!-- Splash Screen
+	<!-- Splash Screen -->
 	<div id="splash" data-role="page" data-theme="a" > 
 		<div data-role="content" class="logo" >    	
 			<p>	<h2>Welcome to events application!</h2> </p>
@@ -83,7 +83,7 @@
 					This is a sample application for searching events...
 				</p>
 		</div>
-	</div> -->
+	</div> 
 
 
 	<!-- Home Page -->

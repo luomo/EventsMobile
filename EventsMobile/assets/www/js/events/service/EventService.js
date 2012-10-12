@@ -45,9 +45,9 @@ var EventService = function () {
 		deleteEventById : function(eventId, callback) {
 			console.log("EventService: deleteEventById: " + eventId);
 			var url = AjaxEventHelper.getRootURL() + 'events/'+ eventId;
-			AjaxEventHelper.createDELETERequestAjax(url,
+			AjaxEventHelper.createPUTRequestAjax(url,
 													function ( data ){
-														eventDao.removeEvent(eventId);
+														eventDao.logicalDeleteEvent(eventId);
 														callback(data)
 													})
 		},

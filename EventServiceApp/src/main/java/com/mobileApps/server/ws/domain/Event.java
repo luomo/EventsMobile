@@ -78,9 +78,12 @@ public class Event implements Serializable {
 	private String tag;
 	
 	//control fields
+	private Integer status = 1;
 	private Long owner;
 	private Date processDate;
 	private String url;
+	
+	
 	
 
 	private Artist artist;
@@ -94,7 +97,7 @@ public class Event implements Serializable {
 
 	
 	public Event(Long id, String title, Date startDate, String description,
-			byte[] image, String attendance, Float price, String tag,
+			byte[] image, String attendance, Float price, String tag, Integer status,
 			Long owner, Date processDate, String url, Artist artist, Venue venue) {
 		super();
 		this.id = id;
@@ -105,6 +108,7 @@ public class Event implements Serializable {
 		this.attendance = attendance;
 		this.price = price;
 		this.tag = tag;
+		this.status = status;
 		this.owner = owner;
 		this.processDate = processDate;
 		this.url = url;
@@ -226,15 +230,31 @@ public class Event implements Serializable {
 	}
 
 
+
+	public Integer getStatus() {
+		return status;
+	}
+
+
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+
+
 	@Override
 	public String toString() {
 		return "Event [id=" + id + ", title=" + title + ", startDate="
 				+ startDate + ", description=" + description + ", image="
 				+ Arrays.toString(image) + ", attendance=" + attendance
-				+ ", price=" + price + ", tag=" + tag + ", owner=" + owner
-				+ ", processDate=" + processDate + ", url=" + url + ", artist="
-				+ artist + ", venue=" + venue + "]";
+				+ ", price=" + price + ", tag=" + tag + ", status=" + status
+				+ ", owner=" + owner + ", processDate=" + processDate
+				+ ", url=" + url + ", artist=" + artist + ", venue=" + venue
+				+ "]";
 	}
+
+	
 
 
 

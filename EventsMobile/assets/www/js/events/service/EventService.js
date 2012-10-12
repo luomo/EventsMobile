@@ -19,7 +19,7 @@ var EventService = function () {
 	// Public API
 	return {
 		init : function( dao ) {
-			alert("EventService: init ");
+			//alert("EventService: init ");
 			console.log("EventService: init ");
 			eventDao = dao;
 			eventDao.init();

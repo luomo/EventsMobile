@@ -93,7 +93,7 @@
 			<h1>						
 			<img alt="Events" src="images/eventsLogo_small_.png" class="logo">
 			</h1>
-			<a href="#settings" data-icon="gear" class="ui-btn-right">Settings</a>
+			<a href="#settings" data-icon="gear" class="ui-btn-right" >Settings</a>
 		</div>
 
 		<div data-role="content" >
@@ -118,7 +118,7 @@
 	</div>
 
 	<!-- personal Page -->
-	<div data-role="page" id="byUserSearchPage" data-theme="c" data-add-back-btn="true">
+	<div data-role="page" id="byUserSearchPage" data-add-back-btn="true">
 		<div data-role="header">
 			
 			
@@ -126,7 +126,7 @@
 			<img alt="Events" src="images/eventsLogo_small_.png" class="logo">
 			</h1>
 
-			<a id="crEventBtn" href="#createEventPage" data-icon="plus" class="ui-btn-right" >Add</a>
+			<a id="crEventBtn" href="#createEventPage" data-icon="plus" class="ui-btn-right" data-theme="b">Add</a>
 		</div>
 
 		<div data-role="content" >
@@ -337,9 +337,10 @@
 
 	</div>
 
-	<div data-role="page" id="createEventPage" data-add-back-btn="true">
+	<div data-role="page" id="createEventPage" data-add-back-btn="false">
 
 		<div data-role="header">
+			<a href="#byUserSearchPage" data-icon="delete" data-role="button">Cancel</a>
 			<h1>Events</h1>
 		</div>
 

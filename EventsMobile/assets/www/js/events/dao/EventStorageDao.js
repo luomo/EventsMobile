@@ -4,10 +4,17 @@
 // Creation of a LocalStorage DAO for data access operations on Events 
 var EventStorageDao = function () { 
 	
+	var EVENT_PREFIX = "ev_"
+	
 	function sameDay( d1, d2 ){
 		  return d1.getUTCFullYear() == d2.getUTCFullYear() &&
 		         d1.getUTCMonth() == d2.getUTCMonth() &&
 		         d1.getUTCDate() == d2.getUTCDate();
+	}
+	
+	function getEventId(eventDbId) {
+		eventDbId.replace(EVENT_PREFIX, "");
+		return eventDbId;
 	}
 
 
@@ -15,29 +22,13 @@ var EventStorageDao = function () {
 	function logEvent(event){
 		return  "id: " + event.id + " ,startDate: " + event.startDat + " ,city: " + event.venue.location.city + " ,processDate: " +  event.processDate  + " ,owner: " +  event.owner
 	}
-	
-	// Query the success callback
-    //
-    function querySuccess(tx, results) {
-    	var len = results.rows.length;
-	  	console.log("Returned rows = " + len);
-	  	// this will be true since it was a select statement and so rowsAffected was 0
-	 	if (!results.rowsAffected) {
-	    	console.log('No rows affected!');
-	    	return false;
-	  	}
-	 	console.log("EVENT_CACHE_DATA table: " + len + " rows found.");
-	    for (var i=0; i<len; i++){
-	    	var cacheItem = results.rows.item(i);
-	    	console.log("Row = " + i + " ID = " + cacheItem.id + " startDate =  " + cacheItem.startDate + " + Data =  " + cacheItem + " LastModified =  " + cacheItem.lastModified + " owner: " + cacheItem.owner);
-	    }
- 	}
+
 	
     function addOrUpdateEventToLocalDB(eventId, event) {
 
     	console.log('EventDao:addOrUpdateEventToLocalDB: eventId: ' + eventId);
     	try {
-    		window.localStorage.setItem(eventId, JSON.stringify(event)); //saves to the database, "key", "value"
+    		window.localStorage.setItem(EVENT_PREFIX + eventId, JSON.stringify(event)); //saves to the database, "key", "value"
     	} catch (e) {
     		 if (e == QUOTA_EXCEEDED_ERR) {
     		 	 alert('Quota exceeded!'); //data wasn't successfully saved due to quota exceed so throw an error
@@ -54,7 +45,7 @@ var EventStorageDao = function () {
     	for(var i = 0; i < eventList.length ; i++) {
     		_event = eventList[i];
     		try {
-    			window.localStorage.setItem(_event.id, JSON.stringify(_event));
+    			window.localStorage.setItem(EVENT_PREFIX + _event.id, JSON.stringify(_event));
     		} catch (e) {
     			if (e == QUOTA_EXCEEDED_ERR) {
     				alert('Quota exceeded!'); //data wasn't successfully saved due to quota exceed so throw an error
@@ -76,7 +67,7 @@ var EventStorageDao = function () {
     function findEventByIdInDatabase(eventId, callback){
     	console.log('EventDao:findEventByIdInDatabase');
     	var _eventJS, _eventJson;
-    	_eventJson = window.localStorage.getItem(eventId);
+    	_eventJson = window.localStorage.getItem(EVENT_PREFIX + eventId);
     	_eventJS = Event.createEventJSObjectBasedOnJsonAjaxReq(jQuery.parseJSON(_eventJson));
     	
     	callback(_eventJS);
@@ -154,14 +145,14 @@ var EventStorageDao = function () {
         
     function deleteEventFromLocalDB(eventId) {
     	console.log("EventDao:deleteEventFromLocalDB");
-    	window.localStorage.removeItem(eventId);
+    	window.localStorage.removeItem(EVENT_PREFIX + eventId);
     } 
 
 	
 	
 	return {
 		init : function() {
-			alert('Init() EVENT Storage DAO');
+			console.log('Init() EVENT Storage DAO');
 			deleteAllEvents();
 			
 		},

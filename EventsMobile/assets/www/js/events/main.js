@@ -75,7 +75,10 @@ $(function(){
 			EventService.createEvent(
 					function(data){
 						//$("#createEventPage").dialog('close');
-						$.mobile.changePage("#byUserSearchPage");
+						//$.mobile.changePage("#byUserSearchPage");
+						$.mobile.changePage("#byUserSearchPage", {
+				            changeHash: false
+				        });
 					}, 
 					createEventRegisterRequest())
 		}, 
@@ -100,11 +103,11 @@ $(function(){
 	*/
 
 	// try to create a splashScreen while a app loads
-	/*setTimeout(hideSplash, 1000);
+	setTimeout(hideSplash, 1000);
 	function hideSplash() {
 	  $.mobile.changePage("#home", "fade");
 	}
-	 */
+	
 
 	
 	$( "#loginBtn", $.mobile.activePage).click(function() {
@@ -581,6 +584,7 @@ $(function(){
     	// Pages are lazily enhanced. We call page() on the page
     	// element to make sure it is always enhanced.
     	$page.page();
+    	
     	
     	// Now call changePage() and tell it to switch to the page we just modified.
     	$.mobile.changePage($page, options);

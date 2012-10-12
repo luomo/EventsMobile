@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -53,17 +54,17 @@ public class EventService {
 		
 		
 		eventList = new ArrayList<Event>();
-		eventList.add(new Event(eventId.incrementAndGet(), "Music - Event 1", new Date(), "Music event", null, "12", 12F,"tag", 1L, processDate, "url", artist, venueBraga));
-		eventList.add(new Event(eventId.incrementAndGet(), "Festival Event 2", new Date(), "Other Music event",  null, "12", 10F, "tag", 1L,processDate,"url", artist, venuePorto));
-		eventList.add(new Event(eventId.incrementAndGet(), "XX - Event 3", new Date(), "AnOther Music event", null,"12",10F, "tag", 1L, processDate,"url", artist, venueCoimbra));
-		eventList.add(new Event(eventId.incrementAndGet(), "Festival - Event 4", tomorowDate, "AnOther Music event", null, "12", 10F, "tag", 1L,processDate,"url", artist, venueBraga));
-		eventList.add(new Event(eventId.incrementAndGet(), "Clubbing - 5", tomorowDate, "Music event", null, "12", 10F, "tag",1L, new Date(), "url", artist, venueBraga));
+		eventList.add(new Event(eventId.incrementAndGet(), "Music - Event 1", new Date(), "Music event", null, "12", 12F,"tag",1, 1L, processDate, "url", artist, venueBraga));
+		eventList.add(new Event(eventId.incrementAndGet(), "Festival Event 2", new Date(), "Other Music event",  null, "12", 10F, "tag",1, 1L,processDate,"url", artist, venuePorto));
+		eventList.add(new Event(eventId.incrementAndGet(), "XX - Event 3", new Date(), "AnOther Music event", null,"12",10F, "tag",1, 1L, processDate,"url", artist, venueCoimbra));
+		eventList.add(new Event(eventId.incrementAndGet(), "Festival - Event 4", tomorowDate, "AnOther Music event", null, "12", 10F, "tag",1, 1L,processDate,"url", artist, venueBraga));
+		eventList.add(new Event(eventId.incrementAndGet(), "Clubbing - 5", tomorowDate, "Music event", null, "12", 10F, "tag",1,1L, new Date(), "url", artist, venueBraga));
 
-		eventList.add(new Event(eventId.incrementAndGet(), "Music - Event 10", new Date(), "Music event", null, "12", 12F,"tag", 1L, new Date(), "url", artist, venueBraga));
-		eventList.add(new Event(eventId.incrementAndGet(), "yFestival Event 20", new Date(), "Other Music event",  null, "12", 10F, "tag", 1L, new Date(),"url", artist, venuePorto));
-		eventList.add(new Event(eventId.incrementAndGet(), "z XX - Event 3", tomorowDate, "AnOther Music event", null,"12",10F, "tag", 1L, new Date(),"url", artist, venueCoimbra));
-		eventList.add(new Event(eventId.incrementAndGet(), "Festival - Event 4", new Date(), "AnOther Music event", null, "12", 10F, "tag", 1L, new Date(),"url", artist, venueBraga));
-		eventList.add(new Event(eventId.incrementAndGet(), "AClubbing - 5", new Date(), "Music event", null, "12", 10F, "tag",1L, new Date(), "url", artist, venueBraga));
+		eventList.add(new Event(eventId.incrementAndGet(), "Music - Event 10", new Date(), "Music event", null, "12", 12F,"tag",1, 1L, new Date(), "url", artist, venueBraga));
+		eventList.add(new Event(eventId.incrementAndGet(), "yFestival Event 20", new Date(), "Other Music event",  null, "12", 10F, "tag",1, 1L, new Date(),"url", artist, venuePorto));
+		eventList.add(new Event(eventId.incrementAndGet(), "z XX - Event 3", tomorowDate, "AnOther Music event", null,"12",10F, "tag",1, 1L, new Date(),"url", artist, venueCoimbra));
+		eventList.add(new Event(eventId.incrementAndGet(), "Festival - Event 4", new Date(), "AnOther Music event", null, "12", 10F, "tag",1, 1L, new Date(),"url", artist, venueBraga));
+		eventList.add(new Event(eventId.incrementAndGet(), "AClubbing - 5", new Date(), "Music event", null, "12", 10F, "tag",1,1L, new Date(), "url", artist, venueBraga));
 		
 		locationList = new ArrayList<Location>();
 		locationList.add(locationBraga);
@@ -241,6 +242,19 @@ public class EventService {
 		}
 		if(index != -1)
 			eventList.remove(index);;
+	}
+	public static Event updateEvent(Event event) {
+		for (Event _eventDB : eventList) {
+			if(_eventDB.getId().equals(event.getId()))
+				_eventDB = event;
+		}
+		return event;
+	}
+	public static void logicalRemoveById(Long eventId) {
+		for (Event _eventDB : eventList) {
+			if(_eventDB.getId().equals(eventId))
+				_eventDB.setStatus(0);
+		}
 	}
 
 

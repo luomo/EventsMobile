@@ -3,7 +3,7 @@
 // *********************************************************************
 // javascript Event object associated with our global singleton object
 // This object will be the main javascript object for events 	
-var Event = function (id, title, startDate, description, image, attendance,  price, tag, owner, processDate, url, artist, venue){
+var Event = function (id, title, startDate, description, image, attendance,  price, tag, status, owner, processDate, url, artist, venue){
 	this.id = id;
 	this.title = title;
 	this.startDate = startDate;
@@ -12,6 +12,7 @@ var Event = function (id, title, startDate, description, image, attendance,  pri
 	this.attendance = attendance;
 	this.price = price;
 	this.tag = tag;
+	this.status = status;
 	this.owner = owner;
 	this.processDate = processDate;
 	this.url = url;
@@ -26,7 +27,7 @@ Event.createEventJSObjectBasedOnJsonAjaxReq = function(eventJson) {
 	var event;
 	//console.log("jsonObject: " + eventJson);
 	event = new Event( eventJson.id, eventJson.title, eventJson.startDate, eventJson.description, eventJson.image, eventJson.attendance,  
-	  					eventJson.price, eventJson.tag, eventJson.owner, eventJson.processDate, eventJson.url,
+	  					eventJson.price, eventJson.tag, eventJson.status, eventJson.owner, eventJson.processDate, eventJson.url,
   						new Artist(eventJson.artist.id, eventJson.artist.artist),
   						new Venue(  eventJson.venue.id, 
 									eventJson.venue.name,

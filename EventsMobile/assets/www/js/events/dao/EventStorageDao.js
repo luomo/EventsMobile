@@ -68,7 +68,7 @@ var EventStorageDao = function () {
     	console.log('EventDao:findEventByIdInDatabase');
     	var _eventJS, _eventJson;
     	_eventJson = window.localStorage.getItem(EVENT_PREFIX + eventId);
-    	_eventJS = Event.createEventJSObjectBasedOnJsonAjaxReq(jQuery.parseJSON(_eventJson));
+    	_eventJS = jQuery.parseJSON(_eventJson);
     	
     	callback(_eventJS);
     }
@@ -79,11 +79,13 @@ var EventStorageDao = function () {
     	console.log("EventDao:findAllEvents");
     	
     	var eventsJson = [];
-    	var _event, _eventId;
+    	var _event, _eventJS,  _eventId;
     	for (var i = 0; i < window.localStorage.length; i++){
     		_eventId = window.localStorage.key(i);
     		_event = window.localStorage.getItem(_eventId);
-    		eventsJson.push(_event);
+    		_eventJS = JSON.parse(_event);
+    		if(_eventJS.status != 0)
+    			eventsJson.push(_event);
     	}
     	
     	callback(eventsJson);
@@ -101,8 +103,9 @@ var EventStorageDao = function () {
     		_eventId = window.localStorage.key(i);
     		_event = window.localStorage.getItem(_eventId);
     		_eventJS = JSON.parse(_event);
-    		if (sameDay( new Date(_eventJS.startDate), new Date()))
-    			eventsJson.push(_event);
+    		if(_eventJS.status != 0)
+	    		if (sameDay( new Date(_eventJS.startDate), new Date()))
+	    			eventsJson.push(_event);
     	}
     	
     	callback(eventsJson);
@@ -115,13 +118,14 @@ var EventStorageDao = function () {
     	console.log("EventDao:findEventsByCityInDatabase");
     	
     	var eventsJson = [];
-    	var _event,_eventJson,  _eventId;
+    	var _eventJS,_eventJson,  _eventId;
     	for (var i = 0; i < window.localStorage.length; i++){
     		_eventId = window.localStorage.key(i);
     		_eventJson = window.localStorage.getItem(_eventId);
-    		_event = JSON.parse(_eventJson);
-    		if(_event.venue.location.city === cityId)
-    			eventsJson.push(_eventJson);
+    		_eventJS = JSON.parse(_eventJson);
+    		if(_eventJS.status != 0)
+	    		if(_eventJS.venue.location.city === cityId)
+	    			eventsJson.push(_eventJson);
     	}	
     	callback(eventsJson);
     }
@@ -136,19 +140,27 @@ var EventStorageDao = function () {
     		_eventId = window.localStorage.key(i);
     		_eventJson = window.localStorage.getItem(_eventId);
     		_event = JSON.parse(_eventJson);
-    		if(_event.owner === userId)
-    			eventsJson.push(_event);
+    		if(_event.status != 0 && _event.owner === userId)
+	    		eventsJson.push(_event);
     	}	
     	callback(eventsJson);
  
     }
-        
+       
     function deleteEventFromLocalDB(eventId) {
     	console.log("EventDao:deleteEventFromLocalDB");
     	window.localStorage.removeItem(EVENT_PREFIX + eventId);
     } 
+    
+    function logicalDeleteEventFromLocalDB(eventId) {
+    	console.log("EventDao:logicalDeleteEventFromLocalDB");
+    	var _jsonEvent = window.localStorage.getItem(EVENT_PREFIX + eventId);
+    	var _eventJS = JSON.parse(_jsonEvent);
+    	_eventJS.status = 0;
+    	window.localStorage.setItem(EVENT_PREFIX + eventId, JSON.stringify(_eventJS));
+    } 
 
-	
+    
 	
 	return {
 		init : function() {
@@ -162,8 +174,8 @@ var EventStorageDao = function () {
 		addOrUpdateEvent : function(event){
 			addOrUpdateEventToLocalDB(event.id, event)
 		}, 
-		removeEvent : function(eventId){
-			deleteEventFromLocalDB(eventId);
+		logicalDeleteEvent : function(eventId){
+			logicalDeleteEventFromLocalDB(eventId);
 		},
 		syncEventList : function(eventList, callback){
 			syncEventsToLocalDB(eventList, callback);

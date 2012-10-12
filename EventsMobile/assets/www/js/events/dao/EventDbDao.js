@@ -30,7 +30,7 @@ var EventDbDao = function () {
 	
 	function populateDB(tx) {
         tx.executeSql('DROP TABLE IF EXISTS EVENT_CACHE_DATA');
-        tx.executeSql('CREATE TABLE IF NOT EXISTS EVENT_CACHE_DATA ( id INTEGER PRIMARY KEY, startDate VARCHAR(50), city VARCHAR(50), evJsonData VARCHAR, lastModified VARCHAR(50), owner LONG)');
+        tx.executeSql('CREATE TABLE IF NOT EXISTS EVENT_CACHE_DATA ( id INTEGER PRIMARY KEY, startDate VARCHAR(50), city VARCHAR(50), status INTEGER, evJsonData VARCHAR, lastModified VARCHAR(50), owner LONG)');
         console.log("Database create and populated");
    }
 	
@@ -48,7 +48,7 @@ var EventDbDao = function () {
     }
 
 	function logEvent(event){
-		return  "id: " + event.id + " ,startDate: " + event.startDat + " ,city: " + event.venue.location.city + " ,processDate: " +  event.processDate  + " ,owner: " +  event.owner
+		return  "id: " + event.id + " ,startDate: " + event.startDat + " ,city: " + event.venue.location.city + " ,status: " +  event.status  + " ,processDate: " +  event.processDate  + " ,owner: " +  event.owner
 	}
 	
 	// Query the success callback
@@ -70,9 +70,9 @@ var EventDbDao = function () {
 	
     function addOrUpdateEventToLocalDB(eventId, event) {
 
-    	var queryParameters = [eventId, event.startDate, event.venue.location.city, JSON.stringify(event), event.processDate, event.owner];
-    	var sql = 'INSERT OR REPLACE INTO EVENT_CACHE_DATA ( id , startDate, city,  evJsonData, lastModified, owner) VALUES ( ? , ? , ?, ?, ?, ? )';
-    	console.log("EventDao:addOrUpdateEventToLocalDB - Sql: " + sql + "queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
+    	var queryParameters = [eventId, event.startDate, event.venue.location.city, event.status, JSON.stringify(event), event.processDate, event.owner];
+    	var sql = 'INSERT OR REPLACE INTO EVENT_CACHE_DATA ( id , startDate, city, status, evJsonData, lastModified, owner) VALUES ( ? , ? , ?, ?, ?, ?, ? )';
+    	console.log("EventDao:addOrUpdateEventToLocalDB - Sql: " + sql + " queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
         
         db.transaction( 
         		function(tx) {
@@ -87,7 +87,7 @@ var EventDbDao = function () {
 
     
     function syncEventsToLocalDB(eventList, callback) {
-    	var sql = 'INSERT OR REPLACE INTO EVENT_CACHE_DATA ( id , startDate, city, evJsonData, lastModified, owner) VALUES ( ? , ? , ? , ?, ?, ? )';
+    	var sql = 'INSERT OR REPLACE INTO EVENT_CACHE_DATA ( id , startDate, city, status, evJsonData, lastModified, owner) VALUES ( ? , ? , ? , ?, ?, ? , ?)';
     	console.log('EventDao:syncEventsToLocalDB');
     	
     	db.transaction(
@@ -95,7 +95,7 @@ var EventDbDao = function () {
                     var event, queryParameters;
                     for (var i = 0; i < eventList.length; i++) {
                         event = eventList[i];
-                        queryParameters = [event.id, event.startDate, event.venue.location.city , JSON.stringify(event), event.processDate, event.owner];
+                        queryParameters = [event.id, event.startDate, event.venue.location.city ,  event.status , JSON.stringify(event), event.processDate, event.owner];
                         tx.executeSql(sql, queryParameters);
                         console.log("EventDao:syncEventsToLocalDB - Sql: " + sql + " Event: " + logEvent(event));
                     }
@@ -113,7 +113,7 @@ var EventDbDao = function () {
     	
     	var queryParameters = [];
     	var sql = "DELETE FROM EVENT_CACHE_DATA";
-    	console.log("EventDao:deleteAllEvents - Sql: " + sql + "queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
+    	console.log("EventDao:deleteAllEvents - Sql: " + sql + " queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
     	
     	db.transaction( 
     			function(tx) {        	
@@ -132,7 +132,7 @@ var EventDbDao = function () {
     	
     	var queryParameters = [eventId];
     	var sql = "SELECT * FROM EVENT_CACHE_DATA WHERE id = ?";
-    	console.log("EventDao:findEventByIdInDatabase - Sql: " + sql + "queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
+    	console.log("EventDao:findEventByIdInDatabase - Sql: " + sql + " queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
     	
     	db.transaction(
     			function (tx) {
@@ -155,8 +155,8 @@ var EventDbDao = function () {
     function findAllEventsInDatabase(date, callback){
 
     	var queryParameters = [];
-    	var sql = "SELECT * FROM EVENT_CACHE_DATA";
-    	console.log("EventDao:findAllEvents - Sql: " + sql + "queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
+    	var sql = "SELECT * FROM EVENT_CACHE_DATA WHERE status = 1";
+    	console.log("EventDao:findAllEvents - Sql: " + sql + " queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
     	
     	db.transaction(
     		function (tx) {
@@ -183,8 +183,8 @@ var EventDbDao = function () {
     function findEventforTodayInDatabase(date, callback){
     	
     	var queryParameters = [];
-    	var sql = 'SELECT * FROM EVENT_CACHE_DATA WHERE startDate BETWEEN DATE("now") AND DATE("now", "+1 day")';
-    	console.log("EventDao:findEventforTodayInDatabase - Sql: " + sql + "queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
+    	var sql = 'SELECT * FROM EVENT_CACHE_DATA WHERE startDate BETWEEN DATE("now") AND DATE("now", "+1 day") AND status = 1';
+    	console.log("EventDao:findEventforTodayInDatabase - Sql: " + sql + " queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
 
     	db.transaction(
     			function (tx) {
@@ -210,8 +210,8 @@ var EventDbDao = function () {
     function findEventsByCityInDatabase(cityId, callback){
     	
     	var queryParameters = [cityId];
-    	var sql = 'SELECT * FROM EVENT_CACHE_DATA WHERE city = ?';
-    	console.log("EventDao:findEventsByCityInDatabase - Sql: " + sql + "queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
+    	var sql = 'SELECT * FROM EVENT_CACHE_DATA WHERE city = ? AND status = 1';
+    	console.log("EventDao:findEventsByCityInDatabase - Sql: " + sql + " queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
     	
     	db.transaction(
     			function (tx) {
@@ -236,8 +236,8 @@ var EventDbDao = function () {
    
     function findEventsByuserId(userId, callback){
     	var queryParameters = [userId];
-    	var sql = "SELECT * FROM EVENT_CACHE_DATA WHERE owner = ?";
-    	console.log("EventDao:findEventsByuserId - Sql: " + sql + "queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
+    	var sql = "SELECT * FROM EVENT_CACHE_DATA WHERE owner = ? AND status = 1";
+    	console.log("EventDao:findEventsByuserId - Sql: " + sql + " queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
     	
     	db.transaction(
     			function (tx) {
@@ -261,7 +261,7 @@ var EventDbDao = function () {
     function deleteEventFromLocalDB(eventId) {
     	var queryParameters = [eventId];
     	var sql = 'DELETE FROM EVENT_CACHE_DATA WHERE id = ?';
-    	console.log("EventDao:deleteEventFromLocalDB - Sql: " + sql + "queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
+    	console.log("EventDao:deleteEventFromLocalDB - Sql: " + sql + " queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
     	
     	db.transaction( 
     			function(tx) {        	
@@ -271,6 +271,21 @@ var EventDbDao = function () {
 		    					   txErrorHandler);
 		    		console.log('event deleted');
 		    	}, txErrorHandler);  
+    } 
+
+    function logicalDeleteEventFromLocalDB(eventId) {
+    	var queryParameters = [eventId];
+    	var sql = 'UPDATE EVENT_CACHE_DATA SET status = 0 WHERE id = ?';
+    	console.log("EventDao:logicalDeleteEventFromLocalDB - Sql: " + sql + " queryParameters: nbr parameters: "+ queryParameters.length + " value: " + queryParameters.toString());
+    	
+    	db.transaction( 
+    			function(tx) {        	
+    				tx.executeSql( sql, 
+    						queryParameters, 
+    						queryDB, 
+    						txErrorHandler);
+    				console.log('event deleted');
+    			}, txErrorHandler);  
     } 
 
 	
@@ -286,8 +301,8 @@ var EventDbDao = function () {
 		addOrUpdateEvent : function(event){
 			addOrUpdateEventToLocalDB(event.id, event)
 		}, 
-		removeEvent : function(eventId){
-			deleteEventFromLocalDB(eventId);
+		logicalDeleteEvent : function(eventId){
+			logicalDeleteEventFromLocalDB(eventId);
 		},
 		syncEventList : function(eventList, callback){
 			syncEventsToLocalDB(eventList, callback);

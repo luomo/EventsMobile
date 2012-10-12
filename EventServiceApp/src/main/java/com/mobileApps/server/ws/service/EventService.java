@@ -89,12 +89,7 @@ public class EventService {
 	}
 	
 	public static List<Event> getAllEvents(){
-		List<Event> res = new ArrayList<Event>();
-		for (Event event : eventList) {
-			if(!event.getStatus().equals(0))
-				res.add(event);
-		}
-		return res;
+		return eventList;
 	}
 	
 	public static List<Location> getAllLocations() {

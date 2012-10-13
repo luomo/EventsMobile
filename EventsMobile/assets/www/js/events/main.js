@@ -236,7 +236,7 @@ $(function(){
 	        	var html = '';
 	        	html += '<p><h1><strong> ' + event.description + '</strong></h1></p>'
 	        	html += '<p><strong> ' + event.artist.artist + '</strong></p>'
-	        	html += '<p>' + event.startDate + '</p>'
+	        	html += '<p>' + convert(event.startDate) + '</p>'
 	        	html += '<p><a href="'+ event.url+ '">'+  event.url +'</a></p>'
 	        	
 	        		
@@ -464,7 +464,7 @@ $(function(){
         	for( var i = 0; i < list.length ; i++) {
         		_event = list[i];
         		html += '<li ><a href="#eventDetails?eventId='+ _event.id + '"><img alt="coverArt" src="images/mia.png" /><h3>' + _event.title + '</h3>';
-    		    html += '<p>' + _event.startDate + '</p>';
+    		    html += '<p>' + convert(_event.startDate) + '</p>';
     		    html += '<p>' + _event.venue.location.city + '</p>';
     		    html += '</a>';
     		    html += '<a href="#deleteEventDialogPage?eventId=' +_event.id + '&eventTitle='+ _event.title + '" data-split-icon="delete"  data-rel="dialog"></a>';
@@ -777,7 +777,7 @@ function refresh(url) {
 function createHtmlEventRow(_event) {
 	var html = '';
 	html += '<li ><a href="#eventDetails?eventId='+ _event.id + '"><img alt="coverArt" src="images/mia.png" /><h3>' + _event.title + '</h3>';
-    html += '<p>' + _event.startDate + '</p>';
+    html += '<p>' + convert(_event.startDate) + '</p>';
     html += '<p>' + _event.venue.location.city + '</p>';
     html += '</a></li>';
     return html;
@@ -807,6 +807,20 @@ function validateIfUserIsLogged(){
 		return true;
 	else return false;
 	*/
+}
+
+function convert(dateJson) {
+	var date = new Date(dateJson); 
+	
+    var hour = date.getHours();
+    var minute = date.getMinutes();
+
+    if(hour < 10)
+        hour = "0" + hour
+    if(minute < 10)
+        minute = "0" + minute
+
+    return date.getFullYear() +"/"+(date.getMonth()+1)+"/"+ date.getDate() + ' - ' + hour + ':' + minute
 }
 
 // ************************************************************************

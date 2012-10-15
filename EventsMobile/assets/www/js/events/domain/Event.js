@@ -44,10 +44,15 @@ Event.createEventJSObjectBasedOnJsonAjaxReq = function(eventJson) {
 	//console.log("Stringify: " + JSON.stringify(event));
 	return event;
 }
+// orderBy title asc
+Event.orderByTitleASC = function (e1 , e2){
+	return e1.title.toUpperCase > e2.title.toUpperCase ? 1 : -1;
+}
+
 
 //create method toString (doing like this is not defined in the global namespace). It belong to the class and aren't created everytime an object is created.   
 Event.prototype.toString  = function(){
 	return '[id:' + this.id + ' ,title: '+ this.title + ' ,startDate: ' + this.startDate + ' ,description:' + this.description + 
-				' ,image:' + this.image +' ,attendance:' + this.attendance +' ,price:' + this.price +' ,tag:' + this.tag +
+				' ,image:' + this.image +' ,attendance:' + this.attendance +' ,price:' + this.price +' ,tag:' + this.tag + ' ,status:' + this.status +
 				' ,owner:' + this.owner +' ,processDate:' + this.processDate + ' ,url:' + this.url +' ,artist:' + this.artist.toString() +' ,venue:' + this.venue.toString() +']';
 }

@@ -98,14 +98,21 @@ var EventService = function () {
 					function(list) {
 						var map = new Object();
 						var _eventJson, _eventJS, city ;
+						var keys = new Array();
 						for(i=0;i < list.length; i++){
 							_eventJson = list[i];
 							_eventJS = Event.createEventJSObjectBasedOnJsonAjaxReq(jQuery.parseJSON(_eventJson));
 							city = _eventJS.venue.location.city;
 							if(map[city] == undefined ) {
+								keys.push(city);
 								map[city] = new Array(); 
 							} 
 							map[city].push(_eventJS);
+							keys.sort();
+							map['sortedKeys'] = keys;
+						}
+						for(var key in map){
+							map[key] = map[key].sort(Event.orderByTitleASC);
 						}
 						callback(map);
 					}
@@ -119,15 +126,19 @@ var EventService = function () {
 							    function(list){
 									var map = new Object();
 									var _eventJson, _eventJS, city ;
+									var keys = new Array(); 
 									for(i=0;i < list.length; i++){
 										_eventJson = list[i];
 										_eventJS = Event.createEventJSObjectBasedOnJsonAjaxReq(jQuery.parseJSON(_eventJson));
 										city = _eventJS.venue.location.city;
 										if(map[city] == undefined ) {
+											keys.push(city);
 											map[city] = new Array(); 
 										} 
 										map[city].push(_eventJS);
 									}
+									keys.sort();
+									map['sortedKeys'] = keys;
 									callback(map);
 								}
 			);
@@ -144,6 +155,7 @@ var EventService = function () {
 							_eventJS = Event.createEventJSObjectBasedOnJsonAjaxReq(jQuery.parseJSON(_eventJson));
 							jsEventList.push(_eventJS);
 						}
+						jsEventList = jsEventList.sort(Event.orderByTitleASC);
 						callback(jsEventList);
 					}); 
 					

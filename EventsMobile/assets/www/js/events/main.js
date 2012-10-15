@@ -307,9 +307,11 @@ $(function(){
     	EventService.findAllEventsGroupedByCity( function (map) {
     		// The markup we are going to inject into the content
         	var html = '<ul id="locationSearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search locations ..." >'
-
+        	var key;
+        	
         	// Set elements in the page.
-        	for(var key in map){
+        	for(var i = 0 ; i < map.sortedKeys.length ; i++ ) {
+        		key = map.sortedKeys[i];
     			html += '<li><a href="#eventsByCityPage?cityId=' + key +'">' + key + '<span class=ui-li-count>' + map[key].length + '</span> </a> </li>';
     		};
     		
@@ -514,15 +516,15 @@ $(function(){
     		
     		// The markup we are going to inject into the content
         	var html = '<ul id="eventsForTodaySearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search events ...">';
-        	var _event;
+        	var _event, key;
         	
-        	for(var key in map){
-    			//html += '<li><a href="#eventsByCityPage?cityId=' + key +'">' + key + '<span class=ui-li-count>' + map[key].length + '</span> </a> </li>';
-            	// Set elements in the page.
-            	html += '<li data-role="list-divider">' + key + '</li>';
+        	// Set elements in the page.
+        	for(var i = 0 ; i < map.sortedKeys.length ; i++ ) {
+        		key = map.sortedKeys[i];
+    			html += '<li data-role="list-divider">' + key + '</li>';
     			var list = map[key];
-    			for(var i = 0; i < list.length ; i++) {	
-    				var _event = list[i];
+    			for(var j = 0; j < list.length ; j++) {	
+    				var _event = list[j];
     				// Create html row for displaying event
     				html += createHtmlEventRow(_event);
     			}

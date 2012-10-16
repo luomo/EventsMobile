@@ -72,13 +72,24 @@ public class EventResourceTestCase {//extends JerseyTest {
 		tomorowCal.add(Calendar.DAY_OF_YEAR, 1);
 		Date tomorowDate = tomorowCal.getTime();
 		
+		tomorowDate = new Date();
+		
 		Location locationLisboa = new Location("Lisboa", "co", "Avenida lx", "2000", 12f, -34.5f);
-		Venue venueLisboa = new Venue(EventService.getNextVenueId(), "Lx place", locationLisboa, "www.xpto.com", "212272000", null);
+//		Venue venueLisboa = new Venue(EventService.getNextVenueId(), "Lx place", locationLisboa, "www.xpto.com", "212272000", null);
+		Venue venueLisboa = new Venue(null, "New Lx place", locationLisboa, "www.xpto.com", "212272000", null);
+		
+		WebResource service = client.resource(getBaseURI());
+		
+		Venue venue =  service.path("venue")
+				.type(MediaType.APPLICATION_JSON)
+				.post(Venue.class, venueLisboa);
+		
+		
 		Artist artist = new Artist(EventService.getNextArtistId(), "new artist");
 		Event event = new Event(EventService.getNextEventId(), "Music - Event 1", tomorowDate, "Music event", null, "12", 12F,"tag", 1,1L, new Date(), "url", artist, venueLisboa);
 		
 //		for (int i = 0; i < 50; i++) {
-			WebResource service = client.resource(getBaseURI());
+			service = client.resource(getBaseURI());
 			
 			Event resp =  service.path("events")
 					.type(MediaType.APPLICATION_JSON)

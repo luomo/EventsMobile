@@ -174,7 +174,9 @@ $(function(){
     		} 
     		else if (u.hash.search(searchVenueUrl) !== -1) {
     			// Display URL venues dialog page - #searchVenueDialogPage
-    			loadVenuesAjax();
+    			//loadVenuesAjax();
+    			openSearchVenuesDialogPage(u, data.options);
+    			e.preventDefault();
     		} 
     		else if (u.hash.search(userUrl) !== -1) {
     			// Display event by user page - #byUserSearchPage
@@ -371,6 +373,69 @@ $(function(){
 
     	// Now call changePage() and tell it to switch to the page we just modified.
     	$.mobile.changePage($page, options);
+    }
+
+    // Display chooese Venue URL dialog 
+    function openSearchVenuesDialogPage(urlObj, options) {
+    	    	
+    	// The pages we use to display our content are already in
+    	// the DOM. The id of the page we are going to write our
+    	// content into is specified in the hash before the '?'.
+    	var	pageSelector = urlObj.hash.replace(/\?.*$/, "");
+    	
+    	// Get the page we are going to write our content into.
+    	var $page = $(pageSelector);
+    	
+    	// Get the header for the page.
+    	//$header = $page.children( ":jqmData(role=header)" );
+    	//$header.find( "h1" ).html( evTitle );
+    	
+    	// Get the content area element for the page.
+    	var $content = $page.children(":jqmData(role=content)");
+    	
+    	// Set elements in the page.
+
+    	
+    	EventService.findAllVenues( 
+    			function( venueMap ) {
+    				var html = '<ul id="searchVenueList" data-role="listview" data-filter="true" data-filter-placeholder="Search Venue ...">';
+    				
+        			
+    				// Set elements in the page.
+    	        	for(var i = 0 ; i < venueMap.sortedKeys.length ; i++ ) {
+    	        		key = venueMap.sortedKeys[i];
+    	    			html += '<li data-role="list-divider">' + key + '</li>';
+    	    			var list = venueMap[key];
+    	    			for(var j = 0; j < list.length ; j++) {	
+    	    				var _venue = list[j];
+            				// Create html row for displaying event
+            				html += '<li ><a href="javascript:loadVenueById('+ _venue.id + ')"><img alt="coverArt" src="images/mia.png" /><h3>' + _venue.name + '</h3>';
+            			    html += '<p>' + _venue.location.country + '</p>';
+            			    html += '<p>' + _venue.location.city + '</p>';
+            			    html += '</a>';
+            			    html += '</li>';
+    	    			}
+    	    		};
+    				
+    				
+    				//console.log(html);
+    	        	html += '</ul>';
+    	        	
+    	    		// Inject the category items markup into the content element.
+    	    		$content.html( html );
+
+    	    		
+    	        	// Pages are lazily enhanced. We call page() on the page
+    	        	// element to make sure it is always enhanced.
+    	        	$page.page();
+    	        	
+    	        	// Enhance the listview we just injected.
+    	        	$content.find( ":jqmData(role=listview)" ).listview();
+
+    	        	// Now call changePage() and tell it to switch to the page we just modified.
+    	        	$.mobile.changePage($page, options);
+    			}
+    	);
     }
 
     function openEventByCityPage(urlObj, options) {
@@ -689,7 +754,31 @@ function loadVenueById(venueId) {
 	console.log("loadVenueById: " + venueId);
 	var url = AjaxEventHelper.getRootURL() + 'venue/'+venueId; 
 	
+	
+	EventService.findVenueById(
+			venueId, 
+			function (data) {
+				$('#vnId').val(data.id);
+				$('#vnName').val(data.name);
+				$('#vnUrl').val(data.url);
+				$('#vnPhone').val(data.vnPhone);
+				$('#vnLocCountry').val(data.location.country);
+				$('#vnLocCity').val(data.location.city);
+				$('#vnLocStreet').val(data.location.street);
+				$('#vnLocLat').val(data.location.latitude);
+				$('#vnLocLong').val(data.location.longitude);
+		
+				// if an existent venue is selected user can't change its details do we have disable all fields 
+				if($('#vnId').val() != null) {
+					$("#vnColapInfo input").prop('disabled', true);
+				}
+				
+				//$("#searchVenueDialogPage").dialog('close');
+				$.mobile.changePage("#createEventPage");
+			});
+	
 	// invoke ws for obtain venue info for populate  form
+	/*
 	AjaxEventHelper.createGETRequestAjax(url, function(data){
 		$('#vnId').val(data.id);
 		$('#vnName').val(data.name);
@@ -708,6 +797,7 @@ function loadVenueById(venueId) {
 		
 		$("#searchVenueDialogPage").dialog('close');
 	});
+	*/
 	
 }
 

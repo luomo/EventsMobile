@@ -11,11 +11,6 @@ var EventStorageDao = function () {
 		         d1.getUTCMonth() == d2.getUTCMonth() &&
 		         d1.getUTCDate() == d2.getUTCDate();
 	}
-	
-	function getEventId(eventDbId) {
-		eventDbId.replace(EVENT_PREFIX, "");
-		return eventDbId;
-	}
 
 
 
@@ -82,10 +77,12 @@ var EventStorageDao = function () {
     	var _event, _eventJS,  _eventId;
     	for (var i = 0; i < window.localStorage.length; i++){
     		_eventId = window.localStorage.key(i);
-    		_event = window.localStorage.getItem(_eventId);
-    		_eventJS = JSON.parse(_event);
-    		if(_eventJS.status != 0)
-    			eventsJson.push(_event);
+    		if(_eventId.match(EVENT_PREFIX) != null) {
+	    		_event = window.localStorage.getItem(_eventId);
+	    		_eventJS = JSON.parse(_event);
+	    		if(_eventJS.status != 0)
+	    			eventsJson.push(_event);
+    		}
     	}
     	
     	callback(eventsJson);
@@ -101,11 +98,13 @@ var EventStorageDao = function () {
     	var _event,  _eventJS, _eventId;
     	for (var i = 0; i < window.localStorage.length; i++){
     		_eventId = window.localStorage.key(i);
-    		_event = window.localStorage.getItem(_eventId);
-    		_eventJS = JSON.parse(_event);
-    		if(_eventJS.status != 0)
-	    		if (sameDay( new Date(_eventJS.startDate), new Date()))
-	    			eventsJson.push(_event);
+    		if(_eventId.match(EVENT_PREFIX) != null) {
+	    		_event = window.localStorage.getItem(_eventId);
+	    		_eventJS = JSON.parse(_event);
+	    		if(_eventJS.status != 0)
+		    		if (sameDay( new Date(_eventJS.startDate), new Date()))
+		    			eventsJson.push(_event);
+    		}
     	}
     	
     	callback(eventsJson);
@@ -121,11 +120,13 @@ var EventStorageDao = function () {
     	var _eventJS,_eventJson,  _eventId;
     	for (var i = 0; i < window.localStorage.length; i++){
     		_eventId = window.localStorage.key(i);
-    		_eventJson = window.localStorage.getItem(_eventId);
-    		_eventJS = JSON.parse(_eventJson);
-    		if(_eventJS.status != 0)
-	    		if(_eventJS.venue.location.city === cityId)
-	    			eventsJson.push(_eventJson);
+    		if(_eventId.match(EVENT_PREFIX) != null) {
+	    		_eventJson = window.localStorage.getItem(_eventId);
+	    		_eventJS = JSON.parse(_eventJson);
+	    		if(_eventJS.status != 0)
+		    		if(_eventJS.venue.location.city === cityId)
+		    			eventsJson.push(_eventJson);
+    		}
     	}	
     	callback(eventsJson);
     }
@@ -138,10 +139,12 @@ var EventStorageDao = function () {
     	var _event, _eventJson, _eventId;
     	for (var i = 0; i < window.localStorage.length; i++){
     		_eventId = window.localStorage.key(i);
-    		_eventJson = window.localStorage.getItem(_eventId);
-    		_event = JSON.parse(_eventJson);
-    		if(_event.status != 0 && _event.owner === userId)
+    		if(_eventId.match(EVENT_PREFIX) != null) {
+	    		_eventJson = window.localStorage.getItem(_eventId);
+	    		_event = JSON.parse(_eventJson);
+	    		if(_event.status != 0 && _event.owner === userId)
 	    		eventsJson.push(_event);
+    		}
     	}	
     	callback(eventsJson);
  
@@ -160,12 +163,13 @@ var EventStorageDao = function () {
     	window.localStorage.setItem(EVENT_PREFIX + eventId, JSON.stringify(_eventJS));
     } 
 
+  
     
 	
 	return {
 		init : function() {
 			console.log('Init() EVENT Storage DAO');
-			//deleteAllEvents();
+//			deleteAllEvents();
 			
 		},
 		clear : function(){

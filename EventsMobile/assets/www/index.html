@@ -29,7 +29,9 @@
 <script type="text/javascript" src="js/events/main.js"></script>
 <!-- **** Dao objects ****** -->
 <script type="text/javascript" src="js/events/dao/EventDbDao.js"></script>
+<script type="text/javascript" src="js/events/dao/VenueDbDao.js"></script>
 <script type="text/javascript" src="js/events/dao/EventStorageDao.js"></script>
+<script type="text/javascript" src="js/events/dao/VenueStorageDao.js"></script>
 <!-- **** Utils objects ****** -->
 <script type="text/javascript" src="js/events/utils/AjaxEventHelper.js"></script>
 <!-- **** Service objects ****** -->
@@ -44,29 +46,25 @@
 <script type="text/javascript">
 	//Wait for Cordova to load
 	//
-	/*
-	document.addEventListener("deviceready", EventService.init, false);
+	
 
-	if (!window.openDatabase) 		
-	    alert("localDB not available");
-	else {
-		alert("it's on");
-		EventService.init();
-	}
-	*/
+
+
 	if (!window.openDatabase){ 		
 	    alert("localDB not available");
 		if(localStorage)  {
 			alert("Local Storage: Supported");  
-			EventService.init(EventStorageDao);
+			EventService.init(EventStorageDao, VenueStorageDao);
 		} else  
 	    	alert("Local Storage: Not Supported ... Please upgrade");
 	}else {
 		alert("localDB available");
-		EventService.init(EventDbDao);
+		document.addEventListener("deviceready", EventService.init(EventDbDao, VenueDbDao), false);
 	}
+	//EventService.init(EventDbDao, VenueDbDao);
 	
-//	EventService.init(EventStorageDao);
+	
+	
 	
 </script>
 
@@ -138,7 +136,7 @@
 			<div data-role=navbar>
 				<ul>
 					<li><a href="#home" data-icon="home">Home</a></li>	
-					<li><a href="" class="ui-btn-active" data-rel="dialog" data-icon="grid">User Area</a></li>
+					<li><a href="" class="ui-btn-active"  data-icon="grid">User Area</a></li>
 					<li><a href="#byLocationSearchPage" data-icon="search">Events</a></li>
 					<li><a href='javascript:refresh("byUserSearchPage");' data-icon="refresh" id="refresh" >Sync</a></li>
 				</ul> 
@@ -425,14 +423,12 @@
 					 	<label for="vnPhone">Phone:</label>
 						<input type="tel" name="vnPhone" id="vnPhone" value=""  />
 				   	</div>
-			
-					<div data-role="controlgroup" data-type="horizontal">
-						<a href="" data-role="button" data-rel="dialog" data-icon="plus" data-inline="true">Take photo</a>
-						<a href="" data-role="button" data-rel="dialog" data-icon="search" data-inline="true">Find image</a>
-					</div>
+
 					
 					<div data-role="fieldcontain"> 
-						<a id="searchVenueDialogPageBtn" href="#searchVenueDialogPage" data-role="button" data-rel="dialog" data-icon="search">Search existent venue</a>
+						<a href="" data-role="button" data-rel="dialog" data-icon="search">Find image</a>
+						<a href="" data-role="button" data-rel="dialog" data-icon="plus" >Take photo</a>
+						<a id="searchVenueDialogPageBtn" href="#searchVenueDialogPage" data-role="button" data-icon="search">Search existent venue</a>
 					</div>   
 				</div>		   
 				
@@ -460,7 +456,7 @@
 	</div>
 	
 	
-	<div data-role="dialog" id="searchVenueDialogPage" data-add-back-btn="true">
+	<div data-role="dialog" id="searchVenueDialogPage" data-add-back-btn="false">
 
 		<div data-role="header">
 			<h1>Search Venues</h1>
@@ -469,10 +465,9 @@
 
 		<div data-role="content">			
 			
-			<ul id="searchVenueList" data-role="listview" data-filter="true" data-filter-placeholder="Search Venue ...">
-			</ul>
+			<!-- 
 			<input  id="vnSearchSubmBtn" class="submit" type="submit" value="Submit" data-theme="a"/>
-		   	<a href="#" data-rel="back" data-role="button">Cancel</a>
+		   	<a href="#" data-rel="back" data-role="button">Cancel</a> -->
 		</div>
 
 		<div data-role="footer">

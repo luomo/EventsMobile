@@ -8,21 +8,32 @@ var EventService = function () {
 	
 	
 	var eventDao;
+	var venueDao;
 	
-	function getChanges(syncURL, lastSyncDate, callback){
+	function getEventChanges(syncURL, lastSyncDate, callback){
 		// lastSyncDate will be used to pass the last date to the server
 		// at this point is not beeing used
     	AjaxEventHelper.createGETRequestAjax(syncURL,callback);
+	}
+
+	function getVenueChanges(syncURL, lastSyncDate, callback){
+		// lastSyncDate will be used to pass the last date to the server
+		// at this point is not beeing used
+		AjaxEventHelper.createGETRequestAjax(syncURL,callback);
 	}
 	
 	
 	// Public API
 	return {
-		init : function( dao ) {
+		init : function( argEventDao, argVenueDao ) {
 			//alert("EventService: init ");
 			console.log("EventService: init ");
-			eventDao = dao;
+			eventDao = argEventDao;
+			venueDao = argVenueDao;
+			
 			eventDao.init();
+			venueDao.init();
+			
 			EventService.sync(function(){
 				console.log("nothing to update");
 			})
@@ -37,7 +48,7 @@ var EventService = function () {
 			AjaxEventHelper.createPOSTRequestAjax( url, 
 												   function( eventJson ){
 														var event = Event.createEventJSObjectBasedOnJsonAjaxReq(eventJson);
-														eventDao.addOrUpdateEvent(event);			
+														eventDao.addOrUpdateEvent(event);						
 														callback(eventJson);
 													},
 													jsonDataToBePosted); 
@@ -55,11 +66,12 @@ var EventService = function () {
 			eventDao.getLastSyncDate(callback);
 	    },
 	    sync: function(callback) {
-	    	var syncURL = AjaxEventHelper.getRootURL() + 'events';
+	    	var syncEventURL = AjaxEventHelper.getRootURL() + 'events';
+	    	var syncVenueURL = AjaxEventHelper.getRootURL() + 'venue';
 	        console.log('Starting synchronization...');
 	        this.getLastSync(
 	        		function(lastSync){
-			            getChanges(syncURL, lastSync, function (data) {
+			            getEventChanges(syncEventURL, lastSync, function (data) {
 			            	// if exists new data 
 			        		if(data.length > 0) {
 			        			// we have to update localDB
@@ -71,11 +83,25 @@ var EventService = function () {
 			        				events.push(_event);
 			        			}
 			        			eventDao.syncEventList(events, callback);
-			        		} else {
-			        			// if there are no changes we can apply the callback method 
-			        			callback();
-			        		}
+			        		} 
 			            });
+			            getVenueChanges(syncVenueURL, lastSync, function (data) {
+			            	// if exists new data 
+			        		if(data.length > 0) {
+			        			// we have to update localDB
+			        			var venues = [];
+			        			for(var i = 0; i< data.length ; i++) {
+			        			//for(var _eventJson in data) {
+			        				var _venueJson = data[i];
+			        				//var _venue = JSON.parse(_venueJson);
+			        				venues.push(_venueJson);
+			        			}
+			        			venueDao.syncVenueList(venues, callback);
+			        		}
+			        			
+			            });
+			            // if there are no changes we can apply the callback method 
+			            callback();
 	        });
 	        		
 	    },
@@ -109,11 +135,11 @@ var EventService = function () {
 							} 
 							map[city].push(_eventJS);
 							keys.sort();
-							map['sortedKeys'] = keys;
 						}
 						for(var key in map){
 							map[key] = map[key].sort(Event.orderByTitleASC);
 						}
+						map['sortedKeys'] = keys;
 						callback(map);
 					}
 			);
@@ -159,6 +185,30 @@ var EventService = function () {
 						callback(jsEventList);
 					}); 
 					
+		}, 
+		findAllVenues : function (callback) {
+			venueDao.findAll(
+					new Date(),
+					function(venueList) {
+						var map = new Object();
+						var _venueJS, city ;
+						var keys = new Array(); 
+						for(i=0;i < venueList.length; i++){
+							_venueJS = venueList[i];
+							city = _venueJS.location.city;
+							if(map[city] == undefined ) {
+								keys.push(city);
+								map[city] = new Array(); 
+							} 
+							map[city].push(_venueJS);
+						}
+						keys.sort();
+						map['sortedKeys'] = keys;
+						callback(map);
+					});
+		},
+		findVenueById : function (venueId, callback) {
+			venueDao.findVenueById(venueId, callback);
 		}
 	}
 }(); 

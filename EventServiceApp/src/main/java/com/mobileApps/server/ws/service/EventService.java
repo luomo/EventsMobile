@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.ws.rs.core.Response.ResponseBuilder;
+
 import com.mobileApps.server.ws.domain.Artist;
 import com.mobileApps.server.ws.domain.Event;
 import com.mobileApps.server.ws.domain.Location;
@@ -90,6 +92,10 @@ public class EventService {
 	
 	public static List<Event> getAllEvents(){
 		return eventList;
+	}
+	
+	public static List<Venue> getAllVenues() {
+		return venueList;
 	}
 	
 	public static List<Location> getAllLocations() {
@@ -255,6 +261,14 @@ public class EventService {
 			if(_eventDB.getId().equals(eventId))
 				_eventDB.setStatus(0);
 		}
+	}
+	
+	
+	public static Venue registerVenue(Venue venue){
+		Long id = EventService.getNextVenueId();
+		venue.setId(id);
+		venueList.add(venue);
+		return venue;
 	}
 
 

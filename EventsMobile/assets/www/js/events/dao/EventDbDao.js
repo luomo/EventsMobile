@@ -292,7 +292,7 @@ var EventDbDao = function () {
 	
 	return {
 		init : function() {
-			alert('Init() EVENT DAO');
+			console.log('Init() EVENT DAO');
 			openDB();
 		},
 		clear : function(){

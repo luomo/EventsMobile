@@ -14,9 +14,9 @@ var PreferencesStorageDao = function () {
 
 
 	
-    function addOrUpdatePrefsToLocalDB(prefsId, prefs) {
+    function addOrUpdatePrefToLocalDB(prefsId, prefs) {
 
-    	console.log('PrefsDao:addOrUpdatePrefsToLocalDB: prefsId: ' + prefsId);
+    	console.log('PrefsDao:addOrUpdatePrefToLocalDB: prefsId: ' + prefsId);
     	try {
     		window.localStorage.setItem(PREFS_PREFIX + prefsId, prefs); //saves to the database, "key", "value"
     	} catch (e) {
@@ -30,9 +30,9 @@ var PreferencesStorageDao = function () {
     
     
     
-    function deleteAllPrefss() {
+    function deleteAllPrefs() {
     	
-    	console.log('PrefsDao:deleteAllPrefss');
+    	console.log('PrefsDao:deleteAllPrefs');
     	window.localStorage.clear();
     }
 
@@ -65,13 +65,13 @@ var PreferencesStorageDao = function () {
 	return {
 		init : function() {
 			console.log('Init() PREFS Storage DAO');
-			//deleteAllPrefss();
+			//deleteAllPrefs();
 		},
 		clear : function(){
-			deleteAllPrefss();
+			deleteAllPrefs();
 		},
 		addOrUpdatePref : function(prefsId, prefs){
-			addOrUpdatePrefsToLocalDB(prefsId, prefs)
+			addOrUpdatePrefToLocalDB(prefsId, prefs)
 		},
 		findPrefById : function(prefsId, callback) {
 			findPrefByIdInDatabase(prefsId, callback);

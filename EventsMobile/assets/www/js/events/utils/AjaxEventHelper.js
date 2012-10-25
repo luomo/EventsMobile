@@ -7,12 +7,13 @@ var AjaxEventHelper = function(){
 
 		
 		errorFunction = function(xhRequest, ErrorText, thrownError){
+			console.log('Error conecting to requested web Service ..check log console');
 			console.log('xhRequest: ' + xhRequest.responseText);
 			console.log('ErrorText: ' + ErrorText);
 			console.log("thrownError: "  + thrownError);
 			$.mobile.hidePageLoadingMsg();
 			$('.console').html('Error conecting to webservice');
-			alert('Error conecting to requested web Service ..check log console');
+//			alert('Error conecting to requested web Service ..check log console');
 		}
 		
 		return {
@@ -31,9 +32,13 @@ var AjaxEventHelper = function(){
 			        success: callback,
 			        error: errorFunction,
 					statusCode: {
-					    404: function() {
-					      alert("page not found");
-					    }
+						404: function() {
+						    	navigator.notification.alert("page not found");
+					    },
+						503: function() {
+							navigator.notification.alert('No network connection. Please validate your internet definitions');
+							  navigator.notification.vibrate(100);
+						}
 					}
 			    });
 			    /*
@@ -57,8 +62,13 @@ var AjaxEventHelper = function(){
 			        error: errorFunction,
 					statusCode: {
 					    404: function() {
-					      alert("page not found");
-					    }
+					    	navigator.notification.alert("page not found");
+					    },
+					    ,
+						503: function() {
+							navigator.notification.alert('No network connection. Please validate your internet definitions');
+							  navigator.notification.vibrate(100);
+						}
 					 }
 			    }).then(function(){
 					//cue the page loader   
@@ -79,7 +89,11 @@ var AjaxEventHelper = function(){
 					error: errorFunction,
 					statusCode: {
 						404: function() {
-							alert("page not found");
+						    	navigator.notification.alert("page not found");
+						    },
+						503: function() {
+							navigator.notification.alert('No network connection. Please validate your internet definitions');
+							  navigator.notification.vibrate(100);
 						}
 					}
 				}).then(function(){

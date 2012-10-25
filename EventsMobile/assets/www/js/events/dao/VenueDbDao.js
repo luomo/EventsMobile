@@ -183,7 +183,7 @@ var VenueDbDao = function () {
 	
 	return {
 		init : function() {
-			alert('Init() VENUE DAO');
+			console.log('Init() VENUE DAO');
 			openDB();
 		},
 		clear : function(){

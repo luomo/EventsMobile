@@ -32,6 +32,7 @@
 <script type="text/javascript" src="js/events/dao/VenueDbDao.js"></script>
 <script type="text/javascript" src="js/events/dao/EventStorageDao.js"></script>
 <script type="text/javascript" src="js/events/dao/VenueStorageDao.js"></script>
+<script type="text/javascript" src="js/events/dao/PreferencesDbDao.js"></script>
 <script type="text/javascript" src="js/events/dao/PreferencesStorageDao.js"></script>
 <!-- **** Utils objects ****** -->
 <script type="text/javascript" src="js/events/utils/AjaxEventHelper.js"></script>
@@ -63,9 +64,9 @@
 		document.addEventListener("deviceready", EventService.init(EventDbDao, VenueDbDao), false);
 	}
 	*/
-	//EventService.init(EventDbDao, VenueDbDao);
+	EventService.init(EventDbDao, VenueDbDao, PreferencesDbDao);
 	
-	EventService.init(EventStorageDao, VenueStorageDao, PreferencesStorageDao);
+	//EventService.init(EventStorageDao, VenueStorageDao, PreferencesStorageDao);
 	
 	
 </script>

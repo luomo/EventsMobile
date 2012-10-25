@@ -39,9 +39,10 @@ var EventService = function () {
 			prefsDao.findPrefById('sync', function( val ) {
 				if( val === 'yes') {
 					EventService.sync(function(){
-						console.log("nothing to update");
+						console.log("Sync completed");
 					})
-				}
+				} else
+					console.log('Automatic sync disabled in preferences')
 			});
 			
 		},
@@ -109,6 +110,7 @@ var EventService = function () {
 			            });
 			            // if there are no changes we can apply the callback method 
 			            callback();
+			          
 	        });
 	        		
 	    },

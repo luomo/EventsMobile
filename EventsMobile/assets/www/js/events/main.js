@@ -4,8 +4,13 @@
 
 $(function(){
 	
+	createOrUpdatePrefs();
 
-
+	$('#sync').change(function(event){
+		var val = $('#sync').val();
+		console.log("Sync pref value was update. New value is " + val);
+		EventService.addOrUpdatePref("sync", val)
+	})
 
 	// ************************************
 	// ********* Initiaizing Code *********
@@ -913,6 +918,20 @@ function convert(dateJson) {
         minute = "0" + minute
 
     return date.getFullYear() +"/"+(date.getMonth()+1)+"/"+ date.getDate() + ' - ' + hour + ':' + minute
+}
+
+
+function createOrUpdatePrefs(){
+	prefs = new Object();
+	prefs['userLogin'] = $('#userLogin').val();
+	prefs['passLogin'] = $('#passLogin').val();
+	prefs['sync'] = $('#sync').val();
+	
+	EventService.syncPrefs(prefs, function (prefsList) {
+		for(prefKey in prefsList) {
+			$('#' + prefKey).val(prefsList[prefKey]);
+		}
+	});
 }
 
 // ************************************************************************

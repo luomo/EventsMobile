@@ -32,6 +32,7 @@
 <script type="text/javascript" src="js/events/dao/VenueDbDao.js"></script>
 <script type="text/javascript" src="js/events/dao/EventStorageDao.js"></script>
 <script type="text/javascript" src="js/events/dao/VenueStorageDao.js"></script>
+<script type="text/javascript" src="js/events/dao/PreferencesStorageDao.js"></script>
 <!-- **** Utils objects ****** -->
 <script type="text/javascript" src="js/events/utils/AjaxEventHelper.js"></script>
 <!-- **** Service objects ****** -->
@@ -49,7 +50,7 @@
 	
 
 
-
+/*
 	if (!window.openDatabase){ 		
 	    alert("localDB not available");
 		if(localStorage)  {
@@ -61,9 +62,10 @@
 		alert("localDB available");
 		document.addEventListener("deviceready", EventService.init(EventDbDao, VenueDbDao), false);
 	}
+	*/
 	//EventService.init(EventDbDao, VenueDbDao);
 	
-	
+	EventService.init(EventStorageDao, VenueStorageDao, PreferencesStorageDao);
 	
 	
 </script>
@@ -281,21 +283,24 @@
 			<p id="prefMsg"></p>
 			<div data-role="fieldcontain">
 				 <label for="userLogin">User:</label>
-				 <input type="text" name="user" id="userLogin" value="" required="true" />
+				 <input type="text" name="userLogin" id="userLogin" value="" required="true" />
 		   </div>
 
 		   <div data-role="fieldcontain">
 			 <label for="passLogin">Password:</label>
-			 <input type="password" name="password" id="passLogin" value="" required="true" />
+			 <input type="password" name="passLogin" id="passLogin" value="" required="true" />
 		   </div>
-			<div data-role="fieldcontain">
-				<label for="updated">Receive updates</label> <select id="updated"
-					name="updated" data-role="slider">
-					<option value="no">No</option>
-					<option value="yes">Yes</option>
-				</select>
+		   <div data-role="fieldcontain">
+			 <a href="#home" data-role="button">Validate User login info</a>
+			 <a href="#home" data-role="button">Create User </a>
+		   </div>
+		<div data-role="fieldcontain">
+			<label for="sync">Automatic Sync</label> 
+			<select id="sync" name="sync" data-role="slider">
+				<option value="no">No</option>
+				<option value="yes">Yes</option>
+			</select>
 			</div>
-
 		</div>
 
 	</div>

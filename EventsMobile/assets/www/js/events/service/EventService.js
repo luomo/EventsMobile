@@ -25,18 +25,25 @@ var EventService = function () {
 	
 	// Public API
 	return {
-		init : function( argEventDao, argVenueDao ) {
+		init : function( argEventDao, argVenueDao, argPrefsDao ) {
 			//alert("EventService: init ");
 			console.log("EventService: init ");
 			eventDao = argEventDao;
 			venueDao = argVenueDao;
+			prefsDao = argPrefsDao;
 			
 			eventDao.init();
 			venueDao.init();
+			prefsDao.init();
 			
-			EventService.sync(function(){
-				console.log("nothing to update");
-			})
+			prefsDao.findPrefById('sync', function( val ) {
+				if( val === 'yes') {
+					EventService.sync(function(){
+						console.log("nothing to update");
+					})
+				}
+			});
+			
 		},
 		clear : function(){
 			console.log("EventService: clear ");
@@ -209,6 +216,15 @@ var EventService = function () {
 		},
 		findVenueById : function (venueId, callback) {
 			venueDao.findVenueById(venueId, callback);
+		},
+		syncPrefs : function (prefs, callback) {
+			prefsDao.syncPrefsList(prefs, callback);
+		},
+		findPrefById : function (prefId, callback) {
+			prefsDao.findPrefById(prefId, callback);
+		},
+		addOrUpdatePref : function (prefId, prefValue) {
+			prefsDao.addOrUpdatePref(prefId, prefValue);
 		}
 	}
 }(); 

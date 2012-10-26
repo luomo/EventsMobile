@@ -64,7 +64,6 @@ var AjaxEventHelper = function(){
 					    404: function() {
 					    	navigator.notification.alert("page not found");
 					    },
-					    ,
 						503: function() {
 							navigator.notification.alert('No network connection. Please validate your internet definitions');
 							  navigator.notification.vibrate(100);

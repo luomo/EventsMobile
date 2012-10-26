@@ -106,7 +106,7 @@
 			<ul data-role="listview"  data-inset="true">
 				<!-- <li data-icon="false"> <a href="#loginPage" ><img alt="Log in" src="images/login.png" class="ui-li-icon">Log In</a></li>-->
 				<li data-icon="false"> <a href="#byLocationSearchPage" ><img alt="Events" src="images/_search.png" class="ui-li-icon">Events</a></li>
-				<li data-icon="false"> <a href="#byUserSearchPage" ><img alt="Events" src="images/add_user.png" class="ui-li-icon">User area</a></li>
+				<li data-icon="false"> <a href="#byUserSearchPage" ><img alt="Events" src="images/add_user.png" class="ui-li-icon">My Events</a></li>
 				<li data-icon="false"> <a href="#genreSearchPage" ><img alt="Sign Up" src="images/add_user.png" class="ui-li-icon">Sign Up</a></li>
 				<li data-icon="false"> <a href="#eventDetails" ><img alt="About" src="images/about.png" class="ui-li-icon">About</a></li>
 				<li data-icon="false"> <a href="feedback.html" data-rel="dialog"><img alt="Feedback" src="images/feedback.png" class="ui-li-icon">Feedback</a></li>
@@ -163,9 +163,9 @@
 		<div data-role="footer" data-position="fixed">
 			<div data-role=navbar>
 				<ul>
-					<li><a href="#home" data-icon="info">Home</a></li>	
-					<li><a href="#byLocationSearchPage" class="ui-btn-active"  data-icon="grid">Location</a></li>
-					<li><a href="#byNameSearchPage" data-icon="Name">Name</a></li>
+					<li><a href="#home" data-icon="home">Home</a></li>	
+					<li><a href="#byLocationSearchPage" class="ui-btn-active"  data-icon="grid">By city</a></li>
+					<li><a href="#byNameSearchPage" data-icon="Name">By name</a></li>
 					<li><a href="#" data-icon="info">Nearby</a></li>
 					<li><a href="#byDateSearchPage" data-icon="star">Today</a></li>
 				</ul> 
@@ -188,8 +188,8 @@
 			<div data-role=navbar>
 				<ul>
 					<li><a href="#home" data-icon="home">Home</a></li>	
-					<li><a href="#byLocationSearchPage" class="ui-btn-active" data-icon="grid">Location</a></li>
-					<li><a href="#byNameSearchPage" data-icon="Name">Name</a></li>
+					<li><a href="#byLocationSearchPage" class="ui-btn-active" data-icon="grid">By city</a></li>
+					<li><a href="#byNameSearchPage" data-icon="Name">By name</a></li>
 					<li><a href="#" data-icon="info">Nearby</a></li>
 					<li><a href="#byDateSearchPage" data-icon="star">Today</a></li>
 				</ul> 
@@ -213,8 +213,8 @@
 			<div data-role=navbar>
 				<ul>
 					<li><a href="#home" data-icon="home">Home</a></li>	
-					<li><a href="#byLocationSearchPage" data-icon="grid">Location</a></li>
-					<li><a href="#byNameSearchPage" data-icon="Name">Name</a></li>
+					<li><a href="#byLocationSearchPage" data-icon="grid">By city</a></li>
+					<li><a href="#byNameSearchPage" data-icon="Name">By name</a></li>
 					<li><a href="#" data-icon="info">Nearby</a></li>
 					<li><a href="#byDateSearchPage" class="ui-btn-active" data-icon="star">Today</a></li>
 				</ul> 
@@ -262,8 +262,8 @@
 			<div data-role=navbar>
 			<ul>
 		        <li><a href="#home" data-icon="home">Home</a></li>	
-				<li><a href="#byLocationSearchPage" data-icon="grid">Location</a></li>
-				<li><a href="#byNameSearchPage" class="ui-btn-active" data-icon="Name">Name</a></li>
+				<li><a href="#byLocationSearchPage" data-icon="grid">By city</a></li>
+				<li><a href="#byNameSearchPage" class="ui-btn-active" data-icon="Name">By name</a></li>
 				<li><a href="#" data-icon="home">Nearby</a></li>
 				<li><a href="#byDateSearchPage" data-icon="star">Today</a></li>
       		</ul> 
@@ -274,37 +274,7 @@
 
 
 
-	<div data-role="page" id="settings" data-add-back-btn="true">
-		<div data-role="header">
-			<h1>Events</h1>
-			
-		</div>
-
-		<div data-role="content">
-			<p id="prefMsg"></p>
-			<div data-role="fieldcontain">
-				 <label for="userLogin">User:</label>
-				 <input type="text" name="userLogin" id="userLogin" value="" required="true" />
-		   </div>
-
-		   <div data-role="fieldcontain">
-			 <label for="passLogin">Password:</label>
-			 <input type="password" name="passLogin" id="passLogin" value="" required="true" />
-		   </div>
-		   <div data-role="fieldcontain">
-			 <a href="#home" data-role="button">Validate User login info</a>
-			 <a href="#home" data-role="button">Create User </a>
-		   </div>
-		<div data-role="fieldcontain">
-			<label for="sync">Automatic Sync</label> 
-			<select id="sync" name="sync" data-role="slider">
-				<option value="no">No</option>
-				<option value="yes">Yes</option>
-			</select>
-			</div>
-		</div>
-
-	</div>
+	
 
 	<div data-role="dialog" id="loginPage" data-add-back-btn="true">
 
@@ -536,6 +506,68 @@
 		</div>
 	
 	</div><!-- /page -->
+
+	<div data-role="page" id="settings" data-add-back-btn="true">
+		<div data-role="header">
+			<h1>Events</h1>
+			
+		</div>
+
+		<div data-role="content">
+		
+			<div data-role="fieldcontain">
+				<label for="xxx"><strong>Accounts details:</strong></label>
+				<ul id="xxx" data-role="listview"  data-inset="true">
+					<li > <a href="#settingsTwitter" ><img alt="Events" src="images/events.png" class="ui-li-icon">Events</a></li>
+					<li > <a href="#settingsTwitter" ><img alt="Twitter" src="images/twitter.png" class="ui-li-icon">Twitter</a></li>
+					<li > <a href="#byLocationSearchPage" ><img alt="Facebook" src="images/facebook.png" class="ui-li-icon">Facebook</a></li>
+					<li > <a href="#byLocationSearchPage" ><img alt="Google+" src="images/googlePlus.png" class="ui-li-icon">Google+</a></li>
+				</ul>
+			</div>
+		
+		
+			<div data-role="fieldcontain">
+				<label for="sync"><strong>Automatic Sync</strong></label> 
+				<select id="sync" name="sync" data-role="slider">
+					<option value="no">No</option>
+					<option value="yes">Yes</option>
+				</select>
+			</div>
+			<div data-role="fieldcontain">
+				<label for="slider-1"><strong>Search Distance (KM):</strong></label>
+				<input type="range" name="slider-1" id="slider-1" value="10" min="0" max="100" data-highlight="true"/>
+			</div>
+		</div>
+
+	</div>
+	
+	<div data-role="page" id="settingsTwitter" data-add-back-btn="true">
+		<div data-role="header">
+			<h1>Twitter details</h1>
+		</div>
+
+		<!-- <label for="xxx"><strong>Twitter details:</strong></label>  -->
+		
+		<div data-role="content">
+			<p id="prefMsg"></p>
+			<div data-role="fieldcontain">
+				 <label for="userLogin">User:</label>
+				 <input type="text" name="userLoginTwitter" id="userLoginTwitter" value="" required="true" />
+		   	</div>
+
+		   	<div data-role="fieldcontain">
+				 <label for="passLogin">Password:</label>
+			 	<input type="password" name="passLoginTwitter" id="passLoginTwitter" value="" required="true" />
+		   	</div>
+
+
+		   <div data-role="fieldcontain">
+			 <a href="#home" data-role="button">Login</a>
+			 <a href="#home" data-role="button">Create User </a>
+		   </div>
+		
+		</div>
+	</div>
 
 
 </body>

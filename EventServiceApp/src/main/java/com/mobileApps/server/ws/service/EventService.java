@@ -250,10 +250,12 @@ public class EventService {
 			eventList.remove(index);;
 	}
 	public static Event updateEvent(Event event) {
-		for (Event _eventDB : eventList) {
-			if(_eventDB.getId().equals(event.getId()))
-				_eventDB = event;
-		}
+		removeEventsById(event.getId());
+//		for (Event _eventDB : eventList) {
+//			if(_eventDB.getId().equals(event.getId()))
+//				_eventDB = event;
+//		}
+		eventList.add(event);
 		return event;
 	}
 	public static void logicalRemoveById(Long eventId) {

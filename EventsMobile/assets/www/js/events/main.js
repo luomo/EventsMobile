@@ -77,7 +77,7 @@ $(function(){
 		submitHandler: function() {
 
 			console.log("submitted!");
-			EventService.createEvent(
+			EventService.createOrUpdateEvent(
 					function(data){
 						//$("#createEventPage").dialog('close');
 						//$.mobile.changePage("#byUserSearchPage");
@@ -85,7 +85,7 @@ $(function(){
 				            changeHash: false
 				        });
 					}, 
-					createEventRegisterRequest())
+					createEventJsRegisterRequest())
 		}, 
 		// set this class to error-labels to indicate valid fields
 		success: function(label) {
@@ -269,7 +269,18 @@ $(function(){
 	
 	        	var tel = 'tel:' + event.venue.phoneNumber; 
 	        	$( "#phoneCallButton" ).attr('href', tel);
-	    			
+	    		
+	        	
+	        	// we have to decide which id the app owned events are going to use
+	        	// I think we have to check against the user logged id to understand if I'm the owner of the event 
+	        	if(event.owner == 0) {
+	        		// this means that user
+	        		html = '';
+	        		html += '<a id="editBtn" href="#createEventPage?eventId=' + eventId + '" data-role="button">Edit Event</a>';
+	        		$content.append(html);
+	        	}
+	        		
+	        		
 	    		// Inject the category items markup into the content element.
 	    		//$content.html( html );
     			
@@ -420,7 +431,7 @@ $(function(){
             			    html += '</a>';
             			    html += '</li>';
     	    			}
-    	    		};
+    	    		}
     				
     				
     				//console.log(html);
@@ -644,6 +655,9 @@ $(function(){
     
     function openCreateEventPage(urlObj, options) {
     	
+    	
+    	var eventId = urlObj.hash.replace(/.*eventId=/, "");
+
     	// The pages we use to display our content are already in
     	// the DOM. The id of the page we are going to write our
     	// content into is specified in the hash before the '?'.
@@ -651,8 +665,35 @@ $(function(){
     	
     	// Get the page we are going to write our content into.
     	var $page = $(pageSelector);
-
     	
+    	if(eventId != undefined && !(eventId === pageSelector)) {
+    		EventService.findEventById( eventId, function (event) {
+    			// Get the content area element for the page.
+	        	var $content = $page.children(":jqmData(role=content)");
+	        	
+	        	$content.find('#evId').val(event.id);
+	        	$content.find('#evTitle').val(event.title);
+	        	$content.find('#evDescr').val(event.description);
+	        	//$content.find('#evStartDate').data('datebox').val(event.startDate); 
+	        	//$content.find('#evStartTime').data('datebox').val(event.);
+	        	$content.find('#evPrice').val(event.price);
+	        	$content.find('#evTags').val(event.tag);
+	        	$content.find('#evUrl').val(event.url);
+	        	
+	        	$content.find('#vnId').val(event.venue.id);
+	        	$content.find('#vnName').val(event.venue.name);
+	        	$content.find('#vnUrl').val(event.venue.website);
+	        	$content.find('#vnPhone').val(event.venue.phoneNumber);
+	        	$content.find('#vnLocCountry').val(event.venue.location.country);
+	        	$content.find('#vnLocCity').val(event.venue.location.city);
+	        	$content.find('#vnLocStreet').val(event.venue.location.street);
+	        	$content.find('#vnLocLat').val(event.venue.location.latitude);
+	        	$content.find('#vnLocLong').val(event.venue.location.longitude);
+
+	        	
+    		});
+    	}
+
     	// Pages are lazily enhanced. We call page() on the page
     	// element to make sure it is always enhanced.
     	$page.page();
@@ -813,11 +854,15 @@ function resetEventCreationFields(){
 
 	// Put all fields editable (user might have created a previous event with existent venues ou artist)
 	$("#createEventForm input").prop('disabled', false);
+	
+	$('#evId').val('');
 } 
 
 
-function createEventRegisterRequest(){	
+function createEventJsRegisterRequest(){	
 	
+	var evId = $('#evId').val();
+	evId = (evId == '' || evId == undefined) ? null : evId;
 	var evTitle = $('#evTitle').val();
 	var evDescr = $('#evDescr').val();
 	var evStartDate = $('#evStartDate').data('datebox').theDate; 
@@ -837,7 +882,7 @@ function createEventRegisterRequest(){
 	var vnLocLong = $('#vnLocLong').val();
 	
 	var event;
-	event = new Event(  null, evTitle, evStartDate, evDescr, null, null,  
+	event = new Event(  evId, evTitle, evStartDate, evDescr, null, null,  
 						evPrice, evTags, 1, 0/*'UserId'*/, new Date(), evUrl,
   						new Artist(null, 'Artist XPTO'),
   						new Venue( vnId, 
@@ -854,9 +899,9 @@ function createEventRegisterRequest(){
 	//console.log(event.toString());
 	
 	//Note: maybe we should add the event to a userList events in memory and add this event to the existent singleton list
-	var json = JSON.stringify(event);
-	console.log("json object create: " + json);
-	return json;
+	
+	console.log("object create: " + event);
+	return event;
 } 
 
 

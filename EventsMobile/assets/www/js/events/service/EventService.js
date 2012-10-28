@@ -50,16 +50,30 @@ var EventService = function () {
 			console.log("EventService: clear ");
 			eventDao.clear();
 		},
-		createEvent : function (callback, jsonDataToBePosted) {
-			console.log("EventService: createEvent ");
+		createOrUpdateEvent : function (callback, eventJs) {
+			console.log("EventService: createOrUpdateEvent ");
+			var eventId = eventJs.id;
 			var url = AjaxEventHelper.getRootURL() + 'events';
-			AjaxEventHelper.createPOSTRequestAjax( url, 
-												   function( eventJson ){
-														var event = Event.createEventJSObjectBasedOnJsonAjaxReq(eventJson);
-														eventDao.addOrUpdateEvent(event);						
-														callback(eventJson);
-													},
-													jsonDataToBePosted); 
+			var jsonDataToBePosted = JSON.stringify(eventJs);
+			if(eventId == undefined) {
+				AjaxEventHelper.createPOSTRequestAjax( url, 
+													   function( eventJson ){
+															var event = Event.createEventJSObjectBasedOnJsonAjaxReq(eventJson);
+															eventDao.addOrUpdateEvent(event);						
+															callback(eventJson);
+														},
+														jsonDataToBePosted);
+			} else {
+//				url = url + "/" + eventId;
+				AjaxEventHelper.createPUTRequestAjax(
+						url,
+						function ( eventJson ){
+							var event = Event.createEventJSObjectBasedOnJsonAjaxReq(eventJson);
+							eventDao.addOrUpdateEvent(event);
+							callback(eventJson);
+						},
+						jsonDataToBePosted );
+			}
 		},
 		deleteEventById : function(eventId, callback) {
 			console.log("EventService: deleteEventById: " + eventId);

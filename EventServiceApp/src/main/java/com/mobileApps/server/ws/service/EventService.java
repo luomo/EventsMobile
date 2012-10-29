@@ -273,6 +273,18 @@ public class EventService {
 		return venue;
 	}
 
+	public static List<Event> createOrUpdateEventList(List<Event> eventList){
+		List<Event> eventListProcessed = new ArrayList<Event>();
+		Event _event;
+		for (Event event : eventList) {
+			if(event.getId() == null)
+				_event = registerEvent(event);
+			else
+				_event = updateEvent(event);
+			eventListProcessed.add(_event);
+		}
+		return eventListProcessed;
+	}
 
 	
 }

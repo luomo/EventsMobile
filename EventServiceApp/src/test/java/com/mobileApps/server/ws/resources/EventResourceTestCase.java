@@ -91,7 +91,7 @@ public class EventResourceTestCase {//extends JerseyTest {
 //		for (int i = 0; i < 50; i++) {
 			service = client.resource(getBaseURI());
 			
-			Event resp =  service.path("events")
+			Event resp =  service.path("events").path("event")
 					.type(MediaType.APPLICATION_JSON)
 					.post(Event.class, event);
 			

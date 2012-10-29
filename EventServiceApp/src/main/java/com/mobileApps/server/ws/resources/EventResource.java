@@ -2,6 +2,7 @@ package com.mobileApps.server.ws.resources;
 
 import java.net.URI;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
@@ -33,20 +34,34 @@ public class EventResource {
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response registerEvent(@Context UriInfo ui, 
+	public Response syncEvents(@Context UriInfo ui, 
 		    					 @Context HttpServletResponse response,  
-								 Event event){
+								 List<Event> eventList){
+		
+		List<Event> processedList = EventService.createOrUpdateEventList(eventList);
+		
+
+		return Response.ok(processedList).header("Access-Control-Allow-Origin", "*").build();
+	}
+
+	@POST
+	@Path("/event")
+	@Consumes({MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response registerEvent(@Context UriInfo ui, 
+			@Context HttpServletResponse response,  
+			Event event){
 		
 		event = EventService.registerEvent(event);
 		
 		if(event.getId() == null)
 			throw new WebApplicationException(
-			        Response
-			          .status(Status.PRECONDITION_FAILED)
-			          .entity("Event alreay exists .. testing!!!")
-			          .build()
-			      );
-
+					Response
+					.status(Status.PRECONDITION_FAILED)
+					.entity("Event alreay exists .. testing!!!")
+					.build()
+					);
+		
 		return Response.created(URI.create("/" + event.getId())).entity(event).header("Access-Control-Allow-Origin", "*").build();
 	}
 	

@@ -169,7 +169,7 @@ var EventStorageDao = function () {
 	return {
 		init : function() {
 			console.log('Init() EVENT Storage DAO');
-//			deleteAllEvents();
+			deleteAllEvents();
 			
 		},
 		clear : function(){

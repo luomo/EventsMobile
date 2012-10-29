@@ -47,7 +47,9 @@ var AjaxEventHelper = function(){
 			    	$.mobile.hidePageLoadingMsg();
 			    });*/
 			},
-			createPOSTRequestAjax : function(url, callback, dataToBePosted){
+			createPOSTRequestAjax : function(url, callback, dataToBePosted, errorCallback){
+				if(errorCallback == undefined)
+					errorCallback = errorFunction;
 				console.log("createPOSTRequestAjax: " + url);
 				//Starting loading animation        
 				$.mobile.showPageLoadingMsg();
@@ -59,7 +61,7 @@ var AjaxEventHelper = function(){
 			        dataType: 'json', // data type of response  try jsonp
 			        data:dataToBePosted,// JSON.stringify({username:"test", password:"data"}),//{ username: "John", password: "2pm" } , //dataToBePosted,// jsonData:   dsfsdkfsld
 			        success: callback,
-			        error: errorFunction,
+			        error: errorCallback,
 					statusCode: {
 					    404: function() {
 					    	navigator.notification.alert("page not found");

@@ -402,10 +402,6 @@ $(function(){
     	// Get the page we are going to write our content into.
     	var $page = $(pageSelector);
     	
-    	// Get the header for the page.
-    	//$header = $page.children( ":jqmData(role=header)" );
-    	//$header.find( "h1" ).html( evTitle );
-    	
     	// Get the content area element for the page.
     	var $content = $page.children(":jqmData(role=content)");
     	
@@ -414,7 +410,8 @@ $(function(){
     	
     	EventService.findAllVenues( 
     			function( venueMap ) {
-    				var html = '<ul id="searchVenueList" data-role="listview" data-filter="true" data-filter-placeholder="Search Venue ...">';
+//    				var html = '<ul id="searchVenueList" data-role="listview" data-filter="true" data-filter-placeholder="Search Venue ...">';
+    				var html = '';
     				
         			
     				// Set elements in the page.
@@ -435,18 +432,21 @@ $(function(){
     				
     				
     				//console.log(html);
-    	        	html += '</ul>';
+//    	        	html += '</ul>';
     	        	
-    	    		// Inject the category items markup into the content element.
-    	    		$content.html( html );
-
-    	    		
-    	        	// Pages are lazily enhanced. We call page() on the page
-    	        	// element to make sure it is always enhanced.
-    	        	$page.page();
+//    	    		// Inject the category items markup into the content element.
+//    	    		$content.html( html );
+//
+//    	    		
+//    	        	// Pages are lazily enhanced. We call page() on the page
+//    	        	// element to make sure it is always enhanced.
+//    	        	$page.page();
+//    	        	
+//    	        	// Enhance the listview we just injected.
+//    	        	$content.find( ":jqmData(role=listview)" ).listview();
     	        	
-    	        	// Enhance the listview we just injected.
-    	        	$content.find( ":jqmData(role=listview)" ).listview();
+    	        	$("#searchVenueList", $.mobile.activePage).html(html);
+    	      		$("#searchVenueList", $.mobile.activePage).listview('refresh');
 
     	        	// Now call changePage() and tell it to switch to the page we just modified.
     	        	$.mobile.changePage($page, options);

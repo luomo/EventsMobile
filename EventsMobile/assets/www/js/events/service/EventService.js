@@ -56,13 +56,18 @@ var EventService = function () {
 			var url = AjaxEventHelper.getRootURL() + 'events';
 			var jsonDataToBePosted = JSON.stringify(eventJs);
 			if(eventId == undefined) {
+				url = url + "/event";
 				AjaxEventHelper.createPOSTRequestAjax( url, 
 													   function( eventJson ){
 															var event = Event.createEventJSObjectBasedOnJsonAjaxReq(eventJson);
 															eventDao.addOrUpdateEvent(event);						
 															callback(eventJson);
 														},
-														jsonDataToBePosted);
+														jsonDataToBePosted, 
+														function(){
+															eventDao.addOrUpdateEvent(eventJs);
+															callback(jsonDataToBePosted);
+														});
 			} else {
 //				url = url + "/" + eventId;
 				AjaxEventHelper.createPUTRequestAjax(
@@ -106,6 +111,8 @@ var EventService = function () {
 			        			}
 			        			eventDao.syncEventList(events, callback);
 			        		} 
+			        		// if there are no changes we can apply the callback method 
+//				            callback();
 			            });
 			            getVenueChanges(syncVenueURL, lastSync, function (data) {
 			            	// if exists new data 
@@ -120,10 +127,10 @@ var EventService = function () {
 			        			}
 			        			venueDao.syncVenueList(venues, callback);
 			        		}
-			        			
+			        		// if there are no changes we can apply the callback method 
+//				            callback();
 			            });
-			            // if there are no changes we can apply the callback method 
-			            callback();
+			            
 			          
 	        });
 	        		

@@ -64,9 +64,8 @@
 		document.addEventListener("deviceready", EventService.init(EventDbDao, VenueDbDao), false);
 	}
 	*/
-	//EventService.init(EventDbDao, VenueDbDao, PreferencesDbDao);
-	
-	EventService.init(EventStorageDao, VenueStorageDao, PreferencesStorageDao);
+	//EventService.init(EventStorageDao, VenueStorageDao, PreferencesStorageDao);
+	EventService.init(EventDbDao, VenueDbDao, PreferencesDbDao);
 	
 	
 </script>
@@ -456,6 +455,8 @@
 			<!-- 
 			<input  id="vnSearchSubmBtn" class="submit" type="submit" value="Submit" data-theme="a"/>
 		   	<a href="#" data-rel="back" data-role="button">Cancel</a> -->
+		   	<ul id="searchVenueList" data-role="listview" data-filter="true" data-filter-placeholder="Search Venue ...">
+		   	</ul>
 		</div>
 
 		<div data-role="footer">

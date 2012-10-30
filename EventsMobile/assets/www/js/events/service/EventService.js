@@ -57,6 +57,11 @@ var EventService = function () {
 			var jsonDataToBePosted = JSON.stringify(eventJs);
 			if(eventId == undefined) {
 				url = url + "/event";
+				// POST a request to save an Event
+				// args: - url 
+				//       - callback success function to be executed when the ajax request delivers a response with OK status
+				//       - json object request
+				//       - callback error function to be executed when the ajax request isn't able to perform the creation request 
 				AjaxEventHelper.createPOSTRequestAjax( url, 
 													   function( eventJson ){
 															var event = Event.createEventJSObjectBasedOnJsonAjaxReq(eventJson);

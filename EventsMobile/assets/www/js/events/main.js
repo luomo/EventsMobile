@@ -445,8 +445,10 @@ $(function(){
 //    	        	// Enhance the listview we just injected.
 //    	        	$content.find( ":jqmData(role=listview)" ).listview();
     	        	
-    	        	$("#searchVenueList", $.mobile.activePage).html(html);
-    	      		$("#searchVenueList", $.mobile.activePage).listview('refresh');
+    	        	$page.page();
+    	        	
+    	        	$("#searchVenueList").html(html);
+    	      		$("#searchVenueList").listview('refresh');
 
     	        	// Now call changePage() and tell it to switch to the page we just modified.
     	        	$.mobile.changePage($page, options);
@@ -883,7 +885,7 @@ function createEventJsRegisterRequest(){
 	
 	var event;
 	event = new Event(  evId, evTitle, evStartDate, evDescr, null, null,  
-						evPrice, evTags, 1, 0/*'UserId'*/, new Date(), evUrl,
+						evPrice, evTags, 1, 0/*'UserId'*/, null/*new Date()*/, evUrl,
   						new Artist(null, 'Artist XPTO'),
   						new Venue( vnId, 
 								   vnName,

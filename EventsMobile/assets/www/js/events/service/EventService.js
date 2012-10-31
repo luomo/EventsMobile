@@ -36,6 +36,9 @@ var EventService = function () {
 			venueDao.init();
 			prefsDao.init();
 			
+//			eventDao.clear();
+//			venueDao.clear();
+
 			prefsDao.findPrefById('sync', function( val ) {
 				if( val === 'yes') {
 					EventService.sync(function(){
@@ -49,6 +52,7 @@ var EventService = function () {
 		clear : function(){
 			console.log("EventService: clear ");
 			eventDao.clear();
+			venueDao.clear();
 		},
 		createOrUpdateEvent : function (callback, eventJs) {
 			console.log("EventService: createOrUpdateEvent ");
@@ -70,7 +74,8 @@ var EventService = function () {
 														},
 														jsonDataToBePosted, 
 														function(){
-															eventDao.addOrUpdateEvent(eventJs);
+															eventJs.setStatusToSyncNeeded();
+															eventDao.addTransientEvent(eventJs);
 															callback(jsonDataToBePosted);
 														});
 			} else {
@@ -82,7 +87,12 @@ var EventService = function () {
 							eventDao.addOrUpdateEvent(event);
 							callback(eventJson);
 						},
-						jsonDataToBePosted );
+						jsonDataToBePosted, 
+						function (){
+							eventJs.setStatusToSyncNeeded();
+							eventDao.addOrUpdateEvent(eventJs);
+							callback();
+						});
 			}
 		},
 		deleteEventById : function(eventId, callback) {
@@ -101,43 +111,136 @@ var EventService = function () {
 	    	var syncEventURL = AjaxEventHelper.getRootURL() + 'events';
 	    	var syncVenueURL = AjaxEventHelper.getRootURL() + 'venue';
 	        console.log('Starting synchronization...');
+	        try {
 	        this.getLastSync(
 	        		function(lastSync){
-			            getEventChanges(syncEventURL, lastSync, function (data) {
-			            	// if exists new data 
-			        		if(data.length > 0) {
-			        			// we have to update localDB
-			        			var events = [];
-			        			for(var i = 0; i< data.length ; i++) {
-			        			//for(var _eventJson in data) {
-			        				var _eventJson = data[i];
-			        				var _event = Event.createEventJSObjectBasedOnJsonAjaxReq(_eventJson);
-			        				events.push(_event);
-			        			}
-			        			eventDao.syncEventList(events, callback);
-			        		} 
-			        		// if there are no changes we can apply the callback method 
-//				            callback();
-			            });
-			            getVenueChanges(syncVenueURL, lastSync, function (data) {
-			            	// if exists new data 
-			        		if(data.length > 0) {
-			        			// we have to update localDB
-			        			var venues = [];
-			        			for(var i = 0; i< data.length ; i++) {
-			        			//for(var _eventJson in data) {
-			        				var _venueJson = data[i];
-			        				//var _venue = JSON.parse(_venueJson);
-			        				venues.push(_venueJson);
-			        			}
-			        			venueDao.syncVenueList(venues, callback);
-			        		}
-			        		// if there are no changes we can apply the callback method 
-//				            callback();
-			            });
-			            
-			          
-	        });
+	        			eventDao.getTransientEventList( 
+	        					function (eventJsonTransientList) {
+	        						if(eventJsonTransientList.length > 0) {
+	        							AjaxEventHelper.createPOSTRequestAjax( 
+	        									syncEventURL, 
+		     								   	function( eventJsonList ){
+	        										// so se devia remover depois de virem os event actualizados ??? tv
+	        										eventDao.removeTransientEventList(
+	        												function () {
+		        												getEventChanges(
+		        			        									syncEventURL, 
+		        			        									lastSync, 
+		        			        									function (data) {
+		        			     	        				            	// if exists new data 
+		        			     	        				        		if(data.length > 0) {
+		        			     	        				        			// we have to update localDB
+		        			     	        				        			var events = [];
+		        			     	        				        			var venues = [];
+		        			     	        				        			for(var i = 0; i< data.length ; i++) {
+		        			     	        				        			//for(var _eventJson in data) {
+		        			     	        				        				var _eventJson = data[i];
+		        			     	        				        				var _event = Event.createEventJSObjectBasedOnJsonAjaxReq(_eventJson);
+		        			     	        				        				events.push(_event);
+		        			     	        				        				venues.push(_event.venue)
+		        			     	        				        			}
+		        			     	        				        			eventDao.syncEventList(
+		        			     	        				        					events, 
+		        			     	        				        					function () {
+		        			     	        				        						venueDao.syncVenueList(venues, callback)
+		        			     	        				        					}
+		        			     	        				        			);
+		        			     	        				        		} 
+		        					     								},
+		        					     								eventJsonTransientList 
+		        					     						)
+	        												}
+	        										);
+	        									}, 
+	        									JSON.stringify(eventJsonTransientList));
+	        						} else 
+	        							getEventChanges(
+	        									syncEventURL, 
+	        									lastSync, 
+	        									function (data) {
+	     	        				            	// if exists new data 
+	     	        				        		if(data.length > 0) {
+	     	        				        			// we have to update localDB
+	     	        				        			var events = [];
+	     	        				        			var venues = [];
+	     	        				        			for(var i = 0; i< data.length ; i++) {
+	     	        				        			//for(var _eventJson in data) {
+	     	        				        				var _eventJson = data[i];
+	     	        				        				var _event = Event.createEventJSObjectBasedOnJsonAjaxReq(_eventJson);
+	     	        				        				events.push(_event);
+	     	        				        				venues.push(_event.venue)
+	     	        				        			}
+	     	        				        			eventDao.syncEventList(
+	     	        				        					events, 
+	     	        				        					function () {
+	     	        				        						venueDao.syncVenueList(venues, callback)
+	     	        				        					}
+	     	        				        			);
+	     	        				        		} 
+			     								},
+			     								eventJsonTransientList 
+			     						);
+//        							getVenueChanges(syncVenueURL, lastSync, function (data) {
+//        				            	// if exists new data 
+//        				        		if(data.length > 0) {
+//        				        			// we have to update localDB
+//        				        			var venues = [];
+//        				        			for(var i = 0; i< data.length ; i++) {
+//        				        			//for(var _eventJson in data) {
+//        				        				var _venueJson = data[i];
+//        				        				//var _venue = JSON.parse(_venueJson);
+//        				        				venues.push(_venueJson);
+//        				        			}
+//        				        			venueDao.syncVenueList(venues, callback);
+//        				        		}
+//        				        		// if there are no changes we can apply the callback method 
+////        					            callback();
+//        				            });
+	        					});
+	        			
+	        		});
+	        } catch (e) {
+				// TODO: handle exception
+	        	console.log(e);
+	        	callback();
+			}
+	        			
+//			            getEventChanges(syncEventURL, lastSync, function (data) {
+//			            	// if exists new data 
+//			        		if(data.length > 0) {
+//			        			// we have to update localDB
+//			        			var events = [];
+//			        			for(var i = 0; i< data.length ; i++) {
+//			        			//for(var _eventJson in data) {
+//			        				var _eventJson = data[i];
+//			        				var _event = Event.createEventJSObjectBasedOnJsonAjaxReq(_eventJson);
+//			        				events.push(_event);
+//			        			}
+//			        			eventDao.syncEventList(events, callback);
+//			        		} 
+//			        		// if there are no changes we can apply the callback method 
+////				            callback();
+//			            });
+//			            getVenueChanges(syncVenueURL, lastSync, function (data) {
+//			            	// if exists new data 
+//			        		if(data.length > 0) {
+//			        			// we have to update localDB
+//			        			var venues = [];
+//			        			for(var i = 0; i< data.length ; i++) {
+//			        			//for(var _eventJson in data) {
+//			        				var _venueJson = data[i];
+//			        				//var _venue = JSON.parse(_venueJson);
+//			        				venues.push(_venueJson);
+//			        			}
+//			        			venueDao.syncVenueList(venues, callback);
+//			        		}
+//			        		// if there are no changes we can apply the callback method 
+////				            callback();
+//			            });
+//			            
+//			          
+//	        });
+	        
 	        		
 	    },
 	    findEventsByuserId : function (userId, callback){

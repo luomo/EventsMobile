@@ -14,6 +14,7 @@ var Event = function (id, title, startDate, description, image, attendance,  pri
 	this.tag = tag;
 	this.status = status;
 	this.owner = owner;
+	this.syncStatus = 0;
 	this.processDate = processDate;
 	this.url = url;
 	this.artist = artist;
@@ -47,6 +48,10 @@ Event.createEventJSObjectBasedOnJsonAjaxReq = function(eventJson) {
 // orderBy title asc
 Event.orderByTitleASC = function (e1 , e2){
 	return e1.title.toUpperCase > e2.title.toUpperCase ? 1 : -1;
+}
+
+Event.prototype.setStatusToSyncNeeded  = function(){
+	this.syncStatus = 1;
 }
 
 

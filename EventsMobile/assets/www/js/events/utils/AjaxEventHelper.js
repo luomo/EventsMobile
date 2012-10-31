@@ -20,7 +20,9 @@ var AjaxEventHelper = function(){
 			getRootURL : function(event){
 				return rootURL;
 			}, 
-			createGETRequestAjax : function(url, callback){
+			createGETRequestAjax : function(url, callback, errorCallback){
+				if(errorCallback == undefined)
+					errorCallback = errorFunction;
 				console.log("createGETRequestAjax: " + url);
 				//Starting loading animation        
 				//$.mobile.showPageLoadingMsg();
@@ -33,11 +35,17 @@ var AjaxEventHelper = function(){
 			        error: errorFunction,
 					statusCode: {
 						404: function() {
+							if(navigator.notification != undefined) {
 						    	navigator.notification.alert("page not found");
+							}else
+								alert('page not found');
 					    },
 						503: function() {
-							navigator.notification.alert('No network connection. Please validate your internet definitions');
-							  navigator.notification.vibrate(100);
+							if(navigator.notification != undefined) {
+								navigator.notification.alert('No network connection. Please validate your internet definitions');
+								navigator.notification.vibrate(100);
+							} else
+								alert('No network connection. Please validate your internet definitions');
 						}
 					}
 			    });
@@ -63,19 +71,27 @@ var AjaxEventHelper = function(){
 			        success: callback,
 			        error: errorCallback,
 					statusCode: {
-					    404: function() {
-					    	navigator.notification.alert("page not found");
+						404: function() {
+							if(navigator.notification != undefined) {
+						    	navigator.notification.alert("page not found");
+							}else
+								alert('page not found');
 					    },
 						503: function() {
-							navigator.notification.alert('No network connection. Please validate your internet definitions');
-							  navigator.notification.vibrate(100);
+							if(navigator.notification != undefined) {
+								navigator.notification.alert('No network connection. Please validate your internet definitions');
+								navigator.notification.vibrate(100);
+							} else
+								alert('No network connection. Please validate your internet definitions');
 						}
 					 }
 			    }).then(function(){
 					//cue the page loader   
 			    	$.mobile.hidePageLoadingMsg();
 			    });
-			}, createPUTRequestAjax : function(url, callback, dataToBePosted){
+			}, createPUTRequestAjax : function(url, callback, dataToBePosted, errorCallback){
+				if(errorCallback == undefined)
+					errorCallback = errorFunction;
 				console.log("createPutRequestAjax: " + url);
 				//Starting loading animation        
 				$.mobile.showPageLoadingMsg();
@@ -90,11 +106,17 @@ var AjaxEventHelper = function(){
 					error: errorFunction,
 					statusCode: {
 						404: function() {
+							if(navigator.notification != undefined) {
 						    	navigator.notification.alert("page not found");
-						    },
+							}else
+								alert('page not found');
+					    },
 						503: function() {
-							navigator.notification.alert('No network connection. Please validate your internet definitions');
-							  navigator.notification.vibrate(100);
+							if(navigator.notification != undefined) {
+								navigator.notification.alert('No network connection. Please validate your internet definitions');
+								navigator.notification.vibrate(100);
+							} else
+								alert('No network connection. Please validate your internet definitions');
 						}
 					}
 				}).then(function(){
@@ -102,7 +124,9 @@ var AjaxEventHelper = function(){
 					$.mobile.hidePageLoadingMsg();
 				});
 			},
-			createDELETERequestAjax : function(url, callback) {
+			createDELETERequestAjax : function(url, callback, errorCallback){
+				if(errorCallback == undefined)
+					errorCallback = errorFunction;
 				console.log("createDELETERequestAjax: " + url);
 				//Starting loading animation        
 				$.mobile.showPageLoadingMsg();

@@ -98,7 +98,7 @@ var VenueStorageDao = function () {
 	return {
 		init : function() {
 			console.log('Init() VENUE Storage DAO');
-			deleteAllVenues();
+			//deleteAllVenues();
 		},
 		clear : function(){
 			deleteAllVenues();

@@ -78,10 +78,16 @@ public class Event implements Serializable {
 	private String tag;
 	
 	//control fields
+	// status will have 3 possible values ... 
+	// 1  - when created
+	// 0  - when deleted  
 	private Integer status = 1;
 	private Long owner;
 	private Date processDate;
 	private String url;
+	// 1 - when created in client side and still to be inserted/sync to server side. After sync should be updated to 0
+	// 0 - when no sync needed
+	private Integer syncStatus;
 	
 	
 	
@@ -114,6 +120,28 @@ public class Event implements Serializable {
 		this.url = url;
 		this.artist = artist;
 		this.venue = venue;
+		this.syncStatus = syncStatus;
+	}
+
+	public Event(Long id, String title, Date startDate, String description,
+			byte[] image, String attendance, Float price, String tag, Integer status,
+			Long owner, Date processDate, String url, Artist artist, Venue venue, Integer syncStatus) {
+		super();
+		this.id = id;
+		this.title = title;
+		this.startDate = startDate;
+		this.description = description;
+		this.image = image;
+		this.attendance = attendance;
+		this.price = price;
+		this.tag = tag;
+		this.status = status;
+		this.owner = owner;
+		this.processDate = processDate;
+		this.url = url;
+		this.artist = artist;
+		this.venue = venue;
+		this.syncStatus = syncStatus;
 	}
 
 
@@ -243,6 +271,18 @@ public class Event implements Serializable {
 
 
 
+	public Integer getSyncStatus() {
+		return syncStatus;
+	}
+
+
+
+	public void setSyncStatus(Integer syncStatus) {
+		this.syncStatus = syncStatus;
+	}
+
+
+
 	@Override
 	public String toString() {
 		return "Event [id=" + id + ", title=" + title + ", startDate="
@@ -250,9 +290,14 @@ public class Event implements Serializable {
 				+ Arrays.toString(image) + ", attendance=" + attendance
 				+ ", price=" + price + ", tag=" + tag + ", status=" + status
 				+ ", owner=" + owner + ", processDate=" + processDate
-				+ ", url=" + url + ", artist=" + artist + ", venue=" + venue
-				+ "]";
+				+ ", url=" + url + ", syncStatus=" + syncStatus + ", artist="
+				+ artist + ", venue=" + venue + "]";
 	}
+
+
+
+	
+	
 
 	
 

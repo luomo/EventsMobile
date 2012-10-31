@@ -149,6 +149,45 @@ var EventStorageDao = function () {
     	callback(eventsJson);
  
     }
+
+    function getTransientEventListInDatabase(callback){
+    	
+    	console.log("EventDao:getTransientEventListInDatabase");
+    	
+    	var eventsJson = [];
+    	var _eventJS,_eventJson,  _eventId;
+    	for (var i = 0; i < window.localStorage.length; i++){
+    		_eventId = window.localStorage.key(i);
+    		if(_eventId.match(EVENT_PREFIX) != null) {
+		    	_eventJson = window.localStorage.getItem(_eventId);
+		    	_eventJS = JSON.parse(_eventJson);
+		    	// events that haven't been sync or that have been deleted and not sync 
+		    	if(_eventJS.syncStatus == 1 ) {
+			    	eventsJson.push(_eventJS);
+	    		}
+    		}
+    	}	
+    	callback(eventsJson);
+    	
+    }
+
+	function removeTransientEventListFromDatabase(callback){
+	
+		console.log("EventDao:removeTransientEventListFromDatabase");
+		
+		var _eventJS,_eventJson,  _eventId;
+		for (var i = 0; i < window.localStorage.length; i++){
+			_eventId = window.localStorage.key(i);
+			if(_eventId.match(EVENT_PREFIX) != null) {
+				_eventJson = window.localStorage.getItem(_eventId);
+				_eventJS = JSON.parse(_eventJson);
+				if(_eventJS.syncStatus == 1)
+					window.localStorage.removeItem(_eventId);
+			}
+		}	
+		callback();
+		
+	}
        
     function deleteEventFromLocalDB(eventId) {
     	console.log("EventDao:deleteEventFromLocalDB");
@@ -169,7 +208,7 @@ var EventStorageDao = function () {
 	return {
 		init : function() {
 			console.log('Init() EVENT Storage DAO');
-			deleteAllEvents();
+			//deleteAllEvents();
 			
 		},
 		clear : function(){
@@ -177,6 +216,9 @@ var EventStorageDao = function () {
 		},
 		addOrUpdateEvent : function(event){
 			addOrUpdateEventToLocalDB(event.id, event)
+		}, 
+		addTransientEvent : function(event){
+			addOrUpdateEventToLocalDB(new Date(), event);
 		}, 
 		logicalDeleteEvent : function(eventId){
 			logicalDeleteEventFromLocalDB(eventId);
@@ -202,6 +244,12 @@ var EventStorageDao = function () {
 		},
 		getLastSyncDate : function (callback) {
 			callback(null);
+		}, 
+		getTransientEventList : function (callback){
+			getTransientEventListInDatabase(callback);
+		}, 
+		removeTransientEventList : function (callback){
+			removeTransientEventListFromDatabase(callback);
 		}
 		
 	}

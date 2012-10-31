@@ -190,6 +190,9 @@ public class EventService {
 	public static Event registerEvent(Event event) {
 		Long id = eventId.incrementAndGet();
 		event.setId(id);
+		event.setProcessDate(new Date());
+		event.setStatus(1);
+		event.setSyncStatus(0);
 		eventList.add(event);
 		return event;
 	}
@@ -255,13 +258,17 @@ public class EventService {
 //			if(_eventDB.getId().equals(event.getId()))
 //				_eventDB = event;
 //		}
+		event.setProcessDate(new Date());
+		event.setSyncStatus(0);
 		eventList.add(event);
 		return event;
 	}
 	public static void logicalRemoveById(Long eventId) {
 		for (Event _eventDB : eventList) {
-			if(_eventDB.getId().equals(eventId))
+			if(_eventDB.getId().equals(eventId)) {
 				_eventDB.setStatus(0);
+				_eventDB.setSyncStatus(0);
+			}
 		}
 	}
 	

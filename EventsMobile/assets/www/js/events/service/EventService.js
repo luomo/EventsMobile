@@ -56,10 +56,15 @@ var EventService = function () {
 		},
 		createOrUpdateEvent : function (callback, eventJs) {
 			console.log("EventService: createOrUpdateEvent ");
-			var eventId = eventJs.id;
 			var url = AjaxEventHelper.getRootURL() + 'events';
+			var eventId = eventJs.id;
+			// validate if event has a transient id
+			// If so set de id to Null and try to create an event throw a POST request
+			// If something goes wrong the id is setted again and persisted to localstorage 
+			if(eventId < 0 )
+				eventJs.id = null;
 			var jsonDataToBePosted = JSON.stringify(eventJs);
-			if(eventId == undefined) {
+			if(eventJs.id == undefined) {
 				url = url + "/event";
 				// POST a request to save an Event
 				// args: - url 
@@ -75,20 +80,35 @@ var EventService = function () {
 														jsonDataToBePosted, 
 														function(){
 															eventJs.setStatusToSyncNeeded();
-															eventDao.addTransientEvent(eventJs);
+															// if the earlier fetched id is null means we are creating a new event
+															// so we have to add a transient id 
+															if(eventId == null) { 
+																eventDao.addTransientEvent(eventJs);
+															} else {
+																// if the id had a value it means that the insert operation was over
+																// a event already persisted in the local database and so we have to 
+																// re set it and update the event in the local db. When sync operation 
+																// will be performed then it will sync it to the server if possible
+																eventJs.id = eventId;
+																eventDao.addOrUpdateEvent(eventJs);
+															}
 															callback(jsonDataToBePosted);
 														});
 			} else {
 //				url = url + "/" + eventId;
+				// if the earlier fetched id is not null it means we are updating a already server persisted event
+				// So we need to update it throw a PUT request
 				AjaxEventHelper.createPUTRequestAjax(
 						url,
 						function ( eventJson ){
+							// if everything goes ok we update the event in local DB
 							var event = Event.createEventJSObjectBasedOnJsonAjaxReq(eventJson);
 							eventDao.addOrUpdateEvent(event);
 							callback(eventJson);
 						},
 						jsonDataToBePosted, 
 						function (){
+							// if something goes wrong we have to update the event and make it set the to Sync flag to true/1 
 							eventJs.setStatusToSyncNeeded();
 							eventDao.addOrUpdateEvent(eventJs);
 							callback();
@@ -98,11 +118,32 @@ var EventService = function () {
 		deleteEventById : function(eventId, callback) {
 			console.log("EventService: deleteEventById: " + eventId);
 			var url = AjaxEventHelper.getRootURL() + 'events/'+ eventId;
-			AjaxEventHelper.createPUTRequestAjax(url,
-													function ( data ){
-														eventDao.logicalDeleteEvent(eventId);
-														callback(data)
-													})
+			eventDao.findEventById(
+					eventId, 
+					function(_eventJs) {
+						// set the status to 0 because the delete is a logical delete
+						_eventJs.status = 0;
+						// this is an already sync event
+						// so we have to update
+						if(eventId > 0) {
+							AjaxEventHelper.createPUTRequestAjax(url,
+									function ( data ){
+										eventDao.addOrUpdateEvent(_eventJs);
+										callback(data)
+									}, 
+									JSON.stringify(_eventJs), 
+									function(){
+										_eventJs.setStatusToSyncNeeded();
+										eventDao.addOrUpdateEvent(_eventJs);
+										callback();
+									})
+						} else {
+							// this means that the event has never been sync so we can simply remove it from db
+							eventDao.deleteEvent(eventId);
+							callback();
+						}	
+					});
+
 		},
 		getLastSync: function(callback) {
 			eventDao.getLastSyncDate(callback);
@@ -112,136 +153,89 @@ var EventService = function () {
 	    	var syncVenueURL = AjaxEventHelper.getRootURL() + 'venue';
 	        console.log('Starting synchronization...');
 	        try {
-	        this.getLastSync(
-	        		function(lastSync){
-	        			eventDao.getTransientEventList( 
-	        					function (eventJsonTransientList) {
-	        						if(eventJsonTransientList.length > 0) {
-	        							AjaxEventHelper.createPOSTRequestAjax( 
-	        									syncEventURL, 
-		     								   	function( eventJsonList ){
-	        										// so se devia remover depois de virem os event actualizados ??? tv
-	        										eventDao.removeTransientEventList(
-	        												function () {
-		        												getEventChanges(
-		        			        									syncEventURL, 
-		        			        									lastSync, 
-		        			        									function (data) {
-		        			     	        				            	// if exists new data 
-		        			     	        				        		if(data.length > 0) {
-		        			     	        				        			// we have to update localDB
-		        			     	        				        			var events = [];
-		        			     	        				        			var venues = [];
-		        			     	        				        			for(var i = 0; i< data.length ; i++) {
-		        			     	        				        			//for(var _eventJson in data) {
-		        			     	        				        				var _eventJson = data[i];
-		        			     	        				        				var _event = Event.createEventJSObjectBasedOnJsonAjaxReq(_eventJson);
-		        			     	        				        				events.push(_event);
-		        			     	        				        				venues.push(_event.venue)
-		        			     	        				        			}
-		        			     	        				        			eventDao.syncEventList(
-		        			     	        				        					events, 
-		        			     	        				        					function () {
-		        			     	        				        						venueDao.syncVenueList(venues, callback)
-		        			     	        				        					}
-		        			     	        				        			);
-		        			     	        				        		} 
-		        					     								},
-		        					     								eventJsonTransientList 
-		        					     						)
-	        												}
-	        										);
-	        									}, 
-	        									JSON.stringify(eventJsonTransientList));
-	        						} else 
-	        							getEventChanges(
-	        									syncEventURL, 
-	        									lastSync, 
-	        									function (data) {
-	     	        				            	// if exists new data 
-	     	        				        		if(data.length > 0) {
-	     	        				        			// we have to update localDB
-	     	        				        			var events = [];
-	     	        				        			var venues = [];
-	     	        				        			for(var i = 0; i< data.length ; i++) {
-	     	        				        			//for(var _eventJson in data) {
-	     	        				        				var _eventJson = data[i];
-	     	        				        				var _event = Event.createEventJSObjectBasedOnJsonAjaxReq(_eventJson);
-	     	        				        				events.push(_event);
-	     	        				        				venues.push(_event.venue)
-	     	        				        			}
-	     	        				        			eventDao.syncEventList(
-	     	        				        					events, 
-	     	        				        					function () {
-	     	        				        						venueDao.syncVenueList(venues, callback)
-	     	        				        					}
-	     	        				        			);
-	     	        				        		} 
-			     								},
-			     								eventJsonTransientList 
-			     						);
-//        							getVenueChanges(syncVenueURL, lastSync, function (data) {
-//        				            	// if exists new data 
-//        				        		if(data.length > 0) {
-//        				        			// we have to update localDB
-//        				        			var venues = [];
-//        				        			for(var i = 0; i< data.length ; i++) {
-//        				        			//for(var _eventJson in data) {
-//        				        				var _venueJson = data[i];
-//        				        				//var _venue = JSON.parse(_venueJson);
-//        				        				venues.push(_venueJson);
-//        				        			}
-//        				        			venueDao.syncVenueList(venues, callback);
-//        				        		}
-//        				        		// if there are no changes we can apply the callback method 
-////        					            callback();
-//        				            });
-	        					});
-	        			
-	        		});
+	        	// get last sync date
+		        this.getLastSync(
+		        		function(lastSync){
+		        			// after having lastSyncDate get all the Events to be sync ( new and updatedValues)
+		        			eventDao.getTransientEventList( 
+		        					function (eventJsonTransientList) {
+		        						// if exist events to be sync
+		        						// we POST a list of events to update
+		        						if(eventJsonTransientList.length > 0) {
+		        							AjaxEventHelper.createPOSTRequestAjax( 
+		        									syncEventURL, 
+			     								   	function( eventJsonList ){
+		        										// so se devia remover depois de virem os event actualizados ??? tv
+		        										// if everyting went well in sync process we can now remove them from local DB
+		        										eventDao.removeTransientEventList(
+		        												function () {
+		        													// after removing them we fetch the already sync events from server
+		        													// syncing events and venues to local DB
+			        												getEventChanges(
+			        			        									syncEventURL, 
+			        			        									lastSync, 
+			        			        									function (data) {
+			        			     	        				            	// if exists new data 
+			        			     	        				        		if(data.length > 0) {
+			        			     	        				        			// we have to update localDB
+			        			     	        				        			var events = [];
+			        			     	        				        			var venues = [];
+			        			     	        				        			for(var i = 0; i< data.length ; i++) {
+			        			     	        				        			//for(var _eventJson in data) {
+			        			     	        				        				var _eventJson = data[i];
+			        			     	        				        				var _event = Event.createEventJSObjectBasedOnJsonAjaxReq(_eventJson);
+			        			     	        				        				events.push(_event);
+			        			     	        				        				venues.push(_event.venue)
+			        			     	        				        			}
+			        			     	        				        			eventDao.syncEventList(
+			        			     	        				        					events, 
+			        			     	        				        					function () {
+			        			     	        				        						venueDao.syncVenueList(venues, callback)
+			        			     	        				        					}
+			        			     	        				        			);
+			        			     	        				        		} 
+			        					     								},
+			        					     								eventJsonTransientList 
+			        					     						)
+		        												}
+		        										);
+		        									}, 
+		        									JSON.stringify(eventJsonTransientList));
+		        						} else {
+		        							getEventChanges(
+		        									syncEventURL, 
+		        									lastSync, 
+		        									function (data) {
+		     	        				            	// if exists new data 
+		     	        				        		if(data.length > 0) {
+		     	        				        			// we have to update localDB
+		     	        				        			var events = [];
+		     	        				        			var venues = [];
+		     	        				        			for(var i = 0; i< data.length ; i++) {
+		     	        				        			//for(var _eventJson in data) {
+		     	        				        				var _eventJson = data[i];
+		     	        				        				var _event = Event.createEventJSObjectBasedOnJsonAjaxReq(_eventJson);
+		     	        				        				events.push(_event);
+		     	        				        				venues.push(_event.venue)
+		     	        				        			}
+		     	        				        			eventDao.syncEventList(
+		     	        				        					events, 
+		     	        				        					function () {
+		     	        				        						venueDao.syncVenueList(venues, callback)
+		     	        				        					}
+		     	        				        			);
+		     	        				        		} 
+				     								},
+				     								eventJsonTransientList 
+				     						);
+		        						}
+		        					});
+		        		});
 	        } catch (e) {
 				// TODO: handle exception
 	        	console.log(e);
 	        	callback();
-			}
-	        			
-//			            getEventChanges(syncEventURL, lastSync, function (data) {
-//			            	// if exists new data 
-//			        		if(data.length > 0) {
-//			        			// we have to update localDB
-//			        			var events = [];
-//			        			for(var i = 0; i< data.length ; i++) {
-//			        			//for(var _eventJson in data) {
-//			        				var _eventJson = data[i];
-//			        				var _event = Event.createEventJSObjectBasedOnJsonAjaxReq(_eventJson);
-//			        				events.push(_event);
-//			        			}
-//			        			eventDao.syncEventList(events, callback);
-//			        		} 
-//			        		// if there are no changes we can apply the callback method 
-////				            callback();
-//			            });
-//			            getVenueChanges(syncVenueURL, lastSync, function (data) {
-//			            	// if exists new data 
-//			        		if(data.length > 0) {
-//			        			// we have to update localDB
-//			        			var venues = [];
-//			        			for(var i = 0; i< data.length ; i++) {
-//			        			//for(var _eventJson in data) {
-//			        				var _venueJson = data[i];
-//			        				//var _venue = JSON.parse(_venueJson);
-//			        				venues.push(_venueJson);
-//			        			}
-//			        			venueDao.syncVenueList(venues, callback);
-//			        		}
-//			        		// if there are no changes we can apply the callback method 
-////				            callback();
-//			            });
-//			            
-//			          
-//	        });
-	        
-	        		
+			}	
 	    },
 	    findEventsByuserId : function (userId, callback){
 	    	console.log("EventService:findEventsById: " + userId);

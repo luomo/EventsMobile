@@ -5,6 +5,20 @@
 var EventStorageDao = function () { 
 	
 	var EVENT_PREFIX = "ev_"
+	var EVENT_TRANSIENT_ID = 0;
+	
+	function getNextTransientId(){
+		var _fakeEventId = window.localStorage.getItem('EVENT_TRANSIENT_ID');
+		if(_fakeEventId == undefined)
+			_fakeEventId = EVENT_TRANSIENT_ID;
+		_fakeEventId = --_fakeEventId;
+		window.localStorage.setItem('EVENT_TRANSIENT_ID', _fakeEventId);
+		return _fakeEventId;
+	}
+	
+	function resetTransientId(){
+		window.localStorage.setItem('EVENT_TRANSIENT_ID', EVENT_TRANSIENT_ID);
+	} 
 	
 	function sameDay( d1, d2 ){
 		  return d1.getUTCFullYear() == d2.getUTCFullYear() &&
@@ -154,7 +168,7 @@ var EventStorageDao = function () {
     	
     	console.log("EventDao:getTransientEventListInDatabase");
     	
-    	var eventsJson = [];
+    	var eventsJsList = [];
     	var _eventJS,_eventJson,  _eventId;
     	for (var i = 0; i < window.localStorage.length; i++){
     		_eventId = window.localStorage.key(i);
@@ -163,11 +177,14 @@ var EventStorageDao = function () {
 		    	_eventJS = JSON.parse(_eventJson);
 		    	// events that haven't been sync or that have been deleted and not sync 
 		    	if(_eventJS.syncStatus == 1 ) {
-			    	eventsJson.push(_eventJS);
+		    		// remove fake id from eventJs
+		    		if(_eventJS.id < 0)
+		    			_eventJS.id = null;
+			    	eventsJsList.push(_eventJS);
 	    		}
     		}
     	}	
-    	callback(eventsJson);
+    	callback(eventsJsList);
     	
     }
 
@@ -217,11 +234,13 @@ var EventStorageDao = function () {
 		addOrUpdateEvent : function(event){
 			addOrUpdateEventToLocalDB(event.id, event)
 		}, 
-		addTransientEvent : function(event){
-			addOrUpdateEventToLocalDB(new Date(), event);
+		addTransientEvent : function(eventJs){
+			var nextId = getNextTransientId();
+			eventJs.id = nextId;
+			addOrUpdateEventToLocalDB(nextId, eventJs);
 		}, 
-		logicalDeleteEvent : function(eventId){
-			logicalDeleteEventFromLocalDB(eventId);
+		deleteEvent : function(eventId){
+			deleteEventFromLocalDB(eventId);
 		},
 		syncEventList : function(eventList, callback){
 			syncEventsToLocalDB(eventList, callback);

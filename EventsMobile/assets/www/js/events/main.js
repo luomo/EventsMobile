@@ -730,8 +730,8 @@ $(function(){
     			}
     		});
     		//console.log(html);
-      		$("#searchVenueList", $.mobile.activePage).html(html);
-      		$("#searchVenueList", $.mobile.activePage).listview('refresh');
+      		$("#searchVenueList").html(html);
+      		$("#searchVenueList").listview('refresh');
       		/*
       		//$(".console").html("Data refreshed ..");
     			*/
@@ -777,11 +777,11 @@ $(function(){
     // code to execute when user clicks in submit event button
     // this has to be done so the validation can be fulfilled.
     // If the the panel is colapsed the validatiion of the fields wont be fired
-    $('#evCreateSubmBtn', $.mobile.activePage).click( function(event){
+    $('#evCreateSubmBtn').click( function(event){
     	// expand basic event and venue collapsable panel
-    	$("#evBasicColapInfo, #vnColapInfo", $.mobile.activePage).trigger('expand');
-    	event.preventDefault();
-        return false;
+    	$("#evBasicColapInfo, #vnColapInfo").trigger('expand');
+//    	event.preventDefault();
+//        return false;
     });
 
 	 		    

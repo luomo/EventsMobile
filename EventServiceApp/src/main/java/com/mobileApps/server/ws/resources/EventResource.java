@@ -84,12 +84,13 @@ public class EventResource {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response updateEvent(@Context UriInfo ui, 
 								@Context HttpServletResponse response,  
-								@PathParam("eventId") Long eventId){
+								@PathParam("eventId") Long eventId,
+								Event event){
 		
-		EventService.logicalRemoveById(eventId);
+		event = EventService.updateEvent(event);
 		
 		
-		return Response.ok().header("Access-Control-Allow-Origin", "*").build();
+		return Response.ok().entity(event).header("Access-Control-Allow-Origin", "*").build();
 	}
 
 	

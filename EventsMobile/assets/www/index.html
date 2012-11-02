@@ -64,8 +64,8 @@
 		document.addEventListener("deviceready", EventService.init(EventDbDao, VenueDbDao), false);
 	}
 	*/
-	//EventService.init(EventStorageDao, VenueStorageDao, PreferencesStorageDao);
-	EventService.init(EventDbDao, VenueDbDao, PreferencesDbDao);
+	EventService.init(EventStorageDao, VenueStorageDao, PreferencesStorageDao);
+	//EventService.init(EventDbDao, VenueDbDao, PreferencesDbDao);
 	
 	
 </script>
@@ -515,6 +515,7 @@
 			<div id="contact_buttons">
 				<a href="http://maps.google.com/maps?hl=en&safe=off&q=braga+ferreiros+google+maps&ie=UTF-8&hq=&hnear=0xd24fed6130e97f5:0x7dcd16ff52948be6,Ferreiros,+Portugal&ei=jAhbUKnaEoOGrAfho4DQCQ&ved=0CCAQ8gEwAA"  data-role="button" data-icon="maps"> Find in Google Maps </a>
 				<a id="phoneCallButton" href="tel:0388161072"  data-role="button" data-icon="tel"> Call </a>
+				<a id="editBtn" data-role="button" >Edit Event</a>;
 			</div>
 		</div>
 	

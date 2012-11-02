@@ -237,7 +237,7 @@ $(function(){
 	        	
 	        	// Get the content area element for the page.
 	        	var $content = $page.children(":jqmData(role=content)");
-	    		
+	        		
 	    		// The markup we are going to inject into the content
 	        	// Create event info
 	        	var html = '';
@@ -248,7 +248,7 @@ $(function(){
 	        	
 	        		
 	        	// we reset the eventInfo from previous chosen events
-	        	$content.find( "#eventInfo" ).empty();
+	        	//$content.find( "#eventInfo" ).empty();
 	        	// append the info from the last event	
 	        	$content.find( "#eventInfo" ).html( html );
 	        	
@@ -263,7 +263,7 @@ $(function(){
 	        	html += '<p><a href="'+ event.venue.website + '">'+  event.venue.website +'</a></p>'
 	        	
 	        	// we reset the venueInfo from previous chosen events
-	        	$content.find( "#venueInfo" ).empty();
+	        	//$content.find( "#venueInfo" ).empty();
 	        	// append the info from the last event venue
 	        	$content.find( "#venueInfo" ).html( html );
 	
@@ -272,12 +272,11 @@ $(function(){
 	    		
 	        	
 	        	// we have to decide which id the app owned events are going to use
-	        	// I think we have to check against the user logged id to understand if I'm the owner of the event 
+	        	// I think we have to check against the user logged id to understand if I'm the owner of the event
+	        	$content.find( "#editBtn" ).hide();
 	        	if(event.owner == 0) {
-	        		// this means that user
-	        		html = '';
-	        		html += '<a id="editBtn" href="#createEventPage?eventId=' + eventId + '" data-role="button">Edit Event</a>';
-	        		$content.append(html);
+	        		$content.find( "#editBtn" ).attr('href', '#createEventPage?eventId=' + eventId);
+	        		$content.find( "#editBtn" ).show();
 	        	}
 	        		
 	        		

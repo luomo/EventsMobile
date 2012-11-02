@@ -31,7 +31,12 @@ var EventService = function () {
 		        			eventDao.syncEventList(
 		        					events, 
 		        					function () {
-		        						venueDao.syncVenueList(venues, callback)
+		        						venueDao.syncVenueList(
+		        								venues,
+		        								function() {
+		        									eventDao.removeTransientEventList ( callback )			
+		        								}
+		        						)
 		        					}
 		        			);
 		        		} 
@@ -190,8 +195,8 @@ var EventService = function () {
 			     								   	function( eventJsonList ){
 		        										// so se devia remover depois de virem os event actualizados ??? tv
 		        										// if everyting went well in sync process we can now remove them from local DB
-		        										eventDao.removeTransientEventList(
-		        												function () {
+//		        										eventDao.removeTransientEventList(
+//		        												function () {
 		        													// after removing them we fetch the already sync events from server
 		        													// syncing events and venues to local DB
 			        												getChangesAndSyncToDB(
@@ -199,8 +204,8 @@ var EventService = function () {
 			        			        									lastSync, 
 			        			        									callback
 			        					     						)
-		        												}
-		        										);
+//		        												}
+//		        										);
 		        									}, 
 		        									JSON.stringify(eventJsonTransientList));
 		        						} else {

@@ -75,8 +75,8 @@ public class EventResourceTestCase {//extends JerseyTest {
 		tomorowDate = new Date();
 		
 		Location locationLisboa = new Location("Lisboa", "co", "Avenida lx", "2000", 12f, -34.5f);
-//		Venue venueLisboa = new Venue(EventService.getNextVenueId(), "Lx place", locationLisboa, "www.xpto.com", "212272000", null);
-		Venue venueLisboa = new Venue(null, "New Lx place", locationLisboa, "www.xpto.com", "212272000", null);
+		Venue venueLisboa = new Venue(EventService.getNextVenueId(), "Lx place", locationLisboa, "www.xpto.com", "212272000", null);
+		//Venue venueLisboa = new Venue(null, "New Lx place", locationLisboa, "www.xpto.com", "212272000", null);
 		
 		WebResource service = client.resource(getBaseURI());
 		

@@ -10,10 +10,33 @@ var EventService = function () {
 	var eventDao;
 	var venueDao;
 	
-	function getEventChanges(syncURL, lastSyncDate, callback){
+	function getChangesAndSyncToDB(syncURL, lastSyncDate, callback){
 		// lastSyncDate will be used to pass the last date to the server
 		// at this point is not beeing used
-    	AjaxEventHelper.createGETRequestAjax(syncURL,callback);
+    	AjaxEventHelper.createGETRequestAjax(
+    			syncURL,
+    			function (data) {
+		            	// if exists new data 
+		        		if(data.length > 0) {
+		        			// we have to update localDB
+		        			var events = [];
+		        			var venues = [];
+		        			for(var i = 0; i< data.length ; i++) {
+		        			//for(var _eventJson in data) {
+		        				var _eventJson = data[i];
+		        				var _event = Event.createEventJSObjectBasedOnJsonAjaxReq(_eventJson);
+		        				events.push(_event);
+		        				venues.push(_event.venue)
+		        			}
+		        			eventDao.syncEventList(
+		        					events, 
+		        					function () {
+		        						venueDao.syncVenueList(venues, callback)
+		        					}
+		        			);
+		        		} 
+				} 
+    	);
 	}
 
 	function getVenueChanges(syncURL, lastSyncDate, callback){
@@ -171,62 +194,22 @@ var EventService = function () {
 		        												function () {
 		        													// after removing them we fetch the already sync events from server
 		        													// syncing events and venues to local DB
-			        												getEventChanges(
+			        												getChangesAndSyncToDB(
 			        			        									syncEventURL, 
 			        			        									lastSync, 
-			        			        									function (data) {
-			        			     	        				            	// if exists new data 
-			        			     	        				        		if(data.length > 0) {
-			        			     	        				        			// we have to update localDB
-			        			     	        				        			var events = [];
-			        			     	        				        			var venues = [];
-			        			     	        				        			for(var i = 0; i< data.length ; i++) {
-			        			     	        				        			//for(var _eventJson in data) {
-			        			     	        				        				var _eventJson = data[i];
-			        			     	        				        				var _event = Event.createEventJSObjectBasedOnJsonAjaxReq(_eventJson);
-			        			     	        				        				events.push(_event);
-			        			     	        				        				venues.push(_event.venue)
-			        			     	        				        			}
-			        			     	        				        			eventDao.syncEventList(
-			        			     	        				        					events, 
-			        			     	        				        					function () {
-			        			     	        				        						venueDao.syncVenueList(venues, callback)
-			        			     	        				        					}
-			        			     	        				        			);
-			        			     	        				        		} 
-			        					     								},
-			        					     								eventJsonTransientList 
+			        			        									callback
 			        					     						)
 		        												}
 		        										);
 		        									}, 
 		        									JSON.stringify(eventJsonTransientList));
 		        						} else {
-		        							getEventChanges(
+		        							// if there isn't anything to POST to the server we simply perform a GET request
+		        							// and update them locally
+		        							getChangesAndSyncToDB(
 		        									syncEventURL, 
 		        									lastSync, 
-		        									function (data) {
-		     	        				            	// if exists new data 
-		     	        				        		if(data.length > 0) {
-		     	        				        			// we have to update localDB
-		     	        				        			var events = [];
-		     	        				        			var venues = [];
-		     	        				        			for(var i = 0; i< data.length ; i++) {
-		     	        				        			//for(var _eventJson in data) {
-		     	        				        				var _eventJson = data[i];
-		     	        				        				var _event = Event.createEventJSObjectBasedOnJsonAjaxReq(_eventJson);
-		     	        				        				events.push(_event);
-		     	        				        				venues.push(_event.venue)
-		     	        				        			}
-		     	        				        			eventDao.syncEventList(
-		     	        				        					events, 
-		     	        				        					function () {
-		     	        				        						venueDao.syncVenueList(venues, callback)
-		     	        				        					}
-		     	        				        			);
-		     	        				        		} 
-				     								},
-				     								eventJsonTransientList 
+		        									callback
 				     						);
 		        						}
 		        					});

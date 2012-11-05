@@ -6,6 +6,20 @@ $(function(){
 	
 	createOrUpdatePrefs();
 
+	$('ul li a img ').live("click tap", function(event) {
+		event.preventDefault();
+		event.stopImmediatePropagation();
+		//alert("x");
+		var src = $(this).attr("src");
+		if(src == "images/star_empty.png") {
+			$(this).attr("src", "images/star.png");
+			$(this).parent().find('.favourite').html("<b>Added to favourites</b>");
+		} else {
+			$(this).attr("src", "images/star_empty.png");
+			$(this).parent().find('.favourite').html("");
+		}
+	});
+	
 	$('#sync').change(function(event){
 		var val = $('#sync').val();
 		console.log("Sync pref value was update. New value is " + val);
@@ -551,8 +565,8 @@ $(function(){
     		    html += '<p>' + convert(_event.startDate) + '</p>';
     		    html += '<p>' + _event.venue.location.city + '</p>';
     		    html += '</a>';
-    		    html += '<a href="#deleteEventDialogPage?eventId=' +_event.id + '&eventTitle='+ _event.title + '" data-split-icon="delete"  data-rel="dialog"></a>';
-    		    html += '</li>';
+    		    html += '<a href="#deleteEventDialogPage?eventId=' +_event.id + '&eventTitle='+ _event.title + '"  data-rel="dialog"></a>';
+    		    html += '</li>'; 
     		};
     		
     		html += '</ul>';
@@ -919,9 +933,11 @@ function refresh(url) {
 
 function createHtmlEventRow(_event) {
 	var html = '';
-	html += '<li ><a href="#eventDetails?eventId='+ _event.id + '"><img alt="coverArt" src="images/mia.png" /><h3>' + _event.title + '</h3>';
+	html += '<li ><a href="#eventDetails?eventId='+ _event.id + '"><img alt="coverArt" src="images/star_empty.png" /><h3>' + _event.title + '</h3>';
     html += '<p>' + convert(_event.startDate) + '</p>';
     html += '<p>' + _event.venue.location.city + '</p>';
+    html += '<p class="favourite"></p>';
+    html += '</a>';
     html += '</a></li>';
     return html;
 }

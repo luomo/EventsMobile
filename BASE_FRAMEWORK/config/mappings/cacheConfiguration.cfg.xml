@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+                                         "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+ <session-factory name="">
+  <class-cache class="com.mobileApps.base.framework.model.MdAllLocation"
+   include="all" usage="read-only"/>
+  <class-cache class="com.mobileApps.base.framework.model.MdItemBase"
+   include="all" usage="read-only"/>
+  <class-cache class="com.mobileApps.base.framework.model.MdItemDtl"
+   include="all" usage="read-only"/>
+  <class-cache class="com.mobileApps.base.framework.model.MdItemMt" 
+  	include="all" usage="read-only"/>
+  <class-cache class="com.mobileApps.base.framework.model.MdItemSupplier"
+   include="all" usage="read-only"/>
+  <class-cache class="com.mobileApps.base.framework.model.MdLocation"
+   include="all" usage="read-only"/>
+  <class-cache class="com.mobileApps.base.framework.model.MdPackStore"
+   include="all" usage="read-only"/>
+  <class-cache class="com.mobileApps.base.framework.model.MdReplItemLoc"
+   include="all" usage="read-only"/>
+  <class-cache class="com.mobileApps.base.framework.model.MdStoreAttributes"
+   include="all" usage="read-only"/>
+  <class-cache class="com.mobileApps.base.framework.model.MdSupplier"
+   include="all" usage="read-only"/>
+  <class-cache class="com.mobileApps.base.framework.model.MdWh" 
+  	include="all" usage="read-only"/>
+  <class-cache class="com.mobileApps.base.framework.model.MdWhAttributes"
+   include="all" usage="read-only"/>
+  <class-cache class="com.mobileApps.base.framework.model.MdWinItem"
+   include="all" usage="read-only"/>
+  <class-cache class="com.mobileApps.base.framework.model.MdWinStore"
+   include="all" usage="read-only"/>
+ </session-factory>
+</hibernate-configuration>

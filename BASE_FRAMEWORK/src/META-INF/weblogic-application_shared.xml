@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wls:weblogic-application
+	xmlns:wls="http://xmlns.oracle.com/weblogic/weblogic-application"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/javaee_5.xsd http://xmlns.oracle.com/weblogic/weblogic-application http://xmlns.oracle.com/weblogic/weblogic-application/1.2/weblogic-application.xsd">
+	
+	<wls:library-ref>
+		<wls:library-name>SpringFramework</wls:library-name>
+		<wls:specification-version>{spring-Specification-Version}</wls:specification-version>
+		<wls:exact-match>true</wls:exact-match>
+	</wls:library-ref>
+		<wls:library-ref>
+		<wls:library-name>hibernateFramework</wls:library-name>
+		<wls:specification-version>{hibernate-Specification-Version}</wls:specification-version>
+		<wls:exact-match>true</wls:exact-match>
+	</wls:library-ref>
+	
+</wls:weblogic-application>

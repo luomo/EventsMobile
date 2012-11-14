@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="events">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="event"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="event">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="title"/>
+        <xs:element ref="artists"/>
+        <xs:element ref="venue"/>
+        <xs:element ref="startDate"/>
+        <xs:element ref="description"/>
+        <xs:element ref="image"/>
+        <xs:element ref="url"/>
+        <xs:element ref="website"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="title" type="xs:string"/>
+  <xs:element name="artists">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="artist"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="artist" type="xs:string"/>
+  <xs:element name="venue">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="location"/>
+        <xs:element ref="website"/>
+        <xs:element ref="phonenumber"/>
+        <xs:element ref="image"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="location">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="city"/>
+        <xs:element ref="country"/>
+        <xs:element ref="street"/>
+        <xs:element ref="postalcode"/>
+        <xs:element ref="latitude"/>
+        <xs:element ref="longitude"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="city" type="xs:string"/>
+  <xs:element name="country" type="xs:string"/>
+  <xs:element name="street" type="xs:string"/>
+  <xs:element name="postalcode" type="xs:string"/>
+  <xs:element name="latitude" type="xs:string"/>
+  <xs:element name="longitude" type="xs:string"/>
+  <xs:element name="phonenumber" type="xs:string" />
+  <xs:element name="startDate" type="xs:string"/>
+  <xs:element name="description" type="xs:string"/>
+  <xs:element name="url" type="xs:anyURI"/>
+  <xs:element name="website" type="xs:string"/>
+  <xs:element name="image" type="xs:anyURI"/>
+</xs:schema>

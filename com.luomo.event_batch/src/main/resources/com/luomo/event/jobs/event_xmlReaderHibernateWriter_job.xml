@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation=
+		"http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+		http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-2.1.xsd">
+		
+	<description>
+		Job for reading xml file using jaxb oxm and write to database using hibernate
+	</description>		
+	
+	<!-- 
+		classes to be bounded my spring oxm / jaxb
+	 -->
+	<util:list id="jaxbClassesBoundedList" >
+    	<value>com.luomo.event.domain.Event</value>
+        <value>com.luomo.event.domain.Artist</value>
+        <value>com.luomo.event.domain.Provider</value>
+        <value>com.luomo.event.domain.Venue</value>
+	</util:list>
+	
+	<bean id="eventItemReader" 
+		  class="org.springframework.batch.item.xml.StaxEventItemReader"
+		  p:resource="${batch.job.eventXmlReader.xml.location}"
+		  p:fragmentRootElementName="event" 
+		  p:unmarshaller-ref="jaxbCFMarshaller" />
+	
+	<bean id="jaxbCFMarshaller" 
+	      class="org.springframework.oxm.jaxb.Jaxb2Marshaller"
+          p:classesToBeBound-ref="jaxbClassesBoundedList"
+          p:schema="${batch.job.eventXmlReader.xsd.location}"/>
+
+	<!-- 
+		Hibernate writer definition
+	 -->
+	<bean id="eventHibernateItemWriter"
+		class="org.springframework.batch.item.database.HibernateItemWriter"
+		p:sessionFactory-ref="sessionFactory" />
+	 
+	<!-- 
+		Step for reading xml and writing to database with Hibernate writer
+	 -->
+	<batch:step id="readWrite">
+		<batch:tasklet>
+			<batch:chunk reader="eventItemReader" 
+						 writer="eventHibernateItemWriter"
+						 commit-interval="100" />
+		</batch:tasklet>
+	</batch:step>
+	
+	<batch:job id="importEventsAndWriteToDBJob" 
+		       job-repository="jobRepository"
+			   incrementer="idIncrementer">
+		<batch:step id="readerWriterStep" 
+					parent="readWrite" />
+	</batch:job>
+	
+	
+	<!-- 
+		Incrementer for being able to run job several times
+	 -->
+	<bean id="idIncrementer"
+		  class="org.springframework.batch.core.launch.support.RunIdIncrementer" />
+	
+	
+</beans>

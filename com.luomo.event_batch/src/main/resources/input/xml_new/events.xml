@@ -1,0 +1,30 @@
+<events>
+<event>
+	<title>Barreiro MetalFest VII</title>
+	<artists>
+		<artist>Holocausto Canibal</artist>
+		<artist>Shadowsphere</artist>
+		<artist>Wall Of Death</artist>
+		<artist>Masque of Innocence</artist>	
+		<artist>Hang The Traitor</artist>
+	</artists>
+	<venue>
+		<location>
+			<city>Lavradio, Barreiro</city>
+			<country>Portugal</country>
+			<street>Rua Augusto Nogueira da Silva, 779</street>
+			<postalcode>4705-097</postalcode>
+			<latitude>38.666947</latitude>
+			<longitude>-9.052072</longitude>
+		</location>
+		<website>sdfsdf</website>
+		<phonenumber>912345677</phonenumber>
+		<image>http://userserve-ak.last.fm/serve/64/5594697.jpg</image>
+	</venue>
+	<startDate>Sat, 14 Jul 2012 23:13:01</startDate>
+	<description>description</description>
+	<image>http://userserve-ak.last.fm/serve/64/5594697.jpg</image>
+	<url>http://www.last.fm/festival/3284858+Barreiro+MetalFest+VII</url>
+	<website>website</website>
+	</event
+></events>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation=
+		"http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+		http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-2.1.xsd">
+	
+	
+	<description>
+		Configuration for using quartz to have schedule jobs.
+		In this case the configuration passes the read xml - write to Db events job
+	</description>
+
+	<bean id="jobDetail" 
+		  class="org.springframework.scheduling.quartz.JobDetailBean"
+		  p:jobClass="com.luomo.event.jobs.EventSpringBatchQuartzJob" 
+		  p:group="file-maintenence" 
+		  p:jobDataAsMap-ref="jobDataAsMap"/>
+
+	<util:map id="jobDataAsMap">
+		<entry key="jobName" value="importEventsAndWriteToDBJob" />
+		<entry key="jobLocator" value-ref="jobRegistry" />
+		<entry key="jobLauncher" value-ref="jobLauncher" />
+		<entry key="jobExplorer" value-ref="jobExplorer" />
+	</util:map>
+	
+	<bean id="cronTrigger" 
+		  class="org.springframework.scheduling.quartz.CronTriggerBean"
+		  p:jobDetail-ref="jobDetail" 
+		  p:cronExpression="0/5 * * * * ?" />
+
+	<util:list id="triggersList">
+		<ref bean="cronTrigger"/>
+	</util:list>
+
+	<bean id="schedule"
+		  class="org.springframework.scheduling.quartz.SchedulerFactoryBean"
+		  p:triggers-ref="triggersList"
+		  p:jobFactory-ref="jobFactory" />
+
+
+	<!--  Only for container deployment???? -->
+	<bean class="org.springframework.batch.core.configuration.support.AutomaticJobRegistrar">
+		<property name="applicationContextFactories">
+			<bean
+				class="org.springframework.batch.core.configuration.support.ClasspathXmlApplicationContextsFactoryBean">
+				<property name="resources" value="classpath*:/com/luomo/event/jobs/event_xmlReaderHibernateWriter_job.xml" />
+			</bean>
+		</property>
+		<property name="jobLoader">
+			<bean
+				class="org.springframework.batch.core.configuration.support.DefaultJobLoader">
+				<property name="jobRegistry" ref="jobRegistry" />
+			</bean>
+		</property>
+	</bean> 		 
+  
+</beans>

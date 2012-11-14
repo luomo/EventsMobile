@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-2.1.xsd">
+		
+	<description>
+		Job for writing a file with timestamp value in a folder 
+		defined in batch.properties file
+	</description>		
+
+	<!-- 
+		Tasklet that implements business logic
+	 -->
+	<bean id="writeTimestampFileTasklet" 
+		  class="com.luomo.event.tasklets.WriteTimestampFileTasklet" 
+		  />
+	
+	<!-- 
+		Step that uses declared tasklet
+	 -->
+	<batch:step id="writeTimestampFileStep">
+		<batch:tasklet ref="writeTimestampFileTasklet" />
+	</batch:step>
+	
+	
+	<!-- 
+		Incrementer for being able to run job several times
+	 -->
+	<bean id="idIncrementer"
+		class="org.springframework.batch.core.launch.support.RunIdIncrementer" />
+	
+	<batch:job id="writeTimestampFileFilesJob" incrementer="idIncrementer">
+		<batch:step id="step1" parent="writeTimestampFileStep" />
+	</batch:job>
+
+</beans>

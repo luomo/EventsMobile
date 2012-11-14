@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="events">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="event"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="event">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="title"/>
+        <xs:element ref="artists"/>
+        <xs:element ref="venue"/>
+        <xs:element ref="startDate"/>
+        <xs:element ref="description"/>
+        <xs:element maxOccurs="unbounded" ref="image"/>
+        <xs:element ref="attendance"/>
+        <xs:element ref="tag"/>
+        <xs:element ref="url"/>
+        <xs:element ref="website"/>
+        <xs:element ref="tickets"/>
+        <xs:element ref="cancelled"/>
+        <xs:element ref="provider"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="title" type="xs:string"/>
+  <xs:element name="artists">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="artist"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="artist" type="xs:string"/>
+  <xs:element name="venue">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="name"/>
+        <xs:element ref="city"/>
+        <xs:element ref="country"/>
+        <xs:element ref="street"/>
+        <xs:element ref="postalcode"/>
+        <xs:element ref="latitude"/>
+        <xs:element ref="longitude"/>
+        <xs:element ref="url"/>
+        <xs:element ref="website"/>
+        <xs:element ref="phonenumber"/>
+        <xs:element maxOccurs="unbounded" ref="image"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="city" type="xs:NCName"/>
+  <xs:element name="country" type="xs:string"/>
+  <xs:element name="street" type="xs:string"/>
+  <xs:element name="postalcode" type="xs:string"/>
+  <xs:element name="latitude" type="xs:decimal"/>
+  <xs:element name="longitude" type="xs:decimal"/>
+  <xs:element name="phonenumber" type="xs:string"/>
+  <xs:element name="startDate" type="xs:string"/>
+  <xs:element name="description">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="attendance" type="xs:integer"/>
+  <xs:element name="tag" type="xs:anyURI"/>
+  <xs:element name="tickets">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="cancelled" type="xs:integer"/>
+  <xs:element name="provider">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="name"/>
+        <xs:element ref="url"/>
+        <xs:element ref="processDate"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="processDate" type="xs:string"/>
+  <xs:element name="name" type="xs:string"/>
+  <xs:element name="url" type="xs:anyURI"/>
+  <xs:element name="website" type="xs:anyURI"/>
+  <xs:element name="image">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:anyURI">
+          <xs:attribute name="size" use="required" type="xs:NCName"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

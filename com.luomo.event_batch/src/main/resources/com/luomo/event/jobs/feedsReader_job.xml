@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation=
+		"http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+		http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-2.1.xsd">
+		
+	<description>
+	
+	</description>		
+
+	<!-- Hibernate configuration -->
+
+	
+	<!-- 
+		classes to be bounded my spring oxm / jaxb
+	 -->
+	<util:list id="jaxbClassesBoundedList" >
+    	<value>com.luomo.event.domain.Event</value>
+        <value>com.luomo.event.domain.Artist</value>
+        <value>com.luomo.event.domain.Provider</value>
+        <value>com.luomo.event.domain.Venue</value>
+	</util:list>
+	
+	<bean id="eventItemReader" 
+		  class="org.springframework.batch.item.xml.StaxEventItemReader"
+		  p:resource="file:C:/development/other_developments/Events_App/lfm_xstl/events_after_process.xml"
+		  p:fragmentRootElementName="event" 
+		  p:unmarshaller-ref="jaxbCFMarshaller" />
+	
+	<bean id="jaxbCFMarshaller" 
+	      class="org.springframework.oxm.jaxb.Jaxb2Marshaller"
+          p:classesToBeBound-ref="jaxbClassesBoundedList"
+          p:schema="classpath:/input/xml_new/event.xsd"/>
+
+	<!-- 
+		Hibernate writer definition
+	 -->
+	<bean id="eventHibernateItemWriter"
+		class="org.springframework.batch.item.database.HibernateItemWriter"
+		p:sessionFactory-ref="sessionFactory" />
+	 
+	<!-- 
+		Step for reading xml and writing to database with Hibernate writer
+	 -->
+	<batch:step id="readWrite">
+		<batch:tasklet>
+			<batch:chunk reader="eventItemReader" 
+						 writer="eventHibernateItemWriter"
+						 commit-interval="100" />
+		</batch:tasklet>
+	</batch:step>
+	
+	
+	<!-- *********************** -->
+
+
+	<bean id="methodSetter"
+		  class="com.luomo.event.preparedStatementSetter.FeedMethodSetter" 
+		  scope="step">
+		<property name="method" value="#{jobParameters[method]}"/>
+	</bean>
+
+	<bean id="feedRowMapper" 
+		  class="com.luomo.event.rowMapper.FeedsRowMapper"/>
+	
+
+	<bean id="feedsItemReader"
+		  class="org.springframework.batch.item.database.JdbcCursorItemReader">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="sql" value="select * from feeds where method = ?"/>
+		<property name="rowMapper" ref="feedRowMapper"/>
+		<property name="preparedStatementSetter" ref="methodSetter"/>
+	</bean>
+	
+	
+	<bean id="feedInvokerProcessor"
+	      class="com.luomo.event.itemProcessor.FeedInvokerProcessor"/>
+	      
+	<bean id="fileItemWriter"
+	      class="com.luomo.event.writer.FileItemWriter"/>
+	
+	<!-- 
+		Tasklet that implements business logic
+	 -->
+	
+	
+	<!-- 
+		Step that uses declared tasklet
+	 -->
+	<batch:step id="readWriteFeeds" >
+		<batch:tasklet >
+			<batch:chunk reader="feedsItemReader" 
+						 processor="feedInvokerProcessor"
+						 writer="fileItemWriter"
+						 commit-interval="100" />
+		</batch:tasklet>
+	</batch:step>
+
+	<bean id="xsltTransformerTasklet"
+		  class="com.luomo.event.tasklets.XsltTransformerTasklet"></bean>
+
+	<batch:step id="xslt" >
+		<batch:tasklet 
+			ref="xsltTransformerTasklet"/>
+	</batch:step>
+
+	
+	 
+	<!-- 
+		Incrementer for being able to run job several times
+	 -->
+	<bean id="idIncrementer"
+		class="org.springframework.batch.core.launch.support.RunIdIncrementer" />
+	
+	<batch:job id="test" incrementer="idIncrementer">
+		<batch:step id="step1" parent="readWriteFeeds" next="step2"/>
+		<batch:step id="step2" parent="xslt" next="step3"/>
+		<batch:step id="step3" parent="readWrite" />	
+	</batch:job>
+
+</beans>

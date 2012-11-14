@@ -68,6 +68,10 @@
 	font-style: italic;
 }
 
+#event_info img{
+	float: right;
+}
+
 #eventDetails div[data-role=content]  img {
 	width: 80px;
 	height: 80px;
@@ -107,3 +111,7 @@ label.error {
 /*----------------------------------------*/
 
 em { color: red; font-weight: bold; padding-right: .25em; }
+
+#xxx .ui-btn-inner ui-li{
+	
+}

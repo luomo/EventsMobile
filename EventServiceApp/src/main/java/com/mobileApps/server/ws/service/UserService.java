@@ -3,7 +3,7 @@ package com.mobileApps.server.ws.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mobileApps.server.ws.domain.UserInfo;
+import com.mobileApps.server.domain.UserInfo;
 
 public class UserService {
 

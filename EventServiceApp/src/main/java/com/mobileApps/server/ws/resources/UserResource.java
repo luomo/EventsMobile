@@ -14,7 +14,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import com.mobileApps.server.ws.domain.UserInfo;
+import com.mobileApps.server.domain.UserInfo;
 import com.mobileApps.server.ws.service.UserService;
 
 @Path("/users")

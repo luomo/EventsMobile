@@ -20,6 +20,8 @@ $( document ).bind( "mobileinit", function() {
         $.mobile.defaultDialogTransition = 'none';
         $.mobile.useFastClick = true; */
     	
-    	$.mobile.buttonMarkup.hoverDelay = 20;
+    	$.mobile.buttonMarkup.hoverDelay = 0;
+    	$.mobile.defaultPageTransition = 'none';
+        $.mobile.defaultDialogTransition = 'none';
     	$.mobile.useFastClick = true;
 	});	

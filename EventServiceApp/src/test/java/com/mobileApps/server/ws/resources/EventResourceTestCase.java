@@ -13,10 +13,10 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import com.mobileApps.server.ws.domain.Artist;
-import com.mobileApps.server.ws.domain.Event;
-import com.mobileApps.server.ws.domain.Location;
-import com.mobileApps.server.ws.domain.Venue;
+import com.mobileApps.server.domain.Artist;
+import com.mobileApps.server.domain.Event;
+import com.mobileApps.server.domain.Location;
+import com.mobileApps.server.domain.Venue;
 import com.mobileApps.server.ws.service.EventService;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.GenericType;

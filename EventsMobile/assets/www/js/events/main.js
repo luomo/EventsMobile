@@ -933,9 +933,11 @@ function refresh(url) {
 
 function createHtmlEventRow(_event) {
 	var html = '';
-	html += '<li ><a href="#eventDetails?eventId='+ _event.id + '"><img alt="coverArt" src="images/star_empty.png" /><h3>' + _event.title + '</h3>';
+	html += '<li ><a href="#eventDetails?eventId='+ _event.id + '">';
+	html += '<img alt="coverArt" src="images/star_empty.png" />';
+	html += '<h3><strong>' + _event.title + '</strong></h3>';
     html += '<p>' + convert(_event.startDate) + '</p>';
-    html += '<p>' + _event.venue.location.city + '</p>';
+    html += '<p>' + _event.venue.name + ' - '+ _event.venue.location.city + ' , ' + _event.venue.location.country  + '</p>';
     html += '<p class="favourite"></p>';
     html += '</a>';
     html += '</a></li>';

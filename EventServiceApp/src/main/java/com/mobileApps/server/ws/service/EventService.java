@@ -13,11 +13,11 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import com.mobileApps.server.ws.domain.Artist;
-import com.mobileApps.server.ws.domain.Event;
-import com.mobileApps.server.ws.domain.Location;
-import com.mobileApps.server.ws.domain.Provider;
-import com.mobileApps.server.ws.domain.Venue;
+import com.mobileApps.server.domain.Artist;
+import com.mobileApps.server.domain.Event;
+import com.mobileApps.server.domain.Location;
+import com.mobileApps.server.domain.Provider;
+import com.mobileApps.server.domain.Venue;
 import com.mobileApps.server.ws.wsDTOs.EventsByCityDto;
 import com.mobileApps.server.ws.wsDTOs.VenueByCityDto;
 
@@ -31,16 +31,16 @@ public class EventService {
 	private static final AtomicLong artistId = new AtomicLong(0);
 	
 	static {
-		Location locationBraga = new Location("Braga", "pt", "Avenida Liberdade", "4700", 12f, -34.5f);
-		Location locationPorto = new Location("Porto", "pt", "Avenida Liberdade", "4000", 12f, -34.5f);
-		Location locationCoimbra = new Location("Coimbra", "co", "Avenida xpto", "2000", 12f, -34.5f);
+		Location locationBraga = new Location("Braga", "Portugal", "Avenida Central", "4700", 12f, -34.5f);
+		Location locationPorto = new Location("Porto", "Portugal", "Avenida Liberdade", "4000", 12f, -34.5f);
+		Location locationCoimbra = new Location("Coimbra", "Portugal", "Avenida xpto", "2000", 12f, -34.5f);
 
 		Venue venueBraga = new Venue(venueId.incrementAndGet(), "Teatro Circo",locationBraga,	"www.teatro-circo.com", "253272000", null);
 		Venue venuePorto = new Venue(venueId.incrementAndGet(),  "Trintaeum ", locationPorto, "www.trintaeum.com", "222272000", null);
 		Venue venueCoimbra = new Venue(venueId.incrementAndGet(), "Coimbra place", locationCoimbra, "www.xpto.com", "222272000", null);
 		
 		Artist artist = new Artist(artistId.incrementAndGet(), "artist");
-		Provider provider = new Provider(1l, "lastFm", "www.lastfm.com", new Date().toString());
+		Provider provider = new Provider(1l, "lastFm", "www.lastfm.com", new Date());
 		
 		Calendar tomorowCal = Calendar.getInstance();
 		tomorowCal.add(Calendar.DAY_OF_YEAR, 1);

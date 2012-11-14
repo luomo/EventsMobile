@@ -7,8 +7,8 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.mobileApps.server.ws.domain.Event;
-import com.mobileApps.server.ws.domain.Venue;
+import com.mobileApps.server.domain.Event;
+import com.mobileApps.server.domain.Venue;
 
 @XmlRootElement(name = "eventByCity")
 public class VenueByCityDto {

@@ -5,19 +5,19 @@ var mapdata = { destination: new google.maps.LatLng(41.5444196, -8.422587) };
 
 //eventDetails page
 $('#eventDetails').live("pageinit", function() {
-	$('#map_square').gmap(
-	    { 'center' : mapdata.destination, 
-	      'zoom' : 12, 
-	      'mapTypeControl' : false,
-	      'navigationControl' : false,
-	      'streetViewControl' : false 
-	    })
-	    .bind('init', function(evt, map) { 
-	        $('#map_square').gmap('addMarker', 
-	            { 'position': map.getCenter(), 
-	              'animation' : google.maps.Animation.DROP 
-	            });                                                                                                                                                                                                                
-	    });
+//	$('#map_square').gmap(
+//	    { 'center' : mapdata.destination, 
+//	      'zoom' : 12, 
+//	      'mapTypeControl' : false,
+//	      'navigationControl' : false,
+//	      'streetViewControl' : false 
+//	    })
+//	    .bind('init', function(evt, map) { 
+//	        $('#map_square').gmap('addMarker', 
+//	            { 'position': map.getCenter(), 
+//	              'animation' : google.maps.Animation.DROP 
+//	            });                                                                                                                                                                                                                
+//	    });
  $('#map_square,  #findInMapsBtn').click( function() { 
      $.mobile.changePage($('#page-map'), {});
  });
@@ -33,17 +33,17 @@ function fadingMsg (locMsg) {
 });
 }
 
-//Create the map then make 'displayDirections' request
-$('#page-map').live("pageinit", function() {
- $('#map_canvas').gmap({'center' : mapdata.destination, 
-     'mapTypeControl' : true, 
-     'navigationControl' : true,
-     'navigationControlOptions' : {'position':google.maps.ControlPosition.LEFT_TOP}
-     })
- .bind('init', function() {
-     $('.refresh').trigger('tap');        
- });
-});
+////Create the map then make 'displayDirections' request
+//$('#page-map').live("pageinit", function() {
+// $('#map_canvas').gmap({'center' : mapdata.destination, 
+//     'mapTypeControl' : true, 
+//     'navigationControl' : true,
+//     'navigationControlOptions' : {'position':google.maps.ControlPosition.LEFT_TOP}
+//     })
+// .bind('init', function() {
+//     $('.refresh').trigger('tap');        
+// });
+//});
 
 $('#page-map').live("pageshow", function() {
  $('#map_canvas').gmap('refresh');

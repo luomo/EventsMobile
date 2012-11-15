@@ -183,20 +183,20 @@ $('#home').bind("pagebeforechange", function() {
 	
 	<div data-role="page" data-theme="c" data-fullscreen="true" id="page-map" >
 
-	<div data-role="content" id="map-content">
-		<div id="map_canvas"></div>
-	</div><!-- /content -->
+		<div data-role="content" id="map-content">
+			<div id="map_canvas"></div>
+		</div><!-- /content -->
 	
-	<div data-role="footer" data-theme="d" data-position="fixed">
-	<div data-role="navbar">
-	<ul>
-    	<li><a href="#eventDetails" data-icon="back">Back</a></li>
-    	<li><a href="#home" data-icon="home">Home</a></li>
-    	<li><a href="#page-map" class="refresh" data-icon="refresh">Refresh</a></li>
-    	<li><a href="#page-dir" data-icon="grid">Directions</a></li>
-	</ul>
-	</div><!-- /navbar -->
-	</div><!-- /footer -->
+		<div data-role="footer" data-theme="d" data-position="fixed">
+			<div data-role="navbar">
+				<ul>
+			    	<li><a id="bckBtnMaps" href="" data-icon="back">Back</a></li>
+			    	<li><a href="#home" data-icon="home">Home</a></li>
+			    	<li><a href="#page-map" class="refresh" data-icon="refresh">Refresh</a></li>
+			    	<li><a href="#page-dir" data-icon="grid">Directions</a></li>
+				</ul>
+			</div><!-- /navbar -->
+		</div><!-- /footer -->
 	</div><!-- /page-map -->
 
 	<div data-role="page" data-theme="c" data-fullscreen="true" id="page-dir">
@@ -237,7 +237,7 @@ $('#home').bind("pagebeforechange", function() {
 				<ul>
 					<li><a href="#home" data-icon="home">Home</a></li>	
 					<li><a href="" class="ui-btn-active"  data-icon="grid">My Events</a></li>
-					<li><a href="" data-icon="grid">Stared Events</a></li>
+					<li><a href="" data-icon="grid">Favourites</a></li>
 					<li><a href="#byLocationSearchPage" data-icon="search">Events</a></li>
 					<li><a href='javascript:refresh("byUserSearchPage");' data-icon="refresh" id="refresh" >Sync</a></li>
 				</ul> 
@@ -640,9 +640,7 @@ $('#home').bind("pagebeforechange", function() {
 			    </div>
 			</div><!-- /grid-a -->
 			<div id="contact_buttons">
-				<a id="findInMapsBtn"  data-role="button" data-icon="maps"> Find in Google Maps </a>
-				<a id="phoneCallButton" href="tel:0388161072"  data-role="button" data-icon="info"> Call </a>
-				<a id="editBtn" href="" data-role="button" data-icon="gear">Edit Event</a>;
+
 			</div>
 		</div>
 	

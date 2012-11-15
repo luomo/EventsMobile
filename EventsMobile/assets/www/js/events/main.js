@@ -5,6 +5,7 @@
 $(function(){
 	
 	//createOrUpdatePrefs();
+	
 
 	$('ul li a img ').live("click tap", function(event) {
 		event.preventDefault();
@@ -163,6 +164,7 @@ $(function(){
     		var prefUrl = /^#settings/;
     		var createEventPag = /^#createEventPage/;
     		var nearbyEventsUrl = /^#nearbySearchPage/;
+    		var eventMapUrl = /^#page-map/;
     		
     		
     		if (u.hash.search(delUrl) !== -1) {
@@ -182,6 +184,10 @@ $(function(){
 				// Display event Nearby    			
 				openEventNearbyPage(u, data.options);
 				e.preventDefault();
+    		} else if (u.hash.search(eventMapUrl) !== -1) {
+    			// Display event Nearby    			
+    			openEventMapPage(u, data.options);
+    			e.preventDefault();
     		}  else if (u.hash.search(byLocUrl) !== -1) {
     			// Display main search page .. by city - #byLocationSearchPage
     			openByLocationPage(u, data.options);
@@ -246,6 +252,7 @@ $(function(){
     	var $page = $(pageSelector);
     	
     	
+    	
     	// because all this is ajax related he have to send our gui generation as a ajax callback.
     	// If we didn't do it we would have data when we created the page
     	EventService.findEventById( eventId, function (event) {
@@ -260,6 +267,7 @@ $(function(){
 	    		// The markup we are going to inject into the content
 	        	// Create event info
 	        	var html = '';
+
 	        	html += '<p><h1><strong> ' + event.description + '</strong></h1></p>'
 	        	html += '<p><strong> ' + event.artist.artist + '</strong></p>'
 	        	html += '<p>' + convert(event.startDate) + '</p>'
@@ -292,13 +300,24 @@ $(function(){
 	        	
 	        	// we have to decide which id the app owned events are going to use
 	        	// I think we have to check against the user logged id to understand if I'm the owner of the event
-	        	$content.find( "#editBtn" ).hide();
+	        	
+//	        	$content.find( "#editBtn" ).hide();
+//	        	if(event.owner == 0) {
+//	        		$content.find( "#editBtn" ).attr('href', '#createEventPage?eventId=' + eventId);
+//	        		$content.find( "#editBtn" ).show();
+//	        	}
+	        	html = '';
+	        	html += '<a id="findInMapsBtn"  data-role="button" data-icon="maps" href="#page-map?eventId='+ event.id + '"> Find in Google Maps </a>';
+	        	html += '<a id="phoneCallButton" href="tel:0388161072"  data-role="button" data-icon="info"> Call </a>';
 	        	if(event.owner == 0) {
-	        		$content.find( "#editBtn" ).attr('href', '#createEventPage?eventId=' + eventId);
-	        		$content.find( "#editBtn" ).show();
-	        	}
-	        		
-	        		
+	        		html += '<a id="editBtn" href="#createEventPage?eventId=' + eventId + '" data-role="button" data-icon="gear">Edit Event</a>';
+	        	}	
+	        	$content.find( "#contact_buttons" ).html( html );
+	        	
+	        	$("#findInMapsBtn").button();
+	        	$("#phoneCallButton").button();
+	        	$("#editBtn").button();
+	        	
 	    		// Inject the category items markup into the content element.
 	    		//$content.html( html );
     			
@@ -308,7 +327,25 @@ $(function(){
 
 	    		// Make sure the url displayed in the the browser's location field includes parameters
 	    		//options.dataUrl = urlObj.href;
-
+    			
+    			//var mapdata = { destination: new google.maps.LatLng(41.5444196, -8.422587) };
+    			var mapInfo = mapdata;
+    			if( event.venue.location.latitude != undefined && event.venue.location.longitude != undefined)
+    				mapInfo = { destination: new google.maps.LatLng(event.venue.location.latitude, event.venue.location.longitude) };
+    			
+    			$('#map_square').gmap(
+    	    		    { 'center' : mapInfo.destination, 
+    	    		      'zoom' : 12, 
+    	    		      'mapTypeControl' : false,
+    	    		      'navigationControl' : false,
+    	    		      'streetViewControl' : false 
+    	    		    })
+    	    		    .bind('init', function(evt, map) { 
+    	    		        $('#map_square').gmap('addMarker', 
+    	    		            { 'position': map.getCenter(), 
+    	    		              'animation' : google.maps.Animation.DROP 
+    	    		            });                                                                                                                                                                                                                
+    	    		    });
     			
     			// Now call changePage() and tell it to switch to the page we just modified.
     			$.mobile.changePage($page, options);
@@ -668,7 +705,6 @@ $(function(){
     	var $content = $page.children(":jqmData(role=content)");
     	
     	
-    	var date = new Date();
     	EventService.findNearbyEvents( 
     			function(eventList) {
     				var _event;
@@ -699,6 +735,60 @@ $(function(){
     			function() {
     				alert("Network connection needed");
     			});
+    }
+
+    function openEventMapPage(urlObj, options) {
+    	
+    	
+    	var eventId = urlObj.hash.replace(/.*eventId=/, "");
+    	console.log("eventId: " + evId);
+    	
+    	// The pages we use to display our content are already in
+    	// the DOM. The id of the page we are going to write our
+    	// content into is specified in the hash before the '?'.
+    	var	pageSelector = urlObj.hash.replace(/\?.*$/, "");
+    	
+    	// Get the page we are going to write our content into.
+    	var $page = $(pageSelector);
+    	
+    	// Get the header for the page.
+    	$header = $page.children( ":jqmData(role=header)" );
+    	//$header.find( "h1" ).html( 'User events' );
+    	
+    	// Get the content area element for the page.
+    	var $content = $page.children(":jqmData(role=content)");
+    	
+    	EventService.findEventById(
+    			eventId, 
+    			function (event) {
+			    		var mapInfo = mapdata;
+			    		if( event.venue.location.latitude != undefined && event.venue.location.longitude != undefined)
+			    			mapInfo = { destination: new google.maps.LatLng(event.venue.location.latitude, event.venue.location.longitude) };
+			    		
+			    		//Create the map then make 'displayDirections' request
+			//    	$('#page-map').live("pageinit", function() {
+			    		$('#map_canvas').gmap({'center' : mapdata.destination, 
+			    			'mapTypeControl' : true, 
+			    			'navigationControl' : true,
+			    			'navigationControlOptions' : {'position':google.maps.ControlPosition.LEFT_TOP}
+			    		})
+			    		.bind('init', function() {
+			    			$('.refresh').trigger('tap');        
+			    		});
+			//    	});
+			    		
+			    		$("#bckBtnMaps" ).attr('href', '#eventDetails?eventId=' + eventId);
+			        	// Pages are lazily enhanced. We call page() on the page
+			        	// element to make sure it is always enhanced.
+			        	$page.page();
+			        	
+			        	
+			        	// Now call changePage() and tell it to switch to the page we just modified.
+			        	$.mobile.changePage($page, options);
+
+    	});
+    	
+    	
     }
 
     function openPreferencesPage(urlObj, options) {

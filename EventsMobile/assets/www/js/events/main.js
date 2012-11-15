@@ -4,7 +4,7 @@
 
 $(function(){
 	
-	createOrUpdatePrefs();
+	//createOrUpdatePrefs();
 
 	$('ul li a img ').live("click tap", function(event) {
 		event.preventDefault();

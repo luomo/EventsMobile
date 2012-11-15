@@ -9,6 +9,7 @@ var EventService = function () {
 	
 	var eventDao;
 	var venueDao;
+	var prefsDao;
 	
 	function getChangesAndSyncToDB(syncURL, lastSyncDate, callback){
 		// lastSyncDate will be used to pass the last date to the server

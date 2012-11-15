@@ -4,8 +4,8 @@ var mapdata = { destination: new google.maps.LatLng(41.5444196, -8.422587) };
 
 
 //eventDetails page
-$('#eventDetails').live("pageinit", function() {
-<<<<<<< HEAD
+//$('#eventDetails').live("pageinit", function() {
+//	
 //	$('#map_square').gmap(
 //	    { 'center' : mapdata.destination, 
 //	      'zoom' : 12, 
@@ -19,10 +19,11 @@ $('#eventDetails').live("pageinit", function() {
 //	              'animation' : google.maps.Animation.DROP 
 //	            });                                                                                                                                                                                                                
 //	    });
- $('#map_square,  #findInMapsBtn').click( function() { 
-     $.mobile.changePage($('#page-map'), {});
- });
-});
+// $('#map_square').click( function() {
+//	 alert("sdfsdfs");
+//     $.mobile.changePage($('#page-map'), {});
+// });
+//});
 
 function fadingMsg (locMsg) {
  $("<div class='ui-overlay-shadow ui-body-e ui-corner-all fading-msg'>" + locMsg + "</div>")
@@ -45,47 +46,8 @@ function fadingMsg (locMsg) {
 //     $('.refresh').trigger('tap');        
 // });
 //});
-=======
-	$('#map_square').gmap(
-	    { 'center' : mapdata.destination, 
-	      'zoom' : 12, 
-	      'mapTypeControl' : false,
-	      'navigationControl' : false,
-	      'streetViewControl' : false 
-	    })
-	    .bind('init', function(evt, map) { 
-	        $('#map_square').gmap('addMarker', 
-	            { 'position': map.getCenter(), 
-	              'animation' : google.maps.Animation.DROP 
-	            });                                                                                                                                                                                                                
-	    });
- $('#map_square,  #findInMapsBtn').click( function() { 
-     $.mobile.changePage($('#page-map'), {});
- });
-});
 
-function fadingMsg (locMsg) {
- $("<div class='ui-overlay-shadow ui-body-e ui-corner-all fading-msg'>" + locMsg + "</div>")
- .css({ "display": "block", "opacity": 0.9, "top": $(window).scrollTop() + 100 })
- .appendTo( $.mobile.pageContainer )
- .delay( 2200 )
- .fadeOut( 500, function(){
-     $(this).remove();
-});
-}
 
-//Create the map then make 'displayDirections' request
-$('#page-map').live("pageinit", function() {
- $('#map_canvas').gmap({'center' : mapdata.destination, 
-     'mapTypeControl' : true, 
-     'navigationControl' : true,
-     'navigationControlOptions' : {'position':google.maps.ControlPosition.LEFT_TOP}
-     })
- .bind('init', function() {
-     $('.refresh').trigger('tap');        
- });
-});
->>>>>>> branch 'master' of https://github.com/luomo/EventsMobile.git
 
 $('#page-map').live("pageshow", function() {
  $('#map_canvas').gmap('refresh');

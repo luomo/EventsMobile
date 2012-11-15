@@ -5,7 +5,6 @@
 $(function(){
 	
 	//createOrUpdatePrefs();
-	
 
 	$('ul li a img ').live("click tap", function(event) {
 		event.preventDefault();
@@ -300,12 +299,7 @@ $(function(){
 	        	
 	        	// we have to decide which id the app owned events are going to use
 	        	// I think we have to check against the user logged id to understand if I'm the owner of the event
-	        	
-//	        	$content.find( "#editBtn" ).hide();
-//	        	if(event.owner == 0) {
-//	        		$content.find( "#editBtn" ).attr('href', '#createEventPage?eventId=' + eventId);
-//	        		$content.find( "#editBtn" ).show();
-//	        	}
+
 	        	html = '';
 	        	html += '<a id="findInMapsBtn"  data-role="button" data-icon="maps" href="#page-map?eventId='+ event.id + '"> Find in Google Maps </a>';
 	        	html += '<a id="phoneCallButton" href="tel:0388161072"  data-role="button" data-icon="info"> Call </a>';

@@ -9,6 +9,7 @@ var EventService = function () {
 	
 	var eventDao;
 	var venueDao;
+	var prefsDao;
 	
 	function getChangesAndSyncToDB(syncURL, lastSyncDate, callback){
 		// lastSyncDate will be used to pass the last date to the server
@@ -338,6 +339,34 @@ var EventService = function () {
 		},
 		addOrUpdatePref : function (prefId, prefValue) {
 			prefsDao.addOrUpdatePref(prefId, prefValue);
+		}, 
+		findNearbyEvents : function (successCallback, errorCallback) {
+			if(navigator != undefined && navigator.geolocation != undefined) {
+				navigator.geolocation.getCurrentPosition(
+						function(position){
+							var syncURL = AjaxEventHelper.getRootURL() + 'events/lat/' + position.coords.latitude + '/long/' + position.coords.longitude;
+							AjaxEventHelper.createGETRequestAjax(
+					    			syncURL,
+					    			function (data) {
+					    				// if exists new data 
+						        		if(data.length > 0) {
+						        			// we have to update localDB
+						        			var events = [];
+						        			for(var i = 0; i< data.length ; i++) {
+						        			//for(var _eventJson in data) {
+						        				var _eventJson = data[i];
+						        				var _event = Event.createEventJSObjectBasedOnJsonAjaxReq(_eventJson);
+						        				events.push(_event);
+						        			}
+						        			successCallback(events);
+						        		} 
+					    			}
+							)
+						}, 
+						errorCallback);
+			} else {
+				errorCallback;
+			}
 		}
 	}
 }(); 

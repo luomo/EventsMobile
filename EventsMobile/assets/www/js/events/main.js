@@ -4,7 +4,7 @@
 
 $(function(){
 	
-	createOrUpdatePrefs();
+	//createOrUpdatePrefs();
 
 	$('ul li a img ').live("click tap", function(event) {
 		event.preventDefault();
@@ -162,6 +162,7 @@ $(function(){
     		var eventDetailsUrl = /^#eventDetails/;
     		var prefUrl = /^#settings/;
     		var createEventPag = /^#createEventPage/;
+    		var nearbyEventsUrl = /^#nearbySearchPage/;
     		
     		
     		if (u.hash.search(delUrl) !== -1) {
@@ -177,6 +178,10 @@ $(function(){
     			// Display event by city page - #eventsByCityPage    			
     			openEventByCityPage(u, data.options);
     			e.preventDefault();
+    		} else if (u.hash.search(nearbyEventsUrl) !== -1) {
+				// Display event Nearby    			
+				openEventNearbyPage(u, data.options);
+				e.preventDefault();
     		}  else if (u.hash.search(byLocUrl) !== -1) {
     			// Display main search page .. by city - #byLocationSearchPage
     			openByLocationPage(u, data.options);
@@ -644,6 +649,58 @@ $(function(){
     	});
     }
 
+    function openEventNearbyPage(urlObj, options) {
+    	
+    	
+    	// The pages we use to display our content are already in
+    	// the DOM. The id of the page we are going to write our
+    	// content into is specified in the hash before the '?'.
+    	var	pageSelector = urlObj.hash.replace(/\?.*$/, "");
+    	
+    	// Get the page we are going to write our content into.
+    	var $page = $(pageSelector);
+    	
+    	// Get the header for the page.
+    	$header = $page.children( ":jqmData(role=header)" );
+    	//$header.find( "h1" ).html( 'User events' );
+    	
+    	// Get the content area element for the page.
+    	var $content = $page.children(":jqmData(role=content)");
+    	
+    	
+    	var date = new Date();
+    	EventService.findNearbyEvents( 
+    			function(eventList) {
+    				var _event;
+    				// The markup we are going to inject into the content
+    				var html = '<ul id="eventsNearcbySearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search events ...">';
+    			
+    				for(var i = 0 ; i < eventList.length ; i++){  
+    					_event = eventList[i];
+    					html += createHtmlEventRow(_event);
+    				}    				
+    				//console.log(html);
+    	        	html += '</ul>';
+
+    	    		// Inject the category items markup into the content element.
+    	    		$content.html( html );
+
+    	    		
+    	        	// Pages are lazily enhanced. We call page() on the page
+    	        	// element to make sure it is always enhanced.
+    	        	$page.page();
+    	        	
+    	        	// Enhance the listview we just injected.
+    	        	$content.find( ":jqmData(role=listview)" ).listview();
+
+    	        	// Now call changePage() and tell it to switch to the page we just modified.
+    	        	$.mobile.changePage($page, options);
+    			}, 
+    			function() {
+    				alert("Network connection needed");
+    			});
+    }
+
     function openPreferencesPage(urlObj, options) {
     	
     	// The pages we use to display our content are already in
@@ -930,6 +987,11 @@ function refresh(url) {
 	});
 }
 
+
+
+function findNearby(){
+	$.mobile.changePage("#nearbySearchPage");
+}
 
 function createHtmlEventRow(_event) {
 	var html = '';

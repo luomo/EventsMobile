@@ -754,9 +754,9 @@ $(function(){
     	$header = $page.children( ":jqmData(role=header)" );
     	//$header.find( "h1" ).html( 'User events' );
     	
-    	// Get the content area element for the page.
-    	var $content = $page.children(":jqmData(role=content)");
-    	
+    	//Get the footer area element for the page.
+    	var $footer = $page.children(":jqmData(role=footer)");
+    
     	EventService.findEventById(
     			eventId, 
     			function (event) {
@@ -790,10 +790,8 @@ $(function(){
 			                    }); 
 			    		
 			    		
-			    		
-			    		
-			    		$("#bckBtnMaps" ).attr('href', '#eventDetails?eventId=' + eventId);
-			    		$("#dirBtnMaps" ).attr('href', '#page-dir?eventId=' + eventId);
+			    		$footer.find("#bckBtnMaps" ).attr('href', '#eventDetails?eventId=' + eventId);
+			    		$footer.find("#dirBtnMaps" ).attr('href', '#page-dir?eventId=' + eventId);
 			        	// Pages are lazily enhanced. We call page() on the page
 			        	// element to make sure it is always enhanced.
 			        	$page.page();
@@ -821,11 +819,10 @@ $(function(){
     	// Get the page we are going to write our content into.
     	var $page = $(pageSelector);
     	
-    	// Get the content area element for the page.
-    	var $content = $page.children(":jqmData(role=content)");
+    	// Get the footer area element for the page.
+    	var $footer = $page.children(":jqmData(role=footer)");
     	
-    	$("#bckBtnMapsDir" ).attr('href', '#page-map?eventId=' + eventId);
-    	//$content.find('#bckBtnMapsDir').attr('href', '#page-map?eventId=' + eventId);
+    	$footer.find('#bckBtnMapsDir').attr('href', '#page-map?eventId=' + eventId);
 		
     	// Pages are lazily enhanced. We call page() on the page
     	// element to make sure it is always enhanced.

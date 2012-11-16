@@ -755,21 +755,37 @@ $(function(){
     	EventService.findEventById(
     			eventId, 
     			function (event) {
+    				// workarround for back pages. Has to be changed
+    				if(event != null ) {
 			    		var mapInfo = mapdata;
 			    		if( event.venue.location.latitude != undefined && event.venue.location.longitude != undefined)
 			    			mapInfo = { destination: new google.maps.LatLng(event.venue.location.latitude, event.venue.location.longitude) };
 			    		
-			    		//Create the map then make 'displayDirections' request
-			//    	$('#page-map').live("pageinit", function() {
-			    		$('#map_canvas').gmap({'center' : mapdata.destination, 
-			    			'mapTypeControl' : true, 
-			    			'navigationControl' : true,
-			    			'navigationControlOptions' : {'position':google.maps.ControlPosition.LEFT_TOP}
-			    		})
-			    		.bind('init', function() {
-			    			$('.refresh').trigger('tap');        
-			    		});
-			//    	});
+			    		navigator.geolocation.getCurrentPosition ( 
+			                    function(position) {
+			                        $('#map_canvas').gmap('displayDirections', 
+			                        { 'origin' : new google.maps.LatLng(position.coords.latitude, position.coords.longitude), 
+			                          'destination' : mapInfo.destination, 'travelMode' : google.maps.DirectionsTravelMode.DRIVING},
+//			                          'destination' : mapdata.destination, 'travelMode' : google.maps.DirectionsTravelMode.WALKING},
+			                        { 'panel' : document.getElementById('dir_panel')},
+			                              function (result, status) {
+			                                  if (status === 'OK') {
+			                                      var center = result.routes[0].bounds.getCenter();
+			                                      $('#map_canvas').gmap('option', 'center', center);
+			                                      $('#map_canvas').gmap('refresh');
+			                                  } else {
+			                                    alert('Unable to get route');
+			                                  }
+			                              }
+			                           );         
+			                    }, 
+			                    function(){ 
+			                        alert('Unable to get location');
+			                        $.mobile.changePage($('#eventDetails'), {}); 
+			                    }); 
+			    		
+			    		
+			    		
 			    		
 			    		$("#bckBtnMaps" ).attr('href', '#eventDetails?eventId=' + eventId);
 			        	// Pages are lazily enhanced. We call page() on the page
@@ -779,7 +795,7 @@ $(function(){
 			        	
 			        	// Now call changePage() and tell it to switch to the page we just modified.
 			        	$.mobile.changePage($page, options);
-
+    				}
     	});
     	
     	

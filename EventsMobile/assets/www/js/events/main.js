@@ -164,6 +164,7 @@ $(function(){
     		var createEventPag = /^#createEventPage/;
     		var nearbyEventsUrl = /^#nearbySearchPage/;
     		var eventMapUrl = /^#page-map/;
+    		var eventMapDirectionsUrl = /^#page-dir/;
     		
     		
     		if (u.hash.search(delUrl) !== -1) {
@@ -184,8 +185,12 @@ $(function(){
 				openEventNearbyPage(u, data.options);
 				e.preventDefault();
     		} else if (u.hash.search(eventMapUrl) !== -1) {
-    			// Display event Nearby    			
+    			// Display event geo map    			
     			openEventMapPage(u, data.options);
+    			e.preventDefault();
+    		} else if (u.hash.search(eventMapDirectionsUrl ) !== -1) {
+    			// Display event geo map directions 			
+    			openEventMapDirectionsPage(u, data.options);
     			e.preventDefault();
     		}  else if (u.hash.search(byLocUrl) !== -1) {
     			// Display main search page .. by city - #byLocationSearchPage
@@ -788,6 +793,7 @@ $(function(){
 			    		
 			    		
 			    		$("#bckBtnMaps" ).attr('href', '#eventDetails?eventId=' + eventId);
+			    		$("#dirBtnMaps" ).attr('href', '#page-dir?eventId=' + eventId);
 			        	// Pages are lazily enhanced. We call page() on the page
 			        	// element to make sure it is always enhanced.
 			        	$page.page();
@@ -798,6 +804,35 @@ $(function(){
     				}
     	});
     	
+    	
+    }
+
+    function openEventMapDirectionsPage(urlObj, options) {
+    	
+    	
+    	var eventId = urlObj.hash.replace(/.*eventId=/, "");
+    	console.log("eventId: " + evId);
+    	
+    	// The pages we use to display our content are already in
+    	// the DOM. The id of the page we are going to write our
+    	// content into is specified in the hash before the '?'.
+    	var	pageSelector = urlObj.hash.replace(/\?.*$/, "");
+    	
+    	// Get the page we are going to write our content into.
+    	var $page = $(pageSelector);
+    	
+    	// Get the content area element for the page.
+    	var $content = $page.children(":jqmData(role=content)");
+    	
+    	$("#bckBtnMapsDir" ).attr('href', '#page-map?eventId=' + eventId);
+    	//$content.find('#bckBtnMapsDir').attr('href', '#page-map?eventId=' + eventId);
+		
+    	// Pages are lazily enhanced. We call page() on the page
+    	// element to make sure it is always enhanced.
+    	$page.page();
+    	
+    	// Now call changePage() and tell it to switch to the page we just modified.
+    	$.mobile.changePage($page, options);
     	
     }
 

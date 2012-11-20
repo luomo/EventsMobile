@@ -10,13 +10,26 @@ $(function(){
 		event.preventDefault();
 		event.stopImmediatePropagation();
 		//alert("x");
+		var eventId =  parseInt($(this).parent().attr('href').replace(/.*eventId=/, ""));
+		console.log("eventId added to favourites: " + eventId);
 		var src = $(this).attr("src");
 		if(src == "images/star_empty.png") {
 			$(this).attr("src", "images/star.png");
-			$(this).parent().find('.favourite').html("<b>Added to favourites</b>");
+			EventService.addEventAsFavouriteToUser(
+					1, 
+					eventId, 
+					function(){
+						$(this).parent().find('.favourite').html("<b>Added to favourites</b>");						
+					});
 		} else {
 			$(this).attr("src", "images/star_empty.png");
 			$(this).parent().find('.favourite').html("");
+			EventService.removeEventAsFavouriteFromUser(
+					1, 
+					eventId, 
+					function(){
+						$(this).parent().find('.favourite').html("<b>Added to favourites</b>");						
+					});
 		}
 	});
 	

@@ -7,7 +7,7 @@ import com.mobileApps.server.domain.Event;
 import com.mobileApps.server.domain.Feed;
 import com.mobileApps.server.domain.Location;
 import com.mobileApps.server.domain.Provider;
-import com.mobileApps.server.domain.UserInfo;
+import com.mobileApps.server.domain.User;
 import com.mobileApps.server.domain.Venue;
 import com.mobileApps.server.ws.wsDTOs.EventsByCityDto;
 import com.sun.jersey.api.json.JSONConfiguration;
@@ -34,7 +34,7 @@ public class JAXBContextResolver {
 							 Provider.class, 
 							 Venue.class, 
 							 EventsByCityDto.class, 
-							 UserInfo.class};
+							 User.class};
 
 	public JAXBContextResolver() throws Exception {
 		this.context = 

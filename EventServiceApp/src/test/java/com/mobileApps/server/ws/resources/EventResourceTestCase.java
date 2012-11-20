@@ -47,7 +47,7 @@ public class EventResourceTestCase {//extends JerseyTest {
         Assert.assertEquals(res.size(), EventService.getAllEvents().size());
 	}
 
-	@Test
+	//@Test
 	public void testGetEventById() throws JAXBException {
 		ClientConfig config = new DefaultClientConfig();
 		Client client = Client.create(config);
@@ -63,7 +63,7 @@ public class EventResourceTestCase {//extends JerseyTest {
 		
 		Assert.assertEquals(res.getId(), EventService.getEventsById(eventId).getId());
 	}
-	@Test
+	//@Test
 	public void testPostEventById() throws JAXBException {
 		ClientConfig config = new DefaultClientConfig();
 		Client client = Client.create(config);

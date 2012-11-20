@@ -31,7 +31,7 @@ public class HelloResourceTestCase {//extends JerseyTest {
 				"http://localhost:8080/EventServiceApp/resources/").build();
 	}
 	
-	@Test
+	//@Test
 	public void testHelloWorld() throws JAXBException {
 		ClientConfig config = new DefaultClientConfig();
 		Client client = Client.create(config);

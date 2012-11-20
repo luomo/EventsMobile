@@ -3,22 +3,22 @@ package com.mobileApps.server.ws.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mobileApps.server.domain.UserInfo;
+import com.mobileApps.server.domain.User;
 
 public class UserService {
 
-	private static final List<UserInfo> userList; 
+	private static final List<User> userList; 
 	 
 	
 	static {
 		
-		userList = new ArrayList<UserInfo>();
-		userList.add(new UserInfo("luomo", "1234"));
+		userList = new ArrayList<User>();
+		userList.add(new User("luomo", "1234"));
 	}
 	
 
-	public static boolean registerUser(UserInfo userInfo) {
-		for (UserInfo user : userList) {
+	public static boolean registerUser(User userInfo) {
+		for (User user : userList) {
 			if(user.getUsername().equalsIgnoreCase(userInfo.getUsername()))
 				return false;
 		}

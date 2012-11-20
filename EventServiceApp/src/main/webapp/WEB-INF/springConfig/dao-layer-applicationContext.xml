@@ -21,6 +21,11 @@
 	      class="com.mobileApps.server.dao.EventDaoImpl">
 	    <property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
+
+	<bean id="userDao"
+	      class="com.mobileApps.server.dao.UserDaoImpl">
+	    <property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
 	
 	
 	

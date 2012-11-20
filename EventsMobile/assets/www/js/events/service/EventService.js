@@ -367,6 +367,30 @@ var EventService = function () {
 			} else {
 				errorCallback;
 			}
+		},
+		addEventAsFavouriteToUser : function (userId, eventId, callback) {
+			var url = AjaxEventHelper.getRootURL() + 'users/favourites/add/1';
+			eventDao.findEventById(eventId, function(_eventJS) {
+				AjaxEventHelper.createPUTRequestAjax(
+						url,
+						function () {
+							callback();
+						}, 
+						JSON.stringify(_eventJS)
+					);
+			 });
+		},
+		removeEventAsFavouriteFromUser : function (userId, eventId, callback) {
+			var url = AjaxEventHelper.getRootURL() + 'users/favourites/remove/1';
+			eventDao.findEventById(eventId, function(_eventJS) {
+				AjaxEventHelper.createPUTRequestAjax(
+						url,
+						function () {
+							callback();
+						}, 
+						JSON.stringify(_eventJS)
+				);
+			});
 		}
 	}
 }(); 

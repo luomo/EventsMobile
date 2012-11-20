@@ -9,7 +9,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import com.mobileApps.server.domain.UserInfo;
+import com.mobileApps.server.domain.User;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
@@ -25,15 +25,15 @@ public class UserResourceTestCase {//extends JerseyTest {
 	}
 	
 
-	@Test
+	//@Test
 	public void sendExample() {
 		ClientConfig config = new DefaultClientConfig();
 		Client client = Client.create(config);
 		
-		UserInfo userInfo = new UserInfo("aasd", "asd");
+		User userInfo = new User("aasd", "asd");
 		
 	    WebResource webResource = client.resource(getBaseURI());
-	    UserInfo resp = webResource.type(MediaType.APPLICATION_JSON).post(UserInfo.class, userInfo);
+	    User resp = webResource.type(MediaType.APPLICATION_JSON).post(User.class, userInfo);
 
 
 	    

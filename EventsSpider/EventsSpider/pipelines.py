@@ -5,5 +5,5 @@
 
 class EventsspiderPipeline(object):
     def process_item(self, item, spider):
-        print '++++++++++++++++?????????????????????*****************************************' + item.__str__()
+        print '*pipeline_luomo*' + item.__str__()
         return item

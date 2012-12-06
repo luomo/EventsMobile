@@ -1,6 +1,0 @@
-com.mobileApps.server.ws.domain
-com.mobileApps.server.ws.jaxb.adapters
-com.mobileApps.server.ws.jaxb.provider
-com.mobileApps.server.ws.resources
-com.mobileApps.server.ws.service
-com.mobileApps.server.ws.wsDTOs

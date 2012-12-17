@@ -9,26 +9,27 @@ $(function(){
 	$('ul li a img ').live("click tap", function(event) {
 		event.preventDefault();
 		event.stopImmediatePropagation();
+		var favouriteImg = $(this);
+		
 		//alert("x");
-		var eventId =  parseInt($(this).parent().attr('href').replace(/.*eventId=/, ""));
+		var eventId =  parseInt(favouriteImg.parent().attr('href').replace(/.*eventId=/, ""));
 		console.log("eventId added to favourites: " + eventId);
-		var src = $(this).attr("src");
+		var src = favouriteImg.attr("src");
 		if(src == "images/star_empty.png") {
-			$(this).attr("src", "images/star.png");
 			EventService.addEventAsFavouriteToUser(
 					1, 
 					eventId, 
 					function(){
-						$(this).parent().find('.favourite').html("<b>Added to favourites</b>");						
+						favouriteImg.attr("src", "images/star.png");
+						//favouriteImg.parent().find('.favourite').html("<b>Added to favourites</b>");						
 					});
 		} else {
-			$(this).attr("src", "images/star_empty.png");
-			$(this).parent().find('.favourite').html("");
 			EventService.removeEventAsFavouriteFromUser(
 					1, 
 					eventId, 
 					function(){
-						$(this).parent().find('.favourite').html("<b>Added to favourites</b>");						
+						favouriteImg.attr("src", "images/star_empty.png");
+						//favouriteImg.parent().find('.favourite').html("");
 					});
 		}
 	});
@@ -178,6 +179,7 @@ $(function(){
     		var nearbyEventsUrl = /^#nearbySearchPage/;
     		var eventMapUrl = /^#page-map/;
     		var eventMapDirectionsUrl = /^#page-dir/;
+    		var favourtesUrl = /^#favourtesPage/;
     		
     		
     		if (u.hash.search(delUrl) !== -1) {
@@ -223,6 +225,10 @@ $(function(){
     			// Display URL venues dialog page - #searchVenueDialogPage
     			//loadVenuesAjax();
     			openSearchVenuesDialogPage(u, data.options);
+    			e.preventDefault();
+    		} 
+    		else if (u.hash.search(favourtesUrl) !== -1) {
+    			openFavouritesPage(u, data.options);
     			e.preventDefault();
     		} 
     		else if (u.hash.search(userUrl) !== -1) {
@@ -561,7 +567,9 @@ $(function(){
     			
     				for(var i = 0 ; i < eventList.length ; i++){  
     					_event = eventList[i];
-    					html += createHtmlEventRow(_event);
+    					EventService.validateIfEventIsFavourite(1, _event.id, function( isFavourite) {
+    						html += createHtmlEventRow(_event, isFavourite);
+    					});
     				}
     				
     				//console.log(html);
@@ -676,7 +684,10 @@ $(function(){
     			for(var j = 0; j < list.length ; j++) {	
     				var _event = list[j];
     				// Create html row for displaying event
-    				html += createHtmlEventRow(_event);
+    				//html += createHtmlEventRow(_event);
+    				EventService.validateIfEventIsFavourite(1, _event.id, function( isFavourite) {
+						html += createHtmlEventRow(_event, isFavourite);
+					});
     			}
     		};
 
@@ -699,7 +710,6 @@ $(function(){
     }
 
     function openEventNearbyPage(urlObj, options) {
-    	
     	
     	// The pages we use to display our content are already in
     	// the DOM. The id of the page we are going to write our
@@ -725,7 +735,10 @@ $(function(){
     			
     				for(var i = 0 ; i < eventList.length ; i++){  
     					_event = eventList[i];
-    					html += createHtmlEventRow(_event);
+    					//html += createHtmlEventRow(_event);
+    					EventService.validateIfEventIsFavourite(1, _event.id, function( isFavourite) {
+    						html += createHtmlEventRow(_event, isFavourite);
+    					});
     				}    				
     				//console.log(html);
     	        	html += '</ul>';
@@ -743,6 +756,60 @@ $(function(){
 
     	        	// Now call changePage() and tell it to switch to the page we just modified.
     	        	$.mobile.changePage($page, options);
+    			}, 
+    			function() {
+    				alert("Network connection needed");
+    			});
+    }
+
+    function openFavouritesPage(urlObj, options) {
+    	
+    	// The pages we use to display our content are already in
+    	// the DOM. The id of the page we are going to write our
+    	// content into is specified in the hash before the '?'.
+    	var	pageSelector = urlObj.hash.replace(/\?.*$/, "");
+    	
+    	// Get the page we are going to write our content into.
+    	var $page = $(pageSelector);
+    	
+    	// Get the header for the page.
+    	$header = $page.children( ":jqmData(role=header)" );
+    	//$header.find( "h1" ).html( 'User events' );
+    	
+    	// Get the content area element for the page.
+    	var $content = $page.children(":jqmData(role=content)");
+    	
+    	
+    	EventService.findFavouriteEvents(
+    			1,
+    			function(eventList) {
+    				var _event;
+    				// The markup we are going to inject into the content
+    				var html = '<ul id="favouriteEventsSearchList" data-role="listview" data-filter="true" data-filter-placeholder="Search events ...">';
+    				
+    				for(var i = 0 ; i < eventList.length ; i++){  
+    					_event = eventList[i];
+    					//html += createHtmlEventRow(_event);
+    					EventService.validateIfEventIsFavourite(1, _event.id, function( isFavourite) {
+    						html += createHtmlEventRow(_event, isFavourite);
+    					});
+    				}    				
+    				//console.log(html);
+    				html += '</ul>';
+    				
+    				// Inject the category items markup into the content element.
+    				$content.html( html );
+    				
+    				
+    				// Pages are lazily enhanced. We call page() on the page
+    				// element to make sure it is always enhanced.
+    				$page.page();
+    				
+    				// Enhance the listview we just injected.
+    				$content.find( ":jqmData(role=listview)" ).listview();
+    				
+    				// Now call changePage() and tell it to switch to the page we just modified.
+    				$.mobile.changePage($page, options);
     			}, 
     			function() {
     				alert("Network connection needed");
@@ -1138,10 +1205,14 @@ function findNearby(){
 	$.mobile.changePage("#nearbySearchPage");
 }
 
-function createHtmlEventRow(_event) {
+function createHtmlEventRow(_event, isFavourite) {
 	var html = '';
+	
 	html += '<li ><a href="#eventDetails?eventId='+ _event.id + '">';
-	html += '<img alt="coverArt" src="images/star_empty.png" />';
+	if(isFavourite)
+		html += '<img alt="coverArt" src="images/star.png" />';
+	else
+		html += '<img alt="coverArt" src="images/star_empty.png" />';
 	html += '<h3><strong>' + _event.title + '</strong></h3>';
     html += '<p>' + convert(_event.startDate) + '</p>';
     html += '<p>' + _event.venue.name + ' - '+ _event.venue.location.city + ' , ' + _event.venue.location.country  + '</p>';
@@ -1149,6 +1220,7 @@ function createHtmlEventRow(_event) {
     html += '</a>';
     html += '</a></li>';
     return html;
+    
 }
 
 

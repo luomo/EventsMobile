@@ -46,6 +46,26 @@ public class UserService
 		return user;
 
 	}
+
+
+	@Override
+	public User addEventToUserFavourites(Long userId, Long eventId) {
+		User user = getGenericDao().findById(userId);
+		Event event = eventDao.findById(eventId);
+		user.getFavourtites().add(event);
+		user = getGenericDao().merge(user);
+		return user;
+	}
+
+
+	@Override
+	public User removeEventFromUserFavourites(Long userId, Long eventId) {
+		User user = getGenericDao().findById(userId);
+		Event event = eventDao.findById(eventId);
+		user.getFavourtites().remove(event);
+		user = getGenericDao().merge(user);
+		return user;
+	}
 	
 	
 }

@@ -10,6 +10,7 @@ var EventService = function () {
 	var eventDao;
 	var venueDao;
 	var prefsDao;
+	var userDao;
 	
 	function getChangesAndSyncToDB(syncURL, lastSyncDate, callback){
 		// lastSyncDate will be used to pass the last date to the server
@@ -54,12 +55,13 @@ var EventService = function () {
 	
 	// Public API
 	return {
-		init : function( argEventDao, argVenueDao, argPrefsDao ) {
+		init : function( argEventDao, argVenueDao, argPrefsDao, argUserDao ) {
 			//alert("EventService: init ");
 			console.log("EventService: init ");
 			eventDao = argEventDao;
 			venueDao = argVenueDao;
 			prefsDao = argPrefsDao;
+			userDao = argUserDao;
 			
 			eventDao.init();
 			venueDao.init();
@@ -369,28 +371,32 @@ var EventService = function () {
 			}
 		},
 		addEventAsFavouriteToUser : function (userId, eventId, callback) {
-			var url = AjaxEventHelper.getRootURL() + 'users/favourites/add/1';
-			eventDao.findEventById(eventId, function(_eventJS) {
+			var url = AjaxEventHelper.getRootURL() + 'users/favourites/add/user/1/event/' + eventId;
+			var user;
+//			eventDao.findEventById(eventId, function(_eventJS) {
 				AjaxEventHelper.createPUTRequestAjax(
 						url,
-						function () {
-							callback();
+						function (  ){
+							userDao.addFavouriteEventToUser(userId, eventId, callback);
 						}, 
-						JSON.stringify(_eventJS)
+						null
 					);
-			 });
+//			 });
 		},
 		removeEventAsFavouriteFromUser : function (userId, eventId, callback) {
-			var url = AjaxEventHelper.getRootURL() + 'users/favourites/remove/1';
-			eventDao.findEventById(eventId, function(_eventJS) {
+			var url = AjaxEventHelper.getRootURL() + 'users/favourites/remove/user/1/event/' + eventId;
+//			eventDao.findEventById(eventId, function(_eventJS) {
 				AjaxEventHelper.createPUTRequestAjax(
 						url,
-						function () {
-							callback();
+						function (  ){
+							userDao.removeFavouriteEventFromUser(userId, eventId, callback);
 						}, 
-						JSON.stringify(_eventJS)
+						null
 				);
-			});
+//			});
+		}, 
+		validateIfEventIsFavourite : function(userId, eventId, callback) {
+			userDao.validateIfEventIsFavourite(userId, eventId, callback);
 		}
 	}
 }(); 

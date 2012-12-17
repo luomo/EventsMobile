@@ -10,5 +10,9 @@ public interface IUserService
 	public User addEventToUserFavourites(Long userId, Event event);
 
 	public User removeEventFromUserFavourites(Long userId, Event event);
+
+	public User addEventToUserFavourites(Long userId, Long eventId);
+
+	public User removeEventFromUserFavourites(Long userId, Long eventId);
 	
 }

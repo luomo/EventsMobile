@@ -65,6 +65,20 @@ public class UserDbResource {
 	
 
 	@PUT
+	@Path("/favourites/add/user/{userId}/event/{eventId}")
+	@Consumes({MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response addEventToUserFavourites(
+			@Context UriInfo ui, 
+			@Context HttpServletResponse response,
+			@PathParam("userId") Long userId,
+			@PathParam("eventId") Long eventId){
+		
+		User user = userService.addEventToUserFavourites(userId, eventId);
+		return Response.ok().entity(user).header("Access-Control-Allow-Origin", "*").build();
+	}
+	
+	@PUT
 	@Path("/favourites/add/{userId}")
 	@Consumes({MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -75,9 +89,23 @@ public class UserDbResource {
 			Event event){
 
 		User user = userService.addEventToUserFavourites(userId, event);
-		return Response.ok().entity(user).header("Access-Control-Allow-Origin", "*").build();
+		return Response.ok().entity(event).header("Access-Control-Allow-Origin", "*").build();
 	}
 
+	@PUT
+	@Path("/favourites/remove/user/{userId}/event/{eventId}")
+	@Consumes({MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response removeEventFromUserFavourites(
+			@Context UriInfo ui, 
+			@Context HttpServletResponse response,
+			@PathParam("userId") Long userId,
+			@PathParam("eventId") Long eventId){
+		
+		User user = userService.removeEventFromUserFavourites(userId, eventId);
+		return Response.ok().entity(user).header("Access-Control-Allow-Origin", "*").build();
+	}
+	
 	@PUT
 	@Path("/favourites/remove/{userId}")
 	@Consumes({MediaType.APPLICATION_JSON })
@@ -89,7 +117,7 @@ public class UserDbResource {
 			Event event){
 		
 		User user = userService.removeEventFromUserFavourites(userId, event);
-		return Response.ok().entity(user).header("Access-Control-Allow-Origin", "*").build();
+		return Response.ok().entity(event).header("Access-Control-Allow-Origin", "*").build();
 	}
 	
 	

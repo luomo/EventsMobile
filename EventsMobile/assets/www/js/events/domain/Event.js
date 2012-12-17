@@ -19,6 +19,7 @@ var Event = function (id, title, startDate, description, image, attendance,  pri
 	this.url = url;
 	this.artist = artist;
 	this.venue = venue;
+	this.isFavourite = 0;
 };
 
 // adding methods to Event Object
@@ -53,7 +54,6 @@ Event.orderByTitleASC = function (e1 , e2){
 Event.prototype.setStatusToSyncNeeded  = function(){
 	this.syncStatus = 1;
 }
-
 
 //create method toString (doing like this is not defined in the global namespace). It belong to the class and aren't created everytime an object is created.   
 Event.prototype.toString  = function(){

@@ -25,6 +25,8 @@ import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import com.mobileApps.server.ws.jaxb.adapters.JsonDateAdapter;
 
 /**
@@ -41,6 +43,8 @@ import com.mobileApps.server.ws.jaxb.adapters.JsonDateAdapter;
 
 @Entity
 @XmlRootElement(name = "event")
+//@JsonIgnoreProperties({"externalId"})
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Event implements Serializable {
 
 

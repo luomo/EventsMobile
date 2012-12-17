@@ -67,7 +67,7 @@ var EventService = function () {
 			venueDao.init();
 			prefsDao.init();
 			
-//			eventDao.clear();
+			eventDao.clear();
 //			venueDao.clear();
 
 			prefsDao.findPrefById('sync', function( val ) {
@@ -377,7 +377,7 @@ var EventService = function () {
 				AjaxEventHelper.createPUTRequestAjax(
 						url,
 						function (  ){
-							userDao.addFavouriteEventToUser(userId, eventId, callback);
+							eventDao.addFavouriteEventToUser(userId, eventId, callback);
 						}, 
 						null
 					);
@@ -389,14 +389,17 @@ var EventService = function () {
 				AjaxEventHelper.createPUTRequestAjax(
 						url,
 						function (  ){
-							userDao.removeFavouriteEventFromUser(userId, eventId, callback);
+							eventDao.removeFavouriteEventFromUser(userId, eventId, callback);
 						}, 
 						null
 				);
 //			});
 		}, 
 		validateIfEventIsFavourite : function(userId, eventId, callback) {
-			userDao.validateIfEventIsFavourite(userId, eventId, callback);
+			eventDao.validateIfEventIsFavourite(userId, eventId, callback);
+		},
+		findFavouriteEvents : function(userId,  callback) {
+			eventDao.findFavouriteEvents(userId, callback);
 		}
 	}
 }(); 

@@ -220,7 +220,57 @@ var EventStorageDao = function () {
     } 
 
   
-    
+    function addFavouriteEventToUserInDb( userId, eventId, callback){
+		console.log('EventDao:addFavouriteEventToUserInDb');
+		var _eventJson = window.localStorage.getItem(EVENT_PREFIX + eventId);
+		var _event = JSON.parse(_eventJson);
+		if(_event.isFavourite === 0) {
+			_event.isFavourite = 1;
+			window.localStorage.setItem(EVENT_PREFIX + eventId, JSON.stringify(_event));
+		}
+		callback();
+	}
+
+	function removeFavouriteEventFromUserInDb( userId, eventId, callback){
+		console.log('EventDao:removeFavouriteEventToUserInDb');
+		var _eventJson = window.localStorage.getItem(EVENT_PREFIX + eventId);
+		var _event = JSON.parse(_eventJson);
+		if(_event.isFavourite === 1) {
+			_event.isFavourite = 0;
+			window.localStorage.setItem(EVENT_PREFIX + eventId, JSON.stringify(_event));
+		}
+		callback();
+	}
+	
+	
+	function validateIfEventIsFavouriteInDb( userId, eventId, callback){
+		console.log('EventDao:validateIfEventIsFavouriteInDb');
+		var _eventJson = window.localStorage.getItem(EVENT_PREFIX + eventId);
+		var _event = JSON.parse(_eventJson);
+		if(_event.isFavourite === 0) {
+			callback(false);
+		} else
+			callback(true);
+	}
+
+	function findFavouriteEventsInDb( userId, callback){
+		console.log('EventDao:findFavouriteEventsInDb');
+		var _eventId;
+		var _eventJS;
+		var _eventJson;
+		var eventList = [];
+
+		for (var i = 0; i < window.localStorage.length; i++){
+			_eventId = window.localStorage.key(i);
+			if(_eventId.match(EVENT_PREFIX) != null) {
+				_eventJson = window.localStorage.getItem(_eventId);
+				_eventJS = JSON.parse(_eventJson);
+				if(_eventJS.isFavourite === 1)
+					eventList.push(_eventJS);
+			}
+		}	
+		callback(eventList);
+	}
 	
 	return {
 		init : function() {
@@ -269,7 +319,20 @@ var EventStorageDao = function () {
 		}, 
 		removeTransientEventList : function (callback){
 			removeTransientEventListFromDatabase(callback);
-		}
+		},
+		addFavouriteEventToUser : function ( userId, eventId, callback){
+			addFavouriteEventToUserInDb( userId, eventId, callback);
+		},
+		removeFavouriteEventFromUser : function ( userId, eventId, callback){
+			removeFavouriteEventFromUserInDb( userId, eventId, callback);
+		},
+		validateIfEventIsFavourite : function ( userId, eventId, callback){
+			validateIfEventIsFavouriteInDb( userId, eventId, callback);
+		},
+		findFavouriteEvents : function ( userId, callback){
+			findFavouriteEventsInDb( userId, callback);
+		},
+		
 		
 	}
 }(); 

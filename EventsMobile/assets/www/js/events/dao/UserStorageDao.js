@@ -38,7 +38,7 @@ var UserStorageDao = function () {
 	
 	
 	function validateIfEventIsFavouriteInDb( userId, eventId, callback){
-		console.log('UserDao:removeFavouriteEventToUserInDb');
+		console.log('UserDao:validateIfEventIsFavouriteInDb');
 		var userFavourites = window.localStorage.getItem(USER_PREFIX + userId);
 		if(userFavourites != undefined) {
 			var favList = JSON.parse(userFavourites);

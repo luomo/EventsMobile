@@ -11,8 +11,7 @@ $(function(){
 		event.stopImmediatePropagation();
 		var favouriteImg = $(this);
 		
-		//alert("x");
-		var eventId =  parseInt(favouriteImg.parent().attr('href').replace(/.*eventId=/, ""));
+		var eventId = parseInt(favouriteImg.parent().attr('href').replace(/.*eventId=/, ""));
 		console.log("eventId added to favourites: " + eventId);
 		var src = favouriteImg.attr("src");
 		if(src == "images/star_empty.png") {
@@ -20,8 +19,7 @@ $(function(){
 					1, 
 					eventId, 
 					function(){
-						favouriteImg.attr("src", "images/star.png");
-						//favouriteImg.parent().find('.favourite').html("<b>Added to favourites</b>");						
+						favouriteImg.attr("src", "images/star.png");						
 					});
 		} else {
 			EventService.removeEventAsFavouriteFromUser(
@@ -29,7 +27,6 @@ $(function(){
 					eventId, 
 					function(){
 						favouriteImg.attr("src", "images/star_empty.png");
-						//favouriteImg.parent().find('.favourite').html("");
 					});
 		}
 	});
@@ -789,10 +786,7 @@ $(function(){
     				
     				for(var i = 0 ; i < eventList.length ; i++){  
     					_event = eventList[i];
-    					//html += createHtmlEventRow(_event);
-    					EventService.validateIfEventIsFavourite(1, _event.id, function( isFavourite) {
-    						html += createHtmlEventRow(_event, isFavourite);
-    					});
+    					html += createHtmlEventRow(_event, true);
     				}    				
     				//console.log(html);
     				html += '</ul>';
